@@ -1,3 +1,5 @@
+import { Button } from "@/components/ui/button";
+
 export default function Home() {
   return (
     <main className="mx-auto flex min-h-screen w-full max-w-5xl flex-col justify-center px-6 py-16">
@@ -11,6 +13,10 @@ export default function Home() {
         Baseline scaffold for the App Router migration. Feature routes, backend
         proxying, and migrated German UX copy will land in follow-up tasks.
       </p>
+      <div className="mt-10 flex flex-wrap items-center gap-3">
+        <Button>Weiter</Button>
+        <Button variant="outline">Details</Button>
+      </div>
       <div className="mt-10 h-2 w-32 rounded-full bg-accent" />
     </main>
   );
