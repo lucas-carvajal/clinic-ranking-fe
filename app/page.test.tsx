@@ -3,12 +3,16 @@ import { describe, expect, it } from "vitest";
 import Home from "./page";
 
 describe("Home", () => {
-  it("renders the migration scaffold heading", () => {
+  it("renders the landing page hero and content blocks", () => {
     render(<Home />);
 
     expect(
-      screen.getByRole("heading", { name: "Clinic Ranking" }),
+      screen.getByRole("heading", { name: "Das Assistenz Arzt Ranking" }),
     ).toBeInTheDocument();
-    expect(screen.getByText("Next.js rewrite")).toBeInTheDocument();
+    expect(screen.getByText("Ärzte helfen Ärzten")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Ranking ansehen" })).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: "Bewertung abgeben" }),
+    ).toBeInTheDocument();
   });
 });
