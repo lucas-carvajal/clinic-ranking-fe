@@ -1,14 +1,37 @@
-import { render, screen } from "@testing-library/react";
+import { render, screen, within } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 import Home from "./page";
 
 describe("Home", () => {
-  it("renders the migration scaffold heading", () => {
+  it("renders the static landing page hero copy", () => {
     render(<Home />);
 
     expect(
-      screen.getByRole("heading", { name: "Clinic Ranking" }),
+      screen.getByRole("heading", {
+        level: 1,
+        name: "Das Assistenz Arzt Ranking",
+      }),
+    ).toHaveClass("page-title");
+    expect(screen.getByText("Ärzte helfen Ärzten")).toBeInTheDocument();
+    expect(
+      screen.getByText("Für eine faire Facharztweiterbildung"),
     ).toBeInTheDocument();
-    expect(screen.getByText("Next.js rewrite")).toBeInTheDocument();
+  });
+
+  it("renders two responsive landing content blocks with one button each", () => {
+    render(<Home />);
+
+    const contentGrid = screen.getByLabelText("Landing page content");
+    expect(contentGrid).toHaveClass("grid-cols-1", "md:grid-cols-2");
+
+    const blocks = screen.getAllByRole("article");
+    expect(blocks).toHaveLength(2);
+
+    for (const block of blocks) {
+      expect(within(block).getByRole("heading", { level: 3 })).toHaveClass(
+        "section-title",
+      );
+      expect(within(block).getAllByRole("button")).toHaveLength(1);
+    }
   });
 });

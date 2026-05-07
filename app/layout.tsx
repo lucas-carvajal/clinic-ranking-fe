@@ -15,10 +15,10 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: {
-    default: "Clinic Ranking",
-    template: "%s | Clinic Ranking",
+    default: "Das Assistenz Arzt Ranking",
+    template: "%s | Das Assistenz Arzt Ranking",
   },
-  description: "Clinic Ranking Next.js rewrite scaffold.",
+  description: "Ärzte helfen Ärzten. Für eine faire Facharztweiterbildung.",
 };
 
 export default function RootLayout({
@@ -28,7 +28,7 @@ export default function RootLayout({
 }>) {
   return (
     <html
-      lang="en"
+      lang="de"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
       <body className="min-h-full">
