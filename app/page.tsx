@@ -32,7 +32,7 @@ export default function Home() {
         {landingBlocks.map((block) => (
           <article
             key={block.title}
-            className="flex min-h-64 flex-col justify-between rounded-lg border bg-card p-6 text-card-foreground shadow-sm"
+            className="flex min-h-64 flex-col justify-between py-4 text-foreground md:px-4"
           >
             <div>
               <h3 className="section-title">{block.title}</h3>
@@ -40,7 +40,9 @@ export default function Home() {
                 {block.body}
               </p>
             </div>
-            <Button className="mt-8 w-fit">{block.button}</Button>
+            <Button className="mt-10 h-12 min-w-48 self-center px-8 text-base sm:h-14 sm:min-w-56 sm:px-10 sm:text-lg">
+              {block.button}
+            </Button>
           </article>
         ))}
       </section>

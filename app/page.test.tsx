@@ -28,10 +28,12 @@ describe("Home", () => {
     expect(blocks).toHaveLength(2);
 
     for (const block of blocks) {
+      expect(block).not.toHaveClass("bg-card", "border", "shadow-sm");
       expect(within(block).getByRole("heading", { level: 3 })).toHaveClass(
         "section-title",
       );
-      expect(within(block).getAllByRole("button")).toHaveLength(1);
+      const [button] = within(block).getAllByRole("button");
+      expect(button).toHaveClass("self-center", "h-12", "sm:h-14");
     }
   });
 });
