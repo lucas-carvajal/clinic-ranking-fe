@@ -67,9 +67,9 @@ describe("shadcn primitives", () => {
       </div>,
     );
 
-    expect(
-      screen.getByRole("button", { name: "Speichern" }),
-    ).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Speichern" })).toHaveClass(
+      "cursor-pointer",
+    );
     expect(screen.getByLabelText("Klinik")).toBeInTheDocument();
     expect(screen.getByLabelText("Feedback")).toBeInTheDocument();
     expect(
