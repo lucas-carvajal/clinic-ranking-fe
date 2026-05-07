@@ -6,19 +6,19 @@
 
 /*
   Authoritative v1 palette:
-  --color-background: #fff8ed;
+  --color-background: #fff8e7;
   --color-foreground: #0a0a0a;
-  --color-brand-red: #ff1f2d;
-  --color-brand-mint: #39f5a6;
+  --color-brand-red: #ff1a1a;
+  --color-brand-mint: #00e6b3;
 
   Change those values here first. Feature components should consume semantic
   Tailwind classes and avoid one-off color hex values.
 */
 :root {
-  --background: #fff8ed;
+  --background: #fff8e7;
   --foreground: #0a0a0a;
-  --brand-red: #ff1f2d;
-  --brand-mint: #39f5a6;
+  --brand-red: #ff1a1a;
+  --brand-mint: #00e6b3;
   --cream-surface: #ffffff;
   --cream-muted: #f7eddc;
   --cream-border: #e7d9c3;
