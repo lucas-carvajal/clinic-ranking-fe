@@ -13,12 +13,12 @@ describe("Home", () => {
       }),
     ).toHaveClass("page-title");
     expect(screen.getByText("Ärzte helfen Ärzten").parentElement).toHaveClass(
-      "text-brand-mint",
+      "text-foreground",
     );
     expect(
       screen.getByText("Für eine faire Facharztweiterbildung"),
     ).toBeInTheDocument();
-    expect(document.querySelector(".mint-accent-bar")).not.toBeInTheDocument();
+    expect(document.querySelector(".mint-accent-bar")).toBeInTheDocument();
   });
 
   it("renders two responsive landing content blocks with one button each", () => {

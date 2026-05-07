@@ -18,10 +18,11 @@ export default function Home() {
     <main className="mx-auto flex min-h-screen w-full max-w-6xl flex-col justify-center px-6 py-16 sm:px-8 lg:px-10">
       <section className="max-w-4xl">
         <h1 className="page-title">Das Assistenz Arzt Ranking</h1>
-        <h2 className="mt-6 text-2xl leading-tight font-medium text-brand-mint sm:text-4xl">
+        <h2 className="mt-6 text-2xl leading-tight font-medium text-foreground sm:text-4xl">
           <span className="block">Ärzte helfen Ärzten</span>
           <span className="block">Für eine faire Facharztweiterbildung</span>
         </h2>
+        <div className="mint-accent-bar mt-10" />
       </section>
 
       <section
