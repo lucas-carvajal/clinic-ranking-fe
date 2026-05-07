@@ -56,5 +56,17 @@ npx shadcn@latest add <component>
 
 ## Environment
 
-No environment variables are required for this baseline scaffold. Backend
-proxying and API configuration will be added in follow-up migration tasks.
+Create local env values from the example:
+
+```bash
+cp .env.example .env
+```
+
+Environment variables:
+
+- `BACKEND_URL`: Backend base URL used by server-side fetches and the Next.js
+  proxy route handler (for example `http://localhost:8080` in local development).
+- `SITE_URL`: Canonical public app URL used by metadata, sitemap, and robots
+  generation (for example `http://localhost:3000` locally).
+- `NEXT_PUBLIC_CLOUDFLARE_ANALYTICS_TOKEN`: Optional public analytics token.
+  Leave empty to disable client analytics injection.
