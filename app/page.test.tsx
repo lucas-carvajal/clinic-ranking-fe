@@ -12,10 +12,13 @@ describe("Home", () => {
         name: "Das Assistenz Arzt Ranking",
       }),
     ).toHaveClass("page-title");
-    expect(screen.getByText("Ärzte helfen Ärzten")).toBeInTheDocument();
+    expect(screen.getByText("Ärzte helfen Ärzten").parentElement).toHaveClass(
+      "text-brand-mint",
+    );
     expect(
       screen.getByText("Für eine faire Facharztweiterbildung"),
     ).toBeInTheDocument();
+    expect(document.querySelector(".mint-accent-bar")).not.toBeInTheDocument();
   });
 
   it("renders two responsive landing content blocks with one button each", () => {
