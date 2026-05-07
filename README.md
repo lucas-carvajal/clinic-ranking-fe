@@ -39,10 +39,20 @@ not configured yet; E2E coverage belongs to the later QA/regression work.
 
 - Next.js App Router with TypeScript strict mode.
 - Tailwind CSS v4.
+- shadcn/ui v4 configured via `components.json`.
 - TanStack Query wired through `components/providers/QueryProvider.tsx`.
 - Vitest, React Testing Library, user-event, jest-dom, and jsdom for unit,
   hook, and component tests.
 - Production builds use `next.config.ts` with `output: "standalone"`.
+
+## UI Components
+
+The shadcn generator is configured to write primitives to `components/ui` and
+shared helpers to `lib`. Add future components with:
+
+```bash
+npx shadcn@latest add <component>
+```
 
 ## Environment
 
