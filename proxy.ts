@@ -2,8 +2,6 @@ import { NextRequest, NextResponse } from "next/server";
 
 import { getSafeAdminRedirect } from "@/lib/admin/get-safe-admin-redirect";
 
-export const runtime = "nodejs";
-
 const ADMIN_LOGIN_PATH = "/admin/login";
 
 function getSessionCookieName(): string {
@@ -44,7 +42,7 @@ async function hasValidAdminSession(request: NextRequest): Promise<boolean> {
   }
 }
 
-export async function middleware(request: NextRequest) {
+export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
   const sessionCookie = request.cookies.get(getSessionCookieName())?.value?.trim();
 
