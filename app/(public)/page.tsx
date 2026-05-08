@@ -2,14 +2,14 @@ import { Button } from "@/components/ui/button";
 
 const landingBlocks = [
   {
-    title: "Weiterbildung sichtbar machen",
-    body: "Dummy-Text für den ersten Inhaltsblock. Hier steht später, wie Erfahrungsberichte Assistenzärzten bei der Orientierung helfen.",
-    button: "Ranking ansehen",
+    title: "Helfe anderen die richtige Entscheidung zu treffen ❤️",
+    body: "Berichte von deiner Facharztweiterbildung und helfe in nur 5 Minuten über 5000 Ärzten bei der Entscheidung zur richtigen Weiterbildung!",
+    button: "Jetzt Berichten",
   },
   {
-    title: "Eigene Erfahrung teilen",
-    body: "Dummy-Text für den zweiten Inhaltsblock. Dieser Bereich erklärt später, wie Ärztinnen und Ärzte ihre Weiterbildung fair bewerten können.",
-    button: "Bewertung abgeben",
+    title: "Finde das richtige Krankenhaus für deine Weiterbildung 🏥",
+    body: "Informiere dich wo du am besten die nächsten 5 Jahre verbringst und dich für deinen Facharzt ausbilden lässt!",
+    button: "Bewertungen Ansehen",
   },
 ];
 

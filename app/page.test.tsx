@@ -10,9 +10,9 @@ describe("Home", () => {
       screen.getByRole("heading", { name: "Das Assistenz Arzt Ranking" }),
     ).toBeInTheDocument();
     expect(screen.getByText("Ärzte helfen Ärzten")).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "Ranking ansehen" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Jetzt Berichten" })).toBeInTheDocument();
     expect(
-      screen.getByRole("button", { name: "Bewertung abgeben" }),
+      screen.getByRole("button", { name: "Bewertungen Ansehen" }),
     ).toBeInTheDocument();
   });
 });
