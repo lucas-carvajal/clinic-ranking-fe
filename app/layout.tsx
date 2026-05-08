@@ -15,8 +15,8 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: {
-    default: "Clinic Ranking",
-    template: "%s | Clinic Ranking",
+    default: "Assistenz Arzt Ranking",
+    template: "%s | Assistenz Arzt Ranking",
   },
   description: "Clinic Ranking Next.js rewrite scaffold.",
 };
