@@ -71,7 +71,7 @@ Critical rule:
 
 Examples:
 
-- backend sends `Set-Cookie: session=...` -> `SESSION_COOKIE_NAME=session`
+- backend sends `Set-Cookie: admin_auth_token=...` -> `SESSION_COOKIE_NAME=admin_auth_token`
 - backend sends `Set-Cookie: admin_session=...` -> `SESSION_COOKIE_NAME=admin_session`
 
 If this value is wrong, valid admin sessions will be treated as logged out.

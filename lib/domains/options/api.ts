@@ -1,29 +1,19 @@
-import { z } from "zod";
-
 import { get } from "@/lib/api/client";
+import {
+  citiesResponseSchema,
+  hospitalsResponseSchema,
+  specialtiesResponseSchema,
+  statesResponseSchema,
+  type CityDto,
+  type HospitalDto,
+  type SpecialtyDto,
+  type StateDto,
+} from "@/lib/contracts/options.schema";
 
-const stringArraySchema = z.array(z.string());
-
-const statesResponseSchema = z.object({
-  states: stringArraySchema,
-});
-
-const specialtiesResponseSchema = z.object({
-  specialties: stringArraySchema,
-});
-
-const citiesResponseSchema = z.object({
-  cities: stringArraySchema,
-});
-
-const hospitalsResponseSchema = z.object({
-  hospitals: stringArraySchema,
-});
-
-export type StatesResponse = z.infer<typeof statesResponseSchema>;
-export type SpecialtiesResponse = z.infer<typeof specialtiesResponseSchema>;
-export type CitiesResponse = z.infer<typeof citiesResponseSchema>;
-export type HospitalsResponse = z.infer<typeof hospitalsResponseSchema>;
+export type StatesResponse = { data: StateDto[] };
+export type SpecialtiesResponse = { data: SpecialtyDto[] };
+export type CitiesResponse = { data: CityDto[] };
+export type HospitalsResponse = { data: HospitalDto[] };
 
 export function fetchStates() {
   return get<StatesResponse>("/types/states", {
