@@ -1,3 +1,4 @@
+import { AdminShell } from "@/components/layout/admin-shell";
 import { requireAdminUser } from "@/lib/admin/require-admin-user";
 
 export default async function ProtectedAdminLayout({
@@ -5,5 +6,5 @@ export default async function ProtectedAdminLayout({
 }: Readonly<{ children: React.ReactNode }>) {
   await requireAdminUser("/admin");
 
-  return <>{children}</>;
+  return <AdminShell>{children}</AdminShell>;
 }

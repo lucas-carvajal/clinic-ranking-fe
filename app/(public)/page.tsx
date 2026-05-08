@@ -15,7 +15,7 @@ const landingBlocks = [
 
 export default function Home() {
   return (
-    <main className="mx-auto flex min-h-screen w-full max-w-6xl flex-col justify-center px-6 py-16 sm:px-8 lg:px-10">
+    <main className="mx-auto flex w-full max-w-6xl flex-1 flex-col justify-center px-6 py-16 sm:px-8 lg:px-10">
       <section className="max-w-4xl">
         <h1 className="page-title">Das Assistenz Arzt Ranking</h1>
         <h2 className="mt-6 text-2xl leading-tight font-medium text-foreground sm:text-4xl">

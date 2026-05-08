@@ -45,6 +45,16 @@ not configured yet; E2E coverage belongs to the later QA/regression work.
   hook, and component tests.
 - Production builds use `next.config.ts` with `output: "standalone"`.
 
+## App structure (routes)
+
+Route groups in parentheses do not affect URLs. Top-level layout (`app/layout.tsx`)
+wraps all pages with the global footer (`SiteFooter`). Public marketing content
+lives under `app/(public)/` (for example the home page at `/`). Legal pages under
+`/legal/*` use a nested layout that adds the public app header (`AppSiteHeader`).
+Authenticated user-facing features under `/app/*` use `app/(authed)/app/` and
+share the same header. Admin tooling lives under `app/(admin)/admin/` with a
+protected layout that adds the admin sidebar (`AdminSidebar`).
+
 ## UI Components
 
 The shadcn generator is configured to write primitives to `components/ui` and
