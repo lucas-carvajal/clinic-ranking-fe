@@ -63,3 +63,36 @@ export function isReviewsCursorLikelyValid(cursor: string): boolean {
   return /^[A-Za-z0-9+/=_-]+$/.test(cursor) && cursor.length >= 8;
 }
 
+/**
+ * Drops city/hospital when parent filters are missing so hierarchy stays consistent
+ * with cascading option loaders.
+ */
+export function normalizeReviewsFilterParams(
+  params: ReviewsFilterParams,
+): ReviewsFilterParams {
+  const next: ReviewsFilterParams = { ...params };
+  if (!next.state) {
+    delete next.city;
+    delete next.hospital;
+  } else if (!next.city) {
+    delete next.hospital;
+  }
+  return next;
+}
+
+export function buildAppReviewsHref(params: ReviewsFilterParams): string {
+  const sp = serializeReviewsUrlParams(params);
+  const qs = sp.toString();
+  return `/app/reviews${qs ? `?${qs}` : ""}`;
+}
+
+/** Returns normalized params when the URL implied invalid filter hierarchy. */
+export function coerceReviewsParamsFromUrl(params: ReviewsFilterParams): {
+  params: ReviewsFilterParams;
+  didCoerce: boolean;
+} {
+  const normalized = normalizeReviewsFilterParams(params);
+  const changed = FILTER_KEYS.some((k) => params[k] !== normalized[k]);
+  return { params: normalized, didCoerce: changed };
+}
+

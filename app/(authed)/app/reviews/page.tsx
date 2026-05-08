@@ -1,5 +1,17 @@
-import { PlaceholderPage } from "@/components/layout/placeholder-page";
+import { Suspense } from "react";
 
-export default function AppReviewsPage() {
-  return <PlaceholderPage title="Alle Bewertungen" ticket="T10" />;
+import { ReviewsPageClient } from "@/components/domains/reviews/reviews-page-client";
+
+export default function ReviewsPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="text-muted-foreground mx-auto max-w-7xl px-3 py-8 text-center">
+          Lade Bewertungen...
+        </div>
+      }
+    >
+      <ReviewsPageClient />
+    </Suspense>
+  );
 }
