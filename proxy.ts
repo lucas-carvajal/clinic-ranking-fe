@@ -5,7 +5,7 @@ import { getSafeAdminRedirect } from "@/lib/admin/get-safe-admin-redirect";
 const ADMIN_LOGIN_PATH = "/admin/login";
 
 function getSessionCookieName(): string {
-  return process.env.SESSION_COOKIE_NAME ?? "session";
+  return process.env.SESSION_COOKIE_NAME ?? "admin_auth_token";
 }
 
 function buildLoginRedirect(request: NextRequest): URL {

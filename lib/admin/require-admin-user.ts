@@ -2,14 +2,15 @@ import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 
 import { getSafeAdminRedirect } from "@/lib/admin/get-safe-admin-redirect";
+import { adminMeResponseSchema, type AdminMeResponse } from "@/lib/contracts/auth.schema";
 
-export type AdminUser = Record<string, unknown>;
+export type AdminUser = AdminMeResponse;
 
 const DEFAULT_ADMIN_REDIRECT = "/admin";
 const ADMIN_ME_PATH = "/admin/me";
 
 function getSessionCookieName(): string {
-  return process.env.SESSION_COOKIE_NAME ?? "session";
+  return process.env.SESSION_COOKIE_NAME ?? "admin_auth_token";
 }
 
 function redirectToLogin(path: string): never {
@@ -52,7 +53,7 @@ export async function requireAdminUser(
   }
 
   try {
-    return (await response.json()) as AdminUser;
+    return adminMeResponseSchema.parse(await response.json());
   } catch {
     return redirectToLogin(redirectPath);
   }

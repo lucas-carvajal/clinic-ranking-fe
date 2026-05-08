@@ -1,0 +1,34 @@
+import { z } from "zod";
+
+import { offsetPaginationSchema } from "@/lib/contracts/pagination.schema";
+import {
+  reviewRequestStatusSchema,
+  reviewSubmitSchema,
+} from "@/lib/contracts/submit.schema";
+
+export const reviewRequestSummarySchema = z.object({
+  id: z.string().uuid(),
+  requestStatus: reviewRequestStatusSchema,
+  dateTime: z.string().datetime(),
+  state: z.string(),
+  city: z.string(),
+  hospital: z.string(),
+  specialty: z.string(),
+  totalGrade: z.number(),
+});
+
+export const reviewRequestSchema = z.object({
+  id: z.string().uuid(),
+  createdAt: z.string().datetime(),
+  updatedAt: z.string().datetime(),
+  requestStatus: reviewRequestStatusSchema,
+  ...reviewSubmitSchema.shape,
+});
+
+export const reviewRequestsResponseSchema = z.object({
+  data: z.array(reviewRequestSummarySchema),
+  pagination: offsetPaginationSchema,
+});
+
+export type ReviewRequestSummary = z.infer<typeof reviewRequestSummarySchema>;
+export type ReviewRequest = z.infer<typeof reviewRequestSchema>;
