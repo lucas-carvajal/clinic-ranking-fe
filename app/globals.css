@@ -5,10 +5,10 @@
 @custom-variant dark (&:is(.dark *));
 
 :root {
-  --background: #fff8e7;
+  --background: #f8f6f0;
   --foreground: #0a0a0a;
-  --brand-red: #ff1a1a;
-  --brand-mint: #00e6b3;
+  --brand-red: #c8102e;
+  --brand-mint: #0d9488;
   --cream-surface: #ffffff;
   --cream-muted: #f7eddc;
   --cream-border: #e7d9c3;
@@ -117,10 +117,6 @@
   }
 
   .section-title {
-    @apply text-brand-red text-2xl leading-tight font-semibold tracking-normal;
-  }
-
-  .mint-accent-bar {
-    @apply bg-brand-mint h-2 w-32 rounded-full;
+    @apply text-brand-mint text-2xl leading-tight font-semibold tracking-normal;
   }
 }

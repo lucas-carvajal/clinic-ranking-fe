@@ -25,7 +25,6 @@ export default function Home() {
           <span className="block">Ärzte helfen Ärzten</span>
           <span className="block">Für eine faire Facharztweiterbildung</span>
         </h2>
-        <div className="mint-accent-bar mt-10" />
       </section>
 
       <section
