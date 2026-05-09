@@ -6,6 +6,7 @@ import { useCallback, useLayoutEffect, useMemo } from "react";
 import { ReviewsPagerControls } from "@/components/domains/reviews/reviews-pager-controls";
 import { ReviewsResults } from "@/components/domains/reviews/reviews-results";
 import { Button } from "@/components/ui/button";
+import { Combobox, type ComboboxOption } from "@/components/ui/combobox";
 import { Label } from "@/components/ui/label";
 import { mapToUiError } from "@/lib/api/errors";
 import {
@@ -70,29 +71,36 @@ export function ReviewsPageClient() {
     [router],
   );
 
-  const handleStateChange = (value: string) =>
+  const handleStateChange = (value: string | undefined) =>
     updateFilters({
       ...filters,
-      state: value || undefined,
+      state: value,
       city: undefined,
       hospital: undefined,
     });
 
-  const handleCityChange = (value: string) =>
+  const handleCityChange = (value: string | undefined) =>
     updateFilters({
       ...filters,
-      city: value || undefined,
+      city: value,
       hospital: undefined,
     });
 
-  const handleHospitalChange = (value: string) =>
-    updateFilters({ ...filters, hospital: value || undefined });
+  const handleHospitalChange = (value: string | undefined) =>
+    updateFilters({ ...filters, hospital: value });
 
-  const handleSpecialtyChange = (value: string) =>
-    updateFilters({ ...filters, specialty: value || undefined });
+  const handleSpecialtyChange = (value: string | undefined) =>
+    updateFilters({ ...filters, specialty: value });
 
-  const selectClass =
-    "border-input bg-background text-foreground focus-visible:ring-ring h-10 w-full rounded-md border px-3 text-sm shadow-xs outline-none focus-visible:ring-2";
+  const toOption = (item: { name: string }): ComboboxOption => ({
+    value: item.name,
+    label: item.name,
+  });
+
+  const specialtyOptions = specialties.map(toOption);
+  const stateOptions = states.map(toOption);
+  const cityOptions = cities.map(toOption);
+  const hospitalOptions = hospitals.map(toOption);
 
   const uiError = pager.isError ? mapToUiError(pager.error) : undefined;
 
@@ -103,72 +111,52 @@ export function ReviewsPageClient() {
       <div className="mb-6 grid w-full grid-cols-1 gap-3 md:grid-cols-2 md:gap-2 lg:grid-cols-4">
         <div className="space-y-1">
           <Label htmlFor="filter-specialty">Fachrichtung</Label>
-          <select
+          <Combobox
             id="filter-specialty"
-            className={selectClass}
-            value={filters.specialty ?? ""}
-            onChange={(e) => handleSpecialtyChange(e.target.value)}
-          >
-            <option value="">Alle Fachrichtungen</option>
-            {specialties.map((s) => (
-              <option key={s.name} value={s.name}>
-                {s.name}
-              </option>
-            ))}
-          </select>
+            placeholder="Alle Fachrichtungen"
+            options={specialtyOptions}
+            value={filters.specialty}
+            onChange={handleSpecialtyChange}
+            ariaLabel="Fachrichtung filtern"
+          />
         </div>
 
         <div className="space-y-1">
           <Label htmlFor="filter-state">Bundesland</Label>
-          <select
+          <Combobox
             id="filter-state"
-            className={selectClass}
-            value={filters.state ?? ""}
-            onChange={(e) => handleStateChange(e.target.value)}
-          >
-            <option value="">Alle Bundesländer</option>
-            {states.map((s) => (
-              <option key={s.name} value={s.name}>
-                {s.name}
-              </option>
-            ))}
-          </select>
+            placeholder="Alle Bundesländer"
+            options={stateOptions}
+            value={filters.state}
+            onChange={handleStateChange}
+            ariaLabel="Bundesland filtern"
+          />
         </div>
 
         <div className="space-y-1">
           <Label htmlFor="filter-city">Stadt</Label>
-          <select
+          <Combobox
             id="filter-city"
+            placeholder="Alle Städte"
+            options={cityOptions}
+            value={filters.city}
+            onChange={handleCityChange}
             disabled={!filters.state}
-            className={selectClass}
-            value={filters.city ?? ""}
-            onChange={(e) => handleCityChange(e.target.value)}
-          >
-            <option value="">Alle Städte</option>
-            {cities.map((c) => (
-              <option key={c.name} value={c.name}>
-                {c.name}
-              </option>
-            ))}
-          </select>
+            ariaLabel="Stadt filtern"
+          />
         </div>
 
         <div className="space-y-1">
           <Label htmlFor="filter-hospital">Krankenhaus</Label>
-          <select
+          <Combobox
             id="filter-hospital"
+            placeholder="Alle Krankenhäuser"
+            options={hospitalOptions}
+            value={filters.hospital}
+            onChange={handleHospitalChange}
             disabled={!filters.state}
-            className={selectClass}
-            value={filters.hospital ?? ""}
-            onChange={(e) => handleHospitalChange(e.target.value)}
-          >
-            <option value="">Alle Krankenhäuser</option>
-            {hospitals.map((h) => (
-              <option key={h.name} value={h.name}>
-                {h.name}
-              </option>
-            ))}
-          </select>
+            ariaLabel="Krankenhaus filtern"
+          />
         </div>
       </div>
 
