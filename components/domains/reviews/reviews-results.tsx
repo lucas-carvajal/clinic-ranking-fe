@@ -32,7 +32,7 @@ export function ReviewsResults({ data }: Readonly<{ data: ReviewSummary[] }>) {
           <Link
             key={review.id}
             href={`/app/review/${review.id}`}
-            className="border-border bg-card block w-full overflow-hidden rounded-lg border p-3 transition-shadow hover:shadow-md"
+            className="border-border bg-background block w-full overflow-hidden rounded-lg border p-3 transition-shadow hover:shadow-md"
           >
             <div className="flex items-start gap-3">
               <div className="min-w-0 flex-1">
