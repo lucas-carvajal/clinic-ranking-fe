@@ -28,7 +28,7 @@ export const reviewColumns = [
     cell: ({ row, getValue }) => (
       <Link
         href={`/app/review/${row.original.id}`}
-        className="text-brand-red font-medium hover:underline"
+        className="text-foreground font-medium hover:underline"
       >
         {getValue()}
       </Link>
