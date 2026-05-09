@@ -63,7 +63,7 @@ export function ReviewsResults({ data }: Readonly<{ data: ReviewSummary[] }>) {
         ))}
       </div>
 
-      <div className="border-border bg-surface-lifted hidden overflow-hidden rounded-md border md:block">
+      <div className="border-border bg-surface-lifted shadow-sm hidden overflow-hidden rounded-md border md:block">
         <Table>
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (

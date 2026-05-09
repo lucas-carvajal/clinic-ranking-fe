@@ -57,7 +57,10 @@ function TableRow({ className, ...props }: React.ComponentProps<"tr">) {
     <tr
       data-slot="table-row"
       className={cn(
-        "border-b transition-colors hover:bg-muted/50 has-aria-expanded:bg-muted/50 data-[state=selected]:bg-muted",
+        // Neutral scrim on hover — avoids a second “cream on cream” layer on
+        // warm surfaces (e.g. reviews on bg-surface-lifted). Selected state stays
+        // slightly stronger than hover.
+        "border-b transition-colors hover:bg-foreground/5 has-aria-expanded:bg-foreground/[0.07] data-[state=selected]:bg-foreground/10 dark:hover:bg-foreground/10 dark:has-aria-expanded:bg-foreground/[0.12] dark:data-[state=selected]:bg-foreground/[0.14]",
         className,
       )}
       {...props}
