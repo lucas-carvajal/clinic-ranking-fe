@@ -32,7 +32,7 @@ export function ReviewsResults({ data }: Readonly<{ data: ReviewSummary[] }>) {
           <Link
             key={review.id}
             href={`/app/review/${review.id}`}
-            className="border-border bg-background block w-full overflow-hidden rounded-lg border p-3 transition-shadow hover:shadow-md"
+            className="border-border bg-surface-lifted block w-full overflow-hidden rounded-lg border p-3 transition-shadow hover:shadow-md"
           >
             <div className="flex items-start gap-3">
               <div className="min-w-0 flex-1">
@@ -63,7 +63,7 @@ export function ReviewsResults({ data }: Readonly<{ data: ReviewSummary[] }>) {
         ))}
       </div>
 
-      <div className="border-border hidden overflow-hidden rounded-md border md:block">
+      <div className="border-border bg-surface-lifted hidden overflow-hidden rounded-md border md:block">
         <Table>
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (

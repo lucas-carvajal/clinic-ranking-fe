@@ -14,6 +14,13 @@
   --cream-border: #e7d9c3;
   --text-muted: #6f6659;
 
+  /**
+   * One step above page background: warm lifted surface (suggestion A).
+   * ~62% white mixed into background — reads cleaner than the canvas without
+   * jumping to pure #fff.
+   */
+  --surface-lifted: color-mix(in srgb, var(--background) 38%, white);
+
   --card: var(--cream-surface);
   --card-foreground: var(--foreground);
   --popover: var(--background);
@@ -48,6 +55,7 @@
 
 @theme inline {
   --color-background: var(--background);
+  --color-surface-lifted: var(--surface-lifted);
   --color-foreground: var(--foreground);
   --color-brand-red: var(--brand-red);
   --color-brand-mint: var(--brand-mint);
