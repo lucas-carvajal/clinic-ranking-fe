@@ -3,7 +3,7 @@ import Link from "next/link";
 
 /** Matches hero h1 (`page-title` / `text-brand-red`); overrides default primary (black). */
 const landingCtaButtonClass =
-  "mt-10 h-12 min-w-48 self-center bg-brand-red px-8 text-base text-white shadow-sm hover:bg-brand-red/90 [a]:hover:bg-brand-red/90 active:bg-brand-red/95 sm:h-14 sm:min-w-56 sm:px-10 sm:text-lg";
+  "mt-10 h-12 min-w-48 self-center bg-brand-red px-8 text-base text-white hover:bg-brand-red/90 [a]:hover:bg-brand-red/90 active:bg-brand-red/95 sm:h-14 sm:min-w-56 sm:px-10 sm:text-lg";
 
 const landingBlocks = [
   {
