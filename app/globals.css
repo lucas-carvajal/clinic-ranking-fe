@@ -16,7 +16,7 @@
 
   --card: var(--cream-surface);
   --card-foreground: var(--foreground);
-  --popover: var(--cream-surface);
+  --popover: var(--background);
   --popover-foreground: var(--foreground);
   --primary: var(--foreground);
   --primary-foreground: var(--background);
