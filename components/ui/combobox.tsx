@@ -208,7 +208,7 @@ export function Combobox({
           aria-label={ariaLabel ?? placeholder}
           disabled={disabled}
           className={cn(
-            "h-10 w-full justify-between bg-surface-lifted px-3 text-sm font-normal",
+            "h-10 w-full justify-between bg-surface-lifted px-3 text-sm font-normal shadow-sm",
             isPlaceholder && "text-muted-foreground",
             triggerClassName,
             className,

@@ -57,10 +57,9 @@ function TableRow({ className, ...props }: React.ComponentProps<"tr">) {
     <tr
       data-slot="table-row"
       className={cn(
-        // Neutral scrim on hover — avoids a second “cream on cream” layer on
-        // warm surfaces (e.g. reviews on bg-surface-lifted). Selected state stays
-        // slightly stronger than hover.
-        "border-b transition-colors hover:bg-foreground/5 has-aria-expanded:bg-foreground/[0.07] data-[state=selected]:bg-foreground/10 dark:hover:bg-foreground/10 dark:has-aria-expanded:bg-foreground/[0.12] dark:data-[state=selected]:bg-foreground/[0.14]",
+        // Black scrim on hover — reads clearly on warm lifted surfaces; ramp up
+        // for expanded / selected rows. (Avoids a second warm cream layer.)
+        "border-b transition-colors hover:bg-black/[0.14] has-aria-expanded:bg-black/[0.17] data-[state=selected]:bg-black/[0.22] dark:hover:bg-white/10 dark:has-aria-expanded:bg-white/12 dark:data-[state=selected]:bg-white/14",
         className,
       )}
       {...props}
