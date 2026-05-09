@@ -10,9 +10,12 @@ describe("Home", () => {
       screen.getByRole("heading", { name: "Das Assistenz Arzt Ranking" }),
     ).toBeInTheDocument();
     expect(screen.getByText("Ärzte helfen Ärzten")).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "Ranking ansehen" })).toBeInTheDocument();
-    expect(
-      screen.getByRole("button", { name: "Bewertung abgeben" }),
-    ).toBeInTheDocument();
+    const reportLink = screen.getByRole("link", { name: "Jetzt Berichten" });
+    expect(reportLink).toBeInTheDocument();
+    expect(reportLink).toHaveAttribute("href", "/app/submit");
+
+    const reviewsLink = screen.getByRole("link", { name: "Bewertungen Ansehen" });
+    expect(reviewsLink).toBeInTheDocument();
+    expect(reviewsLink).toHaveAttribute("href", "/app/reviews");
   });
 });

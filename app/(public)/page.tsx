@@ -1,15 +1,18 @@
 import { Button } from "@/components/ui/button";
+import Link from "next/link";
 
 const landingBlocks = [
   {
-    title: "Weiterbildung sichtbar machen",
-    body: "Dummy-Text für den ersten Inhaltsblock. Hier steht später, wie Erfahrungsberichte Assistenzärzten bei der Orientierung helfen.",
-    button: "Ranking ansehen",
+    title: "Helfe anderen die richtige Entscheidung zu treffen ❤️",
+    body: "Berichte von deiner Facharztweiterbildung und helfe in nur 5 Minuten über 5000 Ärzten bei der Entscheidung zur richtigen Weiterbildung!",
+    button: "Jetzt Berichten",
+    href: "/app/submit",
   },
   {
-    title: "Eigene Erfahrung teilen",
-    body: "Dummy-Text für den zweiten Inhaltsblock. Dieser Bereich erklärt später, wie Ärztinnen und Ärzte ihre Weiterbildung fair bewerten können.",
-    button: "Bewertung abgeben",
+    title: "Finde das richtige Krankenhaus für deine Weiterbildung 🏥",
+    body: "Informiere dich wo du am besten die nächsten 5 Jahre verbringst und dich für deinen Facharzt ausbilden lässt!",
+    button: "Bewertungen Ansehen",
+    href: "/app/reviews",
   },
 ];
 
@@ -40,9 +43,18 @@ export default function Home() {
                 {block.body}
               </p>
             </div>
-            <Button className="mt-10 h-12 min-w-48 self-center px-8 text-base sm:h-14 sm:min-w-56 sm:px-10 sm:text-lg">
-              {block.button}
-            </Button>
+            {block.href ? (
+              <Button
+                asChild
+                className="mt-10 h-12 min-w-48 self-center px-8 text-base sm:h-14 sm:min-w-56 sm:px-10 sm:text-lg"
+              >
+                <Link href={block.href}>{block.button}</Link>
+              </Button>
+            ) : (
+              <Button className="mt-10 h-12 min-w-48 self-center px-8 text-base sm:h-14 sm:min-w-56 sm:px-10 sm:text-lg">
+                {block.button}
+              </Button>
+            )}
           </article>
         ))}
       </section>

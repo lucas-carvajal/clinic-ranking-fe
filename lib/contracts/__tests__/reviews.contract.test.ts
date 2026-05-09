@@ -31,6 +31,29 @@ describe("reviews contracts", () => {
     expect(parsed.pagination.nextCursor).toBeUndefined();
   });
 
+  it("accepts Go-style datetimes with numeric timezone offset", () => {
+    const parsed = reviewsListResponseSchema.parse({
+      data: [
+        {
+          id: "0078adf4-e623-4115-a4e2-e009f7d7f218",
+          dateTime: "2026-01-27T20:57:20.216975+01:00",
+          state: "Bayern",
+          city: "München",
+          hospital: "Test",
+          specialty: "Biochemie",
+          totalGrade: 2,
+        },
+      ],
+      pagination: {
+        nextCursor: "abc",
+        pageSize: 20,
+        hasNext: true,
+      },
+    });
+
+    expect(parsed.data[0].dateTime).toContain("+01:00");
+  });
+
   it("parses review detail and create response", () => {
     const detail = reviewDetailSchema.parse({
       id: "550e8400-e29b-41d4-a716-446655440001",
