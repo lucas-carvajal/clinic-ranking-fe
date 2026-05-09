@@ -1,6 +1,10 @@
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 
+/** Matches hero h1 (`page-title` / `text-brand-red`); overrides default primary (black). */
+const landingCtaButtonClass =
+  "mt-10 h-12 min-w-48 self-center bg-brand-red px-8 text-base text-white shadow-sm hover:bg-brand-red/90 [a]:hover:bg-brand-red/90 active:bg-brand-red/95 sm:h-14 sm:min-w-56 sm:px-10 sm:text-lg";
+
 const landingBlocks = [
   {
     title: "Helfe anderen die richtige Entscheidung zu treffen ❤️",
@@ -43,16 +47,11 @@ export default function Home() {
               </p>
             </div>
             {block.href ? (
-              <Button
-                asChild
-                className="mt-10 h-12 min-w-48 self-center px-8 text-base sm:h-14 sm:min-w-56 sm:px-10 sm:text-lg"
-              >
+              <Button asChild className={landingCtaButtonClass}>
                 <Link href={block.href}>{block.button}</Link>
               </Button>
             ) : (
-              <Button className="mt-10 h-12 min-w-48 self-center px-8 text-base sm:h-14 sm:min-w-56 sm:px-10 sm:text-lg">
-                {block.button}
-              </Button>
+              <Button className={landingCtaButtonClass}>{block.button}</Button>
             )}
           </article>
         ))}
