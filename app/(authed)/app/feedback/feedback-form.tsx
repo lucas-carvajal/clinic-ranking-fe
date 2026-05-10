@@ -10,7 +10,7 @@ import { Textarea } from "@/components/ui/textarea";
 import type { FeedbackPageType } from "@/lib/domains/feedback/feedback-form-action.schema";
 import { cn } from "@/lib/utils";
 
-import { submitFeedbackAction } from "./actions";
+import { submitFeedbackAction, type FeedbackActionState } from "./actions";
 
 const COPY: Record<
   FeedbackPageType,
@@ -81,7 +81,7 @@ export function FeedbackForm({ defaultType }: Readonly<{ defaultType: FeedbackPa
             placeholder={copy.feedbackPlaceholder}
             aria-invalid={!!state.fieldErrors?.feedback}
             className={cn(
-              "min-h-[200px] resize-y",
+              "bg-surface-lifted border-border min-h-[200px] resize-y shadow-sm",
               state.fieldErrors?.feedback &&
                 "border-destructive focus-visible:border-destructive",
             )}
@@ -102,11 +102,11 @@ export function FeedbackForm({ defaultType }: Readonly<{ defaultType: FeedbackPa
             autoComplete="email"
             placeholder={copy.emailPlaceholder}
             aria-invalid={!!state.fieldErrors?.email}
-            className={
-              state.fieldErrors?.email
-                ? "border-destructive focus-visible:border-destructive"
-                : undefined
-            }
+            className={cn(
+              "bg-surface-lifted border-border shadow-sm",
+              state.fieldErrors?.email &&
+                "border-destructive focus-visible:border-destructive",
+            )}
           />
           <p className="text-muted-foreground text-xs">
             Für Rückfragen bei Bearbeitung deines Feedbacks :)
