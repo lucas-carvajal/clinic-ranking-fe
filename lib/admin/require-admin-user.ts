@@ -2,16 +2,13 @@ import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 
 import { getSafeAdminRedirect } from "@/lib/admin/get-safe-admin-redirect";
+import { getSessionCookieName } from "@/lib/admin/session-cookie-name";
 import { adminMeResponseSchema, type AdminMeResponse } from "@/lib/contracts/auth.schema";
 
 export type AdminUser = AdminMeResponse;
 
-const DEFAULT_ADMIN_REDIRECT = "/admin";
+const DEFAULT_ADMIN_REDIRECT = "/admin/review-requests";
 const ADMIN_ME_PATH = "/admin/me";
-
-function getSessionCookieName(): string {
-  return process.env.SESSION_COOKIE_NAME ?? "admin_auth_token";
-}
 
 function redirectToLogin(path: string): never {
   const loginUrl = new URL("/admin/login", "http://localhost");

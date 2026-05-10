@@ -10,23 +10,21 @@ const navItems = [
   { href: "/admin/feedback", label: "Feedback" },
 ] as const;
 
+/** Nav links only — shell (`AdminShell`) wraps this + logout in the `<aside>`. */
 export function AdminSidebar() {
   const pathname = usePathname();
 
   return (
-    <aside
-      className="border-border bg-card shadow-sm flex w-64 shrink-0 flex-col border-r p-4"
-      aria-label="Administration"
-    >
+    <>
       <div className="mb-6">
         <Link
-          href="/admin"
+          href="/admin/review-requests"
           className="text-foreground text-xl font-bold transition-colors hover:text-brand-red"
         >
           Admin
         </Link>
       </div>
-      <nav className="space-y-1">
+      <nav className="flex-1 space-y-1">
         {navItems.map((item) => {
           const active =
             item.href === "/admin/review-requests"
@@ -49,6 +47,6 @@ export function AdminSidebar() {
           );
         })}
       </nav>
-    </aside>
+    </>
   );
 }
