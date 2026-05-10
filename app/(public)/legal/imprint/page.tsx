@@ -1,5 +1,34 @@
-import { PlaceholderPage } from "@/components/layout/placeholder-page";
+import type { Metadata } from "next";
+
+import { LegalPageShell } from "@/components/legal/legal-page-shell";
+
+export const metadata: Metadata = {
+  title: "Impressum",
+};
 
 export default function LegalImprintPage() {
-  return <PlaceholderPage title="Impressum" ticket="T21" />;
+  return (
+    <LegalPageShell title="Impressum">
+      <p className="text-muted-foreground">Angaben gemäß § 5 TMG</p>
+
+      <section>
+        <h2>Kontakt</h2>
+        <p>E-Mail: kontakt@example.de</p>
+      </section>
+
+      <section>
+        <h2>Verantwortlich für den Inhalt</h2>
+        <p>[Name und Adresse einfügen]</p>
+      </section>
+
+      <section>
+        <h2>Haftungsausschluss</h2>
+        <p>
+          Trotz sorgfältiger inhaltlicher Kontrolle übernehmen wir keine Haftung
+          für die Inhalte externer Links. Für den Inhalt der verlinkten Seiten
+          sind ausschließlich deren Betreiber verantwortlich.
+        </p>
+      </section>
+    </LegalPageShell>
+  );
 }
