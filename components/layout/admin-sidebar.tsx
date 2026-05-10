@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import type { ReactNode } from "react";
 
 import { cn } from "@/lib/utils";
 
@@ -10,7 +11,7 @@ const navItems = [
   { href: "/admin/feedback", label: "Feedback" },
 ] as const;
 
-export function AdminSidebar() {
+export function AdminSidebar({ footer }: Readonly<{ footer?: ReactNode }>) {
   const pathname = usePathname();
 
   return (
@@ -26,7 +27,7 @@ export function AdminSidebar() {
           Admin
         </Link>
       </div>
-      <nav className="space-y-1">
+      <nav className="flex-1 space-y-1">
         {navItems.map((item) => {
           const active =
             item.href === "/admin/review-requests"
@@ -49,6 +50,9 @@ export function AdminSidebar() {
           );
         })}
       </nav>
+      {footer ? (
+        <div className="border-border mt-6 border-t pt-4">{footer}</div>
+      ) : null}
     </aside>
   );
 }

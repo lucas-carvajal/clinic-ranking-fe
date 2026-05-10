@@ -1,12 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 
 import { getSafeAdminRedirect } from "@/lib/admin/get-safe-admin-redirect";
+import { getSessionCookieName } from "@/lib/admin/session-cookie-name";
 
 const ADMIN_LOGIN_PATH = "/admin/login";
-
-function getSessionCookieName(): string {
-  return process.env.SESSION_COOKIE_NAME ?? "admin_auth_token";
-}
 
 function buildLoginRedirect(request: NextRequest): URL {
   const loginUrl = new URL(ADMIN_LOGIN_PATH, request.url);

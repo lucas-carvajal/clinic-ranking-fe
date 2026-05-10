@@ -76,6 +76,14 @@ Examples:
 
 If this value is wrong, valid admin sessions will be treated as logged out.
 
+## Logout (no backend endpoint)
+
+There is **no** backend logout route. Sign-out clears the session **in the browser** by
+issuing a new `Set-Cookie` for the same cookie name with an **empty value** and
+`Expires` / `maxAge: 0` — implemented in `clearAdminSession()` using Next **`cookies()`**
+from a **Server Action** (`adminLogoutAction`). Client-side script never reads or writes
+the cookie. **`localStorage` is not cleared** (public submit drafts stay intact).
+
 ## Security model
 
 - cookie presence checks in root `proxy.ts` are UX/efficiency, not final auth
