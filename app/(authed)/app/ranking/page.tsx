@@ -1,5 +1,5 @@
-import { PlaceholderPage } from "@/components/layout/placeholder-page";
+import { RankingComingSoon } from "@/components/domains/ranking/ranking-coming-soon";
 
 export default function AppRankingPage() {
-  return <PlaceholderPage title="Das Ranking" ticket="T11" />;
+  return <RankingComingSoon />;
 }
