@@ -7,7 +7,7 @@ import { adminMeResponseSchema, type AdminMeResponse } from "@/lib/contracts/aut
 
 export type AdminUser = AdminMeResponse;
 
-const DEFAULT_ADMIN_REDIRECT = "/admin";
+const DEFAULT_ADMIN_REDIRECT = "/admin/review-requests";
 const ADMIN_ME_PATH = "/admin/me";
 
 function redirectToLogin(path: string): never {

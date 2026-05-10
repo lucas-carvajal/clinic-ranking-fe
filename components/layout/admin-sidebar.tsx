@@ -2,7 +2,6 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import type { ReactNode } from "react";
 
 import { cn } from "@/lib/utils";
 
@@ -11,17 +10,15 @@ const navItems = [
   { href: "/admin/feedback", label: "Feedback" },
 ] as const;
 
-export function AdminSidebar({ footer }: Readonly<{ footer?: ReactNode }>) {
+/** Nav links only — shell (`AdminShell`) wraps this + logout in the `<aside>`. */
+export function AdminSidebar() {
   const pathname = usePathname();
 
   return (
-    <aside
-      className="border-border bg-card shadow-sm flex w-64 shrink-0 flex-col border-r p-4"
-      aria-label="Administration"
-    >
+    <>
       <div className="mb-6">
         <Link
-          href="/admin"
+          href="/admin/review-requests"
           className="text-foreground text-xl font-bold transition-colors hover:text-brand-red"
         >
           Admin
@@ -50,9 +47,6 @@ export function AdminSidebar({ footer }: Readonly<{ footer?: ReactNode }>) {
           );
         })}
       </nav>
-      {footer ? (
-        <div className="border-border mt-6 border-t pt-4">{footer}</div>
-      ) : null}
-    </aside>
+    </>
   );
 }
