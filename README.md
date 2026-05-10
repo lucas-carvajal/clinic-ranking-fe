@@ -66,25 +66,22 @@ npx shadcn@latest add <component>
 
 ## Environment
 
-Create local env values from the example:
+Create local env values from the example (the repo only tracks **`.env.example`**;
+**`.env`** is gitignored):
 
 ```bash
 cp .env.example .env
 ```
 
-Environment variables:
+| Variable | Required | Purpose |
+|----------|----------|---------|
+| **`BACKEND_URL`** | **Yes** (for real API/admin) | Base URL of the Go backend. Used by `app/api/proxy/[...path]`, server-side fetch helpers, `proxy.ts` admin `/admin/me` checks, and actions such as feedback submit. Example: `http://localhost:8080`. |
+| **`SESSION_COOKIE_NAME`** | No — defaults to `admin_auth_token` | **Must exactly match** the session cookie name in backend `Set-Cookie` after login. Used by `proxy.ts`, `requireAdminUser()`, and logout cookie clearing. See [Admin Session Cookie Contract](#admin-session-cookie-contract) below. |
+| **`SITE_URL`** | Recommended locally | Public origin of this Next app (e.g. `http://localhost:3000`). Documented for future sitemap/robots/canonical work; set it to your dev URL so it is ready when those features read this variable. |
+| **`NEXT_PUBLIC_CLOUDFLARE_ANALYTICS_TOKEN`** | No | Optional public token. Not wired in application code yet; leave empty. |
+| **`NODE_ENV`** | Automatic | Set by Next.js (`development` / `production`). Do not put in `.env` unless you know you need an override. |
 
-- `BACKEND_URL`: Backend base URL used by server-side fetches and the Next.js
-  proxy route handler (for example `http://localhost:8080` in local development).
-- `SESSION_COOKIE_NAME`: **Must exactly match the cookie name issued by the backend**
-  in `Set-Cookie` (for example `admin_auth_token` or `admin_session`). The frontend uses this
-  name only to locate the auth cookie for admin gating and backend `/admin/me` checks.
-  If it does not match the backend cookie name, authenticated admins will be treated
-  as logged out and redirected to `/admin/login`. Defaults to `admin_auth_token`.
-- `SITE_URL`: Canonical public app URL used by metadata, sitemap, and robots
-  generation (for example `http://localhost:3000` locally).
-- `NEXT_PUBLIC_CLOUDFLARE_ANALYTICS_TOKEN`: Optional public analytics token.
-  Leave empty to disable client analytics injection.
+All keys and comments also live in **`.env.example`**.
 
 ## Admin Session Cookie Contract
 
