@@ -1,6 +1,10 @@
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 
+/** Layout only — colors come from `Button variant="brand"` (see docs/design-philosophy.md). */
+const landingCtaLayoutClass =
+  "mt-10 h-12 min-w-48 self-center px-8 text-base sm:h-14 sm:min-w-56 sm:px-10 sm:text-lg";
+
 const landingBlocks = [
   {
     title: "Helfe anderen die richtige Entscheidung zu treffen ❤️",
@@ -25,7 +29,6 @@ export default function Home() {
           <span className="block">Ärzte helfen Ärzten</span>
           <span className="block">Für eine faire Facharztweiterbildung</span>
         </h2>
-        <div className="mint-accent-bar mt-10" />
       </section>
 
       <section
@@ -44,14 +47,11 @@ export default function Home() {
               </p>
             </div>
             {block.href ? (
-              <Button
-                asChild
-                className="mt-10 h-12 min-w-48 self-center px-8 text-base sm:h-14 sm:min-w-56 sm:px-10 sm:text-lg"
-              >
+              <Button asChild variant="brand" className={landingCtaLayoutClass}>
                 <Link href={block.href}>{block.button}</Link>
               </Button>
             ) : (
-              <Button className="mt-10 h-12 min-w-48 self-center px-8 text-base sm:h-14 sm:min-w-56 sm:px-10 sm:text-lg">
+              <Button variant="brand" className={landingCtaLayoutClass}>
                 {block.button}
               </Button>
             )}

@@ -8,6 +8,7 @@ import { ReviewsResults } from "@/components/domains/reviews/reviews-results";
 import { Button } from "@/components/ui/button";
 import { Combobox, type ComboboxOption } from "@/components/ui/combobox";
 import { Label } from "@/components/ui/label";
+import { CenteredSpinner } from "@/components/ui/spinner";
 import { mapToUiError } from "@/lib/api/errors";
 import {
   buildAppReviewsHref,
@@ -160,9 +161,7 @@ export function ReviewsPageClient() {
         </div>
       </div>
 
-      {pager.isLoading ? (
-        <p className="text-muted-foreground text-center">Lade Bewertungen...</p>
-      ) : null}
+      {pager.isLoading ? <CenteredSpinner label="Lade Bewertungen…" /> : null}
 
       {pager.isError && uiError ? (
         <div

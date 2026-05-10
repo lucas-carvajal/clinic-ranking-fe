@@ -15,7 +15,7 @@ export function AdminSidebar() {
 
   return (
     <aside
-      className="border-border bg-card flex w-64 shrink-0 flex-col border-r p-4"
+      className="border-border bg-card shadow-sm flex w-64 shrink-0 flex-col border-r p-4"
       aria-label="Administration"
     >
       <div className="mb-6">

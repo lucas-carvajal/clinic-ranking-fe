@@ -208,7 +208,7 @@ export function Combobox({
           aria-label={ariaLabel ?? placeholder}
           disabled={disabled}
           className={cn(
-            "h-10 w-full justify-between px-3 text-sm font-normal",
+            "h-10 w-full justify-between bg-surface-lifted px-3 text-sm font-normal hover:bg-black/[0.14] aria-expanded:bg-black/[0.17] dark:hover:bg-white/10 dark:aria-expanded:bg-white/12",
             isPlaceholder && "text-muted-foreground",
             triggerClassName,
             className,
@@ -222,7 +222,7 @@ export function Combobox({
       <PopoverContent
         align="start"
         sideOffset={4}
-        className="w-(--radix-popover-trigger-width) min-w-(--radix-popover-trigger-width) p-0 ring-foreground/10"
+        className="w-(--radix-popover-trigger-width) min-w-(--radix-popover-trigger-width) bg-surface-lifted p-0 ring-foreground/10"
         onOpenAutoFocus={(event) => {
           event.preventDefault();
           inputRef.current?.focus();
@@ -277,7 +277,8 @@ export function Combobox({
                   onClick={() => commit(item)}
                   className={cn(
                     "flex cursor-pointer items-center gap-2 px-3 py-2 text-sm",
-                    isHighlighted && "bg-muted",
+                    isHighlighted &&
+                      "bg-black/[0.14] dark:bg-white/10",
                     item.isClear && "text-muted-foreground",
                   )}
                 >

@@ -35,7 +35,7 @@ export function ReviewsPagerControls({
       <Button
         type="button"
         variant="outline"
-        className="h-12 w-12 text-lg"
+        className="h-12 w-12 bg-surface-lifted text-lg"
         onClick={onPrev}
         disabled={currentPage === 1 || isFetching}
         aria-label="Vorherige Seite"
@@ -57,7 +57,11 @@ export function ReviewsPagerControls({
             key={`p-${item.page}`}
             type="button"
             variant={item.page === currentPage ? "default" : "outline"}
-            className="h-12 min-w-12 px-3 text-base font-medium"
+            className={
+              item.page === currentPage
+                ? "h-12 min-w-12 px-3 text-base font-medium"
+                : "h-12 min-w-12 bg-surface-lifted px-3 text-base font-medium"
+            }
             onClick={() => onGoToPage(item.page)}
             disabled={isFetching && item.page !== currentPage}
             aria-current={item.page === currentPage ? "page" : undefined}
@@ -71,7 +75,7 @@ export function ReviewsPagerControls({
       <Button
         type="button"
         variant="outline"
-        className="h-12 w-12 text-lg"
+        className="h-12 w-12 bg-surface-lifted text-lg"
         onClick={onNext}
         disabled={!hasNext || isFetching}
         aria-label="Nächste Seite"
