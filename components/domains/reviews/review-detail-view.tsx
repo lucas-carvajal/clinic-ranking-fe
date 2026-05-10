@@ -33,14 +33,11 @@ function YesNo({ value }: { value: boolean | null | undefined }) {
     return <span className="text-muted-foreground">—</span>;
   }
 
-  const positive = (
-    <span className="text-green-700 dark:text-green-400 font-medium">Ja</span>
-  );
-  const negative = (
-    <span className="text-destructive font-medium">Nein</span>
-  );
+  /** Intentionally no red/destructive on this page — mint for both poles. */
+  const ja = <span className="text-brand-mint font-medium">Ja</span>;
+  const nein = <span className="text-brand-mint font-medium">Nein</span>;
 
-  return value ? positive : negative;
+  return value ? ja : nein;
 }
 
 function SectionCard({
@@ -129,11 +126,9 @@ export function ReviewDetailView({ review }: Readonly<{ review: ReviewDetail }>)
                 review.wouldRecommendHospital === null ? (
                   "—"
                 ) : review.wouldRecommendHospital ? (
-                  <span className="text-green-700 dark:text-green-400 font-medium">
-                    Ja
-                  </span>
+                  <span className="text-brand-mint font-medium">Ja</span>
                 ) : (
-                  <span className="text-destructive font-medium">Nein</span>
+                  <span className="text-brand-mint font-medium">Nein</span>
                 )
               }
             />
