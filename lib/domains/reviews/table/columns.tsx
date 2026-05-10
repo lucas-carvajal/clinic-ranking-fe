@@ -1,7 +1,5 @@
 "use client";
 
-import Link from "next/link";
-
 import type { ReviewSummary } from "@/lib/contracts/reviews.schema";
 import { createColumnHelper } from "@/lib/table/createTable";
 
@@ -25,13 +23,8 @@ export const reviewColumns = [
   }),
   helper.accessor("hospital", {
     header: "Krankenhaus",
-    cell: ({ row, getValue }) => (
-      <Link
-        href={`/app/review/${row.original.id}`}
-        className="text-foreground font-medium hover:underline"
-      >
-        {getValue()}
-      </Link>
+    cell: ({ getValue }) => (
+      <span className="text-foreground font-medium">{getValue()}</span>
     ),
   }),
   helper.accessor("dateTime", {
@@ -41,7 +34,7 @@ export const reviewColumns = [
   helper.accessor("totalGrade", {
     header: "Note",
     cell: ({ getValue }) => (
-      <span className="font-semibold text-foreground">{getValue()}</span>
+      <span className="text-brand-mint font-semibold tabular-nums">{getValue()}</span>
     ),
   }),
 ];

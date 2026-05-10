@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 import {
   Table,
@@ -23,6 +24,7 @@ function formatReviewDate(iso: string) {
 }
 
 export function ReviewsResults({ data }: Readonly<{ data: ReviewSummary[] }>) {
+  const router = useRouter();
   const table = useReviewsTable(data);
 
   return (
@@ -55,7 +57,7 @@ export function ReviewsResults({ data }: Readonly<{ data: ReviewSummary[] }>) {
                 </dl>
               </div>
               <div className="w-12 shrink-0 text-center">
-                <div className="text-brand-red text-xl font-bold">{review.totalGrade}</div>
+                <div className="text-brand-mint text-xl font-bold">{review.totalGrade}</div>
                 <div className="text-muted-foreground text-xs">Note</div>
               </div>
             </div>
@@ -79,15 +81,32 @@ export function ReviewsResults({ data }: Readonly<{ data: ReviewSummary[] }>) {
             ))}
           </TableHeader>
           <TableBody>
-            {table.getRowModel().rows.map((row) => (
-              <TableRow key={row.id}>
-                {row.getVisibleCells().map((cell) => (
-                  <TableCell key={cell.id}>
-                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                  </TableCell>
-                ))}
-              </TableRow>
-            ))}
+            {table.getRowModel().rows.map((row) => {
+              const href = `/app/review/${row.original.id}`;
+              return (
+                <TableRow
+                  key={row.id}
+                  className="cursor-pointer"
+                  tabIndex={0}
+                  role="link"
+                  aria-label={`Bewertung ${row.original.hospital}: Details anzeigen`}
+                  onClick={() => router.push(href)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" || e.key === " ") {
+                      e.preventDefault();
+                      router.push(href);
+                    }
+                  }}
+                  onMouseEnter={() => router.prefetch(href)}
+                >
+                  {row.getVisibleCells().map((cell) => (
+                    <TableCell key={cell.id}>
+                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                    </TableCell>
+                  ))}
+                </TableRow>
+              );
+            })}
           </TableBody>
         </Table>
       </div>

@@ -62,7 +62,7 @@ function GradeCell({ label, value }: { label: string; value: number | null | und
   return (
     <div className="bg-muted/40 rounded-lg p-3 text-center">
       <p className="text-muted-foreground mb-1 text-xs">{label}</p>
-      <p className="text-brand-red text-2xl font-bold tabular-nums">
+      <p className="text-brand-mint text-2xl font-bold tabular-nums">
         {value ?? "–"}
       </p>
     </div>
@@ -140,7 +140,7 @@ export function ReviewDetailView({ review }: Readonly<{ review: ReviewDetail }>)
           </div>
           <aside className="border-border flex w-full shrink-0 flex-row items-center justify-center gap-2 border-t pt-4 text-center md:mt-0 md:w-40 md:flex-col md:justify-start md:border-l md:border-t-0 md:pl-8 md:pt-0">
             <p className="text-muted-foreground text-sm md:mb-1">Gesamtnote</p>
-            <p className="text-brand-red text-4xl font-bold tabular-nums">
+            <p className="text-brand-mint text-4xl font-bold tabular-nums">
               {review.totalGrade}
             </p>
           </aside>

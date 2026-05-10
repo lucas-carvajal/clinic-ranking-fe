@@ -13,5 +13,6 @@ export function useReviewsTable(data: ReviewSummary[]) {
     data,
     columns,
     getCoreRowModel: getCoreRowModel(),
+    getRowId: (row, index) => row.id ?? String(index),
   });
 }
