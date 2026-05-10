@@ -35,6 +35,9 @@ function NavLink({ href, label }: { href: string; label: string }) {
 
 export function AppSiteHeader() {
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [heartPulseCount, setHeartPulseCount] = useState(1);
+
+  const pulseHeart = () => setHeartPulseCount((count) => count + 1);
 
   return (
     <>
@@ -47,8 +50,13 @@ export function AppSiteHeader() {
             <Link
               href="/"
               className="text-foreground flex items-center gap-2 text-xl font-bold"
+              onClick={pulseHeart}
             >
-              <span className="text-2xl" aria-hidden>
+              <span
+                key={heartPulseCount}
+                className="heart-pulse text-2xl"
+                aria-hidden
+              >
                 ❤️
               </span>
             </Link>
