@@ -75,6 +75,7 @@ Do **not** use brand red for routine chrome (header “Bewerten” stays **defau
 - **Filled primaries & brand**: `shadow-md` — clearer lift on cream.
 - **Outlined / secondary / destructive**: `shadow-sm` — border already defines edge; lighter shadow avoids noise.
 - **Dense tables**: shadow on the **container**, not every row (reduces cognitive load; aligns with common dashboard/table UX — scan lines + hover, not stacked cards).
+- **Table + filter hover**: data rows and **filter combobox** (trigger hover/open + highlighted option) share the same **neutral black scrim** (`black/[0.14]`–`[0.17]`), not `bg-muted` cream—one system for “interactive emphasis” on lifted surfaces.
 
 ---
 
