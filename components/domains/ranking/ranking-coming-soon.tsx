@@ -6,7 +6,7 @@
 export function RankingComingSoon() {
   return (
     <div className="text-foreground mx-auto max-w-full overflow-x-hidden px-3 py-4 md:p-4">
-      <h1 className="mb-6 text-3xl font-bold">Krankenhaus Ranking</h1>
+      <h1 className="app-page-heading mb-6">Krankenhaus Ranking</h1>
 
       <div className="flex flex-col items-center justify-center py-16 text-center">
         <div className="mb-6 text-6xl" aria-hidden>

@@ -13,6 +13,10 @@ const navLinks = [
   { href: "/app/feedback", label: "Feedback" },
 ] as const;
 
+function isHeaderNavPath(path: string): boolean {
+  return navLinks.some(({ href }) => path === href || path.startsWith(`${href}/`));
+}
+
 function NavLink({ href, label }: { href: string; label: string }) {
   const pathname = usePathname();
   const active = pathname.startsWith(href);
@@ -36,9 +40,12 @@ function NavLink({ href, label }: { href: string; label: string }) {
 const HEART_PULSE_MS = 600;
 
 export function AppSiteHeader() {
+  const pathname = usePathname();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [heartPulsing, setHeartPulsing] = useState(false);
   const pulseClearRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const prevPathnameRef = useRef<string | null>(null);
+  const prevMobileOpenRef = useRef<boolean | null>(null);
 
   /** Toggle pulse class briefly so CSS `@keyframes` re-run (Svelte Navbar parity); avoids hydrate issues from a permanently-mounted animation class. */
   const pulseHeart = useCallback(() => {
@@ -60,6 +67,32 @@ export function AppSiteHeader() {
       if (pulseClearRef.current) clearTimeout(pulseClearRef.current);
     };
   }, [pulseHeart]);
+
+  /** Pulse when switching between main header destinations (reviews / ranking / feedback). */
+  useEffect(() => {
+    if (prevPathnameRef.current === null) {
+      prevPathnameRef.current = pathname;
+      return;
+    }
+    if (prevPathnameRef.current === pathname) return;
+    const previous = prevPathnameRef.current;
+    prevPathnameRef.current = pathname;
+    if (isHeaderNavPath(previous) && isHeaderNavPath(pathname)) {
+      pulseHeart();
+    }
+  }, [pathname, pulseHeart]);
+
+  /** Pulse when the mobile sandwich menu opens or closes. */
+  useEffect(() => {
+    if (prevMobileOpenRef.current === null) {
+      prevMobileOpenRef.current = mobileOpen;
+      return;
+    }
+    if (prevMobileOpenRef.current !== mobileOpen) {
+      prevMobileOpenRef.current = mobileOpen;
+      pulseHeart();
+    }
+  }, [mobileOpen, pulseHeart]);
 
   return (
     <>
@@ -88,7 +121,11 @@ export function AppSiteHeader() {
             </div>
           </div>
           <div className="hidden md:block">
-            <Button asChild>
+            <Button
+              asChild
+              size="lg"
+              className="h-auto min-h-11 px-5 text-base font-medium md:text-lg md:px-6"
+            >
               <Link href="/app/submit">Bewerten</Link>
             </Button>
           </div>
@@ -172,7 +209,11 @@ export function AppSiteHeader() {
               </Link>
             ))}
             <hr className="border-border border-t" />
-            <Button asChild className="w-full py-4 text-xl">
+            <Button
+              asChild
+              size="lg"
+              className="h-auto min-h-11 w-full px-6 py-3.5 text-lg font-medium"
+            >
               <Link href="/app/submit" onClick={() => setMobileOpen(false)}>
                 Bewerten
               </Link>
