@@ -14,13 +14,15 @@ describe("feedbackFormActionSchema", () => {
     expect(parsed.feedback).toBe("hi");
   });
 
-  it("rejects unknown type", () => {
-    expect(() =>
-      feedbackFormActionSchema.parse({
-        type: "malicious_type",
-        email: "x@example.com",
-        feedback: "x",
-      }),
-    ).toThrow();
+  it("rejects unknown type with German message", () => {
+    const parsed = feedbackFormActionSchema.safeParse({
+      type: "malicious_type",
+      email: "x@example.com",
+      feedback: "x",
+    });
+    expect(parsed.success).toBe(false);
+    expect(parsed.error?.issues.some((i) => i.message.includes("Formular"))).toBe(
+      true,
+    );
   });
 });

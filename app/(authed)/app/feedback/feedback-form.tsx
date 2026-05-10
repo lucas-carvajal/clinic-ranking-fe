@@ -42,7 +42,12 @@ const initialFeedbackState: FeedbackActionState = {};
 function SubmitFeedbackButton() {
   const { pending } = useFormStatus();
   return (
-    <Button type="submit" disabled={pending} className="w-full">
+    <Button
+      type="submit"
+      disabled={pending}
+      size="lg"
+      className="h-auto min-h-11 w-full px-6 py-3 text-base font-medium md:text-lg"
+    >
       {pending ? "Wird gesendet…" : "Feedback absenden"}
     </Button>
   );
@@ -54,9 +59,7 @@ export function FeedbackForm({ defaultType }: Readonly<{ defaultType: FeedbackPa
 
   return (
     <div className="text-foreground mx-auto max-w-3xl px-4 py-8 md:px-6">
-      <h1 className="text-foreground mb-3 text-2xl font-bold tracking-tight">
-        {copy.title}
-      </h1>
+      <h1 className="app-page-heading mb-3">{copy.title}</h1>
 
       <p className="text-muted-foreground mb-8 leading-relaxed">{copy.subtitle}</p>
 

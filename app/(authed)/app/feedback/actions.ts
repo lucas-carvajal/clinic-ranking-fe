@@ -54,7 +54,10 @@ export async function submitFeedbackAction(
 
   const backendUrl = process.env.BACKEND_URL?.trim();
   if (!backendUrl) {
-    return { formError: "Der Server ist nicht korrekt konfiguriert." };
+    return {
+      formError:
+        "Feedback kann gerade nicht verschickt werden. Bitte versuch es später noch einmal oder melde dich auf anderem Weg.",
+    };
   }
 
   const body: FeedbackSubmitRequest = {
@@ -77,7 +80,7 @@ export async function submitFeedbackAction(
   } catch {
     return {
       formError:
-        "Das Feedback konnte nicht gesendet werden. Bitte versuche es später erneut.",
+        "Es gab ein Verbindungsproblem. Prüfe deine Internetverbindung und versuch es gleich noch einmal.",
     };
   }
 
@@ -90,17 +93,9 @@ export async function submitFeedbackAction(
   }
 
   if (!response.ok) {
-    const maybeMessage =
-      typeof responseJson === "object" &&
-      responseJson !== null &&
-      "message" in responseJson &&
-      typeof (responseJson as { message?: unknown }).message === "string"
-        ? (responseJson as { message: string }).message
-        : undefined;
     return {
       formError:
-        maybeMessage ??
-        "Das Feedback konnte nicht gesendet werden. Bitte versuche es später erneut.",
+        "Feedback kann gerade nicht verschickt werden. Bitte versuch es später noch einmal.",
     };
   }
 
@@ -108,7 +103,7 @@ export async function submitFeedbackAction(
   if (!created.success) {
     return {
       formError:
-        "Das Feedback wurde möglicherweise gespeichert, aber die Antwort ist ungewöhnlich. Bitte prüfen und ggf. erneut versuchen.",
+        "Die Bestätigung konnte nicht angezeigt werden — deine Nachricht ist aber vermutlich trotzdem angekommen. Warte einen Moment, bevor du genau denselben Text noch einmal absendest. Wenn du keine Rückmeldung erhältst, probier es später erneut.",
     };
   }
 

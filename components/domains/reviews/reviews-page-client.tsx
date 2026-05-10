@@ -107,7 +107,7 @@ export function ReviewsPageClient() {
 
   return (
     <div className="text-foreground mx-auto w-full max-w-7xl px-3 py-4 md:p-4">
-      <h1 className="mb-6 text-3xl font-bold">Alle Bewertungen</h1>
+      <h1 className="app-page-heading mb-6">Alle Bewertungen</h1>
 
       <div className="mb-6 grid w-full grid-cols-1 gap-3 md:grid-cols-2 md:gap-2 lg:grid-cols-4">
         <div className="space-y-1">

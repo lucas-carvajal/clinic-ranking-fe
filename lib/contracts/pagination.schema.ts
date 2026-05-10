@@ -17,7 +17,8 @@ export const cursorPaginationSchema = z.object({
 
 export const createdResourceSchema = z.object({
   id: z.string().uuid(),
-  createdAt: z.string().datetime(),
+  /** Backend (Go) emits RFC3339 with zone offset (e.g. `+02:00`), not only `Z`. */
+  createdAt: z.string().datetime({ offset: true }),
 });
 
 export type OffsetPagination = z.infer<typeof offsetPaginationSchema>;

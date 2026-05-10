@@ -88,7 +88,11 @@ export function AppSiteHeader() {
             </div>
           </div>
           <div className="hidden md:block">
-            <Button asChild>
+            <Button
+              asChild
+              size="lg"
+              className="h-auto min-h-11 px-5 text-base font-medium md:text-lg md:px-6"
+            >
               <Link href="/app/submit">Bewerten</Link>
             </Button>
           </div>
@@ -172,7 +176,11 @@ export function AppSiteHeader() {
               </Link>
             ))}
             <hr className="border-border border-t" />
-            <Button asChild className="w-full py-4 text-xl">
+            <Button
+              asChild
+              size="lg"
+              className="h-auto min-h-11 w-full px-6 py-3.5 text-lg font-medium"
+            >
               <Link href="/app/submit" onClick={() => setMobileOpen(false)}>
                 Bewerten
               </Link>
