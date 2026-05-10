@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -33,11 +33,33 @@ function NavLink({ href, label }: { href: string; label: string }) {
   );
 }
 
+const HEART_PULSE_MS = 600;
+
 export function AppSiteHeader() {
   const [mobileOpen, setMobileOpen] = useState(false);
-  const [heartPulseCount, setHeartPulseCount] = useState(1);
+  const [heartPulsing, setHeartPulsing] = useState(false);
+  const pulseClearRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  const pulseHeart = () => setHeartPulseCount((count) => count + 1);
+  /** Toggle pulse class briefly so CSS `@keyframes` re-run (Svelte Navbar parity); avoids hydrate issues from a permanently-mounted animation class. */
+  const pulseHeart = useCallback(() => {
+    if (pulseClearRef.current) clearTimeout(pulseClearRef.current);
+    setHeartPulsing(true);
+    pulseClearRef.current = setTimeout(() => {
+      setHeartPulsing(false);
+      pulseClearRef.current = null;
+    }, HEART_PULSE_MS);
+  }, []);
+
+  useEffect(() => {
+    // Defer so the linter allows it and the pulse runs after first paint / hydration settles.
+    const id = window.setTimeout(() => {
+      pulseHeart();
+    }, 0);
+    return () => {
+      window.clearTimeout(id);
+      if (pulseClearRef.current) clearTimeout(pulseClearRef.current);
+    };
+  }, [pulseHeart]);
 
   return (
     <>
@@ -53,8 +75,7 @@ export function AppSiteHeader() {
               onClick={pulseHeart}
             >
               <span
-                key={heartPulseCount}
-                className="heart-pulse text-2xl"
+                className={cn("text-2xl", heartPulsing && "heart-pulse")}
                 aria-hidden
               >
                 ❤️
