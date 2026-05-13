@@ -98,7 +98,7 @@ export const reviewSubmitSchema = z.object({
   wouldRecommendHospital: z.boolean().nullable(),
   textReviewTraining: z.string(),
   textReviewApplication: z.string(),
-  publishAtDate: z.string().datetime().nullable(),
+  publishAtDate: z.string().datetime({ offset: true }).nullable(),
   email: z.string().email(),
 });
 
