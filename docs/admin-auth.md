@@ -84,6 +84,24 @@ issuing a new `Set-Cookie` for the same cookie name with an **empty value** and
 from a **Server Action** (`adminLogoutAction`). Client-side script never reads or writes
 the cookie. **`localStorage` is not cleared** (public submit drafts stay intact).
 
+### Caveat: backend JWT remains valid until natural expiry
+
+The Next-side logout removes the cookie from the **browser**, but it does **not** revoke
+the JWT on the backend — the backend issues short-lived JWTs (currently 24h per
+[`clinic-ranking-backend/docs/api.md`](../../clinic-ranking-backend/docs/api.md) §
+Authentication) and there is no revocation endpoint. This is acceptable because:
+
+- the cookie is `httpOnly`, so client-side JS can never read it
+- after logout, the browser no longer sends the cookie on requests, so the JWT cannot
+  reach the backend through normal use
+- a leaked cookie value would already be exploitable until natural expiry whether or
+  not the user clicks "logout" — adding a backend revocation endpoint would not change
+  that without a separate session-store + check on every authenticated request
+
+If the threat model changes (e.g. shared-machine usage where copy-pasting cookies is a
+realistic risk), revisit by adding a backend revocation endpoint and calling it from
+`adminLogoutAction` before `clearAdminSession()`.
+
 ## Security model
 
 - cookie presence checks in root `proxy.ts` are UX/efficiency, not final auth
