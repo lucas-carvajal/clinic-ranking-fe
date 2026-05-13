@@ -1,5 +1,54 @@
-import { PlaceholderPage } from "@/components/layout/placeholder-page";
+import { Suspense } from "react";
 
-export default function AdminReviewRequestsPage() {
-  return <PlaceholderPage title="Bewertungsanfragen" ticket="T14" />;
+import { AdminReviewRequestsTable } from "@/components/domains/admin/review-requests/admin-review-requests-table";
+import { CenteredSpinner } from "@/components/ui/spinner";
+import {
+  reviewRequestsResponseSchema,
+  type ReviewRequestsResponse,
+} from "@/lib/contracts/admin.schema";
+import { ApiError } from "@/lib/api/errors";
+import { serverGet } from "@/lib/api/server";
+import { parseAdminReviewRequestsSearchParams } from "@/lib/domains/admin/review-requests/review-requests-url";
+
+type AdminReviewRequestsPageProps = {
+  searchParams?: Promise<Record<string, string | string[] | undefined>>;
+};
+
+async function AdminReviewRequestsContent({
+  searchParams,
+}: {
+  searchParams: Record<string, string | string[] | undefined>;
+}) {
+  const urlParams = parseAdminReviewRequestsSearchParams(searchParams);
+  const query = new URLSearchParams({
+    status: "open",
+    page: String(urlParams.page),
+    page_size: String(urlParams.pageSize),
+  });
+
+  let data: ReviewRequestsResponse;
+  try {
+    data = await serverGet(`/admin/review-requests?${query.toString()}`, {
+      responseSchema: reviewRequestsResponseSchema,
+    });
+  } catch (error) {
+    if (error instanceof ApiError && error.normalized.status === 400) {
+      throw new Error(error.normalized.message);
+    }
+    throw error;
+  }
+
+  return (
+    <AdminReviewRequestsTable rows={data.data} pagination={data.pagination} urlParams={urlParams} />
+  );
+}
+
+export default async function AdminReviewRequestsPage({ searchParams }: AdminReviewRequestsPageProps) {
+  const sp = searchParams ? await searchParams : {};
+
+  return (
+    <Suspense fallback={<CenteredSpinner label="Lade Bewertungsanfragen…" />}>
+      <AdminReviewRequestsContent searchParams={sp} />
+    </Suspense>
+  );
 }
