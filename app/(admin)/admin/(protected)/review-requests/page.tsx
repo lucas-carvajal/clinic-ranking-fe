@@ -6,7 +6,6 @@ import {
   reviewRequestsResponseSchema,
   type ReviewRequestsResponse,
 } from "@/lib/contracts/admin.schema";
-import { ApiError } from "@/lib/api/errors";
 import { serverGet } from "@/lib/api/server";
 import { parseAdminReviewRequestsSearchParams } from "@/lib/domains/admin/review-requests/review-requests-url";
 
@@ -26,17 +25,12 @@ async function AdminReviewRequestsContent({
     page_size: String(urlParams.pageSize),
   });
 
-  let data: ReviewRequestsResponse;
-  try {
-    data = await serverGet(`/admin/review-requests?${query.toString()}`, {
+  const data: ReviewRequestsResponse = await serverGet(
+    `/admin/review-requests?${query.toString()}`,
+    {
       responseSchema: reviewRequestsResponseSchema,
-    });
-  } catch (error) {
-    if (error instanceof ApiError && error.normalized.status === 400) {
-      throw new Error(error.normalized.message);
-    }
-    throw error;
-  }
+    },
+  );
 
   return (
     <AdminReviewRequestsTable rows={data.data} pagination={data.pagination} urlParams={urlParams} />

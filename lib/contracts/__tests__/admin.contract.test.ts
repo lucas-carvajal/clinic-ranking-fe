@@ -34,6 +34,33 @@ describe("admin contracts", () => {
     expect(parsed.data[0].requestStatus).toBe("SUBMITTED");
   });
 
+  it("parses list dateTime with numeric timezone offset (Go default JSON)", () => {
+    const parsed = reviewRequestsResponseSchema.parse({
+      data: [
+        {
+          id: "550e8400-e29b-41d4-a716-446655440010",
+          requestStatus: "SUBMITTED",
+          dateTime: "2026-05-07T14:32:11.000+02:00",
+          state: "Bayern",
+          city: "Muenchen",
+          hospital: "Klinikum A",
+          specialty: "Innere Medizin",
+          totalGrade: 3,
+        },
+      ],
+      pagination: {
+        page: 1,
+        pageSize: 20,
+        totalItems: 1,
+        totalPages: 1,
+        hasNext: false,
+        hasPrev: false,
+      },
+    });
+
+    expect(parsed.data[0].dateTime).toBe("2026-05-07T14:32:11.000+02:00");
+  });
+
   it("parses full review request shape", () => {
     const parsed = reviewRequestSchema.parse({
       id: "550e8400-e29b-41d4-a716-446655440011",
