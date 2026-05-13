@@ -1,6 +1,7 @@
 import { ZodType } from "zod";
 
 import { ApiError, normalizeErrorFromResponse } from "@/lib/api/errors";
+import { parseJsonResponseBody } from "@/lib/api/parse-json-response-body";
 
 type UnauthorizedHandler = (error: ApiError) => void;
 
@@ -19,28 +20,6 @@ export function setAdminUnauthorizedHandler(handler?: UnauthorizedHandler) {
 
 function buildProxyPath(path: string): string {
   return `/api/proxy${path.startsWith("/") ? path : `/${path}`}`;
-}
-
-async function parseResponseBody(response: Response): Promise<unknown> {
-  const text = await response.text();
-  if (!text) {
-    return null;
-  }
-
-  try {
-    return JSON.parse(text) as unknown;
-  } catch {
-    throw new ApiError({
-      status: response.status || 500,
-      code: "INVALID_JSON",
-      message: "Invalid JSON received from API",
-      details: text,
-      correlationId:
-        response.headers.get("x-correlation-id") ??
-        response.headers.get("x-request-id") ??
-        undefined,
-    });
-  }
 }
 
 async function request<TRequest, TResponse>(
@@ -84,7 +63,7 @@ async function request<TRequest, TResponse>(
     });
   }
 
-  const parsedBody = await parseResponseBody(response);
+  const parsedBody = await parseJsonResponseBody(response);
 
   if (!response.ok) {
     const apiError = new ApiError(normalizeErrorFromResponse(response, parsedBody));
