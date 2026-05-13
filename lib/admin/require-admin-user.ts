@@ -1,9 +1,13 @@
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 
+import {
+  AdminAuthMisconfiguredError,
+  BackendUnavailableError,
+} from "@/lib/admin/auth-errors";
 import { getSafeAdminRedirect } from "@/lib/admin/get-safe-admin-redirect";
 import { getSessionCookieName } from "@/lib/admin/session-cookie-name";
-import { serverGet } from "@/lib/api/server";
+import { serverBackendGet } from "@/lib/api/server";
 import { adminMeResponseSchema, type AdminMeResponse } from "@/lib/contracts/auth.schema";
 
 export type AdminUser = AdminMeResponse;
@@ -17,6 +21,13 @@ function redirectToLogin(path: string): never {
   return redirect(`${loginUrl.pathname}${loginUrl.search}`);
 }
 
+function toBackendUnavailable(cause?: unknown, status?: number): never {
+  throw new BackendUnavailableError({
+    status,
+    cause,
+  });
+}
+
 export async function requireAdminUser(
   redirectPath = DEFAULT_ADMIN_REDIRECT,
 ): Promise<AdminUser> {
@@ -26,11 +37,40 @@ export async function requireAdminUser(
     return redirectToLogin(redirectPath);
   }
 
+  if (!process.env.BACKEND_URL?.trim()) {
+    throw new AdminAuthMisconfiguredError();
+  }
+
+  let response: Response;
   try {
-    return await serverGet(ADMIN_ME_PATH, {
-      responseSchema: adminMeResponseSchema,
-    });
-  } catch {
+    response = await serverBackendGet(ADMIN_ME_PATH);
+  } catch (error) {
+    toBackendUnavailable(error);
+  }
+
+  if (response.status === 401 || response.status === 403) {
     return redirectToLogin(redirectPath);
   }
+
+  if (response.status >= 500) {
+    toBackendUnavailable(undefined, response.status);
+  }
+
+  if (!response.ok) {
+    toBackendUnavailable(undefined, response.status);
+  }
+
+  let body: unknown;
+  try {
+    body = await response.json();
+  } catch (cause) {
+    toBackendUnavailable(cause);
+  }
+
+  const parsed = adminMeResponseSchema.safeParse(body);
+  if (!parsed.success) {
+    toBackendUnavailable(parsed.error);
+  }
+
+  return parsed.data;
 }

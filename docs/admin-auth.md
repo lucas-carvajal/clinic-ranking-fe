@@ -16,13 +16,25 @@ This document explains how admin authentication works in this repository end-to-
   - only calls backend `/admin/me` on `/admin/login` when a session cookie is present
 - `lib/admin/require-admin-user.ts`
   - authoritative server-side session check
-  - calls backend `/admin/me` with incoming cookie header
-  - redirects to login on 401 or transient errors (fail closed)
+  - calls backend `/admin/me` via `serverBackendGet()` from `lib/api/server.ts` (forwards cookies;
+    raw `Response` so 401/403 vs 5xx can be handled in auth code)
+  - **401 / 403** → redirect to `/admin/login` (invalid or forbidden session)
+  - **transient backend issues** (network failure, 5xx, invalid JSON on 2xx, schema mismatch on
+    2xx) → throws `BackendUnavailableError` so `(protected)/error.tsx` can show a soft-error UI
+    **without** clearing the session cookie
+  - **missing `BACKEND_URL`** → throws `AdminAuthMisconfiguredError` (configuration error, not a
+    login problem)
 - `app/(admin)/admin/(protected)/layout.tsx`
   - wraps protected admin pages
   - calls `requireAdminUser()` before rendering children
 - `lib/admin/get-safe-admin-redirect.ts`
   - sanitizes redirect values to allow only relative `/admin...` paths
+- `lib/admin/auth-errors.ts`
+  - tagged errors (`BackendUnavailableError`, `AdminAuthMisconfiguredError`) with `kind`
+    discriminants for the admin error boundary
+- `app/(admin)/admin/(protected)/error.tsx`
+  - client error UI for failures thrown from the protected layout (soft backend error vs
+    configuration vs generic)
 
 ## Two proxies: do not confuse them
 
@@ -55,8 +67,10 @@ They do not call `/api/proxy/admin/me`.
 - root `proxy.ts` allows request through (cookie presence)
 - `(protected)` layout runs `requireAdminUser()`
 - `requireAdminUser()` calls backend `/admin/me`
-  - 200: render page
-  - 401/5xx/network error: redirect to login (fail closed)
+  - 200 with valid body: render page
+  - 401 / 403: redirect to `/admin/login`
+  - 5xx, network error, bad JSON, or unexpected 200 body: soft-error page (session preserved)
+  - missing `BACKEND_URL`: configuration error page
 
 ## Environment contract
 
@@ -124,5 +138,31 @@ Check:
 
 Likely causes:
 
-- backend `/admin/me` returns 401 (invalid/expired session)
-- backend transient failure (5xx/network), currently fail-closed by design
+- backend `/admin/me` returns **401** or **403** (invalid/expired session or forbidden)
+- **no session cookie** (or wrong `SESSION_COOKIE_NAME`): you are treated as logged out before
+  `/admin/me` runs
+
+**Note:** A brief **5xx** or **network** outage on `/admin/me` no longer sends you to login. You
+should see an in-app **“Backend nicht erreichbar”** message instead; your session cookie stays
+set so a reload works once the backend recovers.
+
+### Symptom: admin pages show a “backend unavailable” error
+
+Meaning:
+
+- the server could not complete `/admin/me` for a **non-auth** reason (e.g. backend down, timeout,
+  5xx, or an unreadable response)
+
+What to do:
+
+- use **Neu laden** after the backend is healthy again; you should **not** need to log in again
+  if your session was still valid
+- if the message persists, check backend uptime, `BACKEND_URL` reachability from the Next.js
+  server, and backend logs for `/admin/me`
+
+### Symptom: “Konfigurationsfehler” on admin pages
+
+Meaning:
+
+- **`BACKEND_URL` is missing or empty** in the Next.js environment. Login would fail the same
+  way; this is not fixed by refreshing the page — fix deployment config.

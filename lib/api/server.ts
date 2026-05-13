@@ -43,6 +43,49 @@ function buildBackendUrl(path: string): URL {
   return new URL(normalized, base);
 }
 
+/**
+ * Low-level GET to the Go backend returning the raw {@link Response}.
+ * Forwards inbound Next.js cookies. Throws {@link ApiError} with `NETWORK_ERROR`
+ * when `fetch` rejects. Does **not** throw on HTTP error status — inspect
+ * `response.ok` / `response.status`.
+ *
+ * Used by admin auth to distinguish 401/403 (redirect) from 5xx (soft error).
+ */
+export async function serverBackendGet(
+  path: string,
+  init?: RequestInit & { forwardCookies?: boolean },
+): Promise<Response> {
+  const { forwardCookies = true, ...rest } = init ?? {};
+
+  const requestHeaders = new Headers(rest.headers);
+  if (!requestHeaders.has("accept")) {
+    requestHeaders.set("accept", "application/json");
+  }
+
+  if (forwardCookies !== false) {
+    const cookieStore = await cookies();
+    requestHeaders.set("cookie", cookieStore.toString());
+  }
+
+  const targetUrl = buildBackendUrl(path);
+
+  try {
+    return await fetch(targetUrl, {
+      ...rest,
+      method: "GET",
+      cache: rest.cache ?? "no-store",
+      headers: requestHeaders,
+    });
+  } catch (error) {
+    throw new ApiError({
+      status: 0,
+      code: "NETWORK_ERROR",
+      message: "Network error while calling API",
+      details: error,
+    });
+  }
+}
+
 async function serverRequest<TRequest, TResponse>(
   method: string,
   path: string,
