@@ -76,16 +76,17 @@ describe("server API helpers", () => {
   });
 
   it("defaults cache to no-store and allows override", async () => {
+    const okBody = { loggedIn: true, username: "admin" };
     global.fetch = vi
       .fn()
       .mockResolvedValueOnce(
-        new Response(JSON.stringify({ loggedIn: true, username: "admin" }), {
+        new Response(JSON.stringify(okBody), {
           status: 200,
           headers: { "Content-Type": "application/json" },
         }),
       )
       .mockResolvedValueOnce(
-        new Response(JSON.stringify({ loggedIn: true, username: "admin" }), {
+        new Response(JSON.stringify(okBody), {
           status: 200,
           headers: { "Content-Type": "application/json" },
         }),
