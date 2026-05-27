@@ -23,7 +23,7 @@ describe("server API helpers", () => {
     vi.mocked(cookies).mockResolvedValue({
       toString: () => "admin_auth_token=session-token",
       get: vi.fn(),
-    } as Awaited<ReturnType<typeof cookies>>);
+    } as unknown as Awaited<ReturnType<typeof cookies>>);
   });
 
   afterEach(() => {

@@ -6,10 +6,13 @@ import {
   reviewSubmitSchema,
 } from "@/lib/contracts/submit.schema";
 
+/** Go emits RFC 3339 with numeric offsets (e.g. +01:00); Zod's default datetime only allows Z. */
+const adminApiDateTimeSchema = z.string().datetime({ offset: true });
+
 export const reviewRequestSummarySchema = z.object({
   id: z.string().uuid(),
   requestStatus: reviewRequestStatusSchema,
-  dateTime: z.string().datetime(),
+  dateTime: adminApiDateTimeSchema,
   state: z.string(),
   city: z.string(),
   hospital: z.string(),
@@ -32,3 +35,4 @@ export const reviewRequestsResponseSchema = z.object({
 
 export type ReviewRequestSummary = z.infer<typeof reviewRequestSummarySchema>;
 export type ReviewRequest = z.infer<typeof reviewRequestSchema>;
+export type ReviewRequestsResponse = z.infer<typeof reviewRequestsResponseSchema>;
