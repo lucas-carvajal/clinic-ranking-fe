@@ -37,7 +37,8 @@ export function toReviewApiPayload(form: ReviewFormState): ReviewSubmit {
 
     // Step 3
     rotations: form.rotations,
-    otherRotations: form.otherRotations,
+    // Clear free-text when the misc rotation is not selected
+    otherRotations: form.rotations.includes("misc") ? form.otherRotations : "",
     surgeryRoles: surgerySelected ? form.surgery.surgeryRoles : [],
     surgeryComplexProcedures: surgerySelected ? form.surgery.surgeryComplexProcedures : false,
     surgeryTimePercentage: surgerySelected ? (form.surgery.surgeryTimePercentage ?? 0) : 0,

@@ -56,6 +56,28 @@ describe("reviewFormSchema — grade fields", () => {
   });
 });
 
+describe("reviewFormSchema — publishAtDate", () => {
+  it("accepts a valid YYYY-MM-DD string", () => {
+    expect(
+      reviewFormSchema.pick({ publishAtDate: true }).safeParse({ publishAtDate: "2024-12-25" })
+        .success,
+    ).toBe(true);
+  });
+
+  it("rejects a non-date string", () => {
+    expect(
+      reviewFormSchema.pick({ publishAtDate: true }).safeParse({ publishAtDate: "not-a-date" })
+        .success,
+    ).toBe(false);
+  });
+
+  it("accepts null", () => {
+    expect(
+      reviewFormSchema.pick({ publishAtDate: true }).safeParse({ publishAtDate: null }).success,
+    ).toBe(true);
+  });
+});
+
 describe("reviewFormSchema — acceptedTerms", () => {
   it("accepts literal true", () => {
     expect(

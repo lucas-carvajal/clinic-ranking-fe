@@ -153,6 +153,22 @@ describe("toReviewApiPayload — overtimeCompensationType", () => {
   });
 });
 
+describe("toReviewApiPayload — otherRotations", () => {
+  it("clears otherRotations when misc rotation is not selected", () => {
+    const payload = toReviewApiPayload(
+      baseForm({ rotations: ["generalWard"], otherRotations: "Some text" }),
+    );
+    expect(payload.otherRotations).toBe("");
+  });
+
+  it("preserves otherRotations when misc rotation is selected", () => {
+    const payload = toReviewApiPayload(
+      baseForm({ rotations: ["misc"], otherRotations: "Notaufnahme extern" }),
+    );
+    expect(payload.otherRotations).toBe("Notaufnahme extern");
+  });
+});
+
 describe("toReviewApiPayload — acceptedTerms dropped", () => {
   it("does not include acceptedTerms in the output", () => {
     const payload = toReviewApiPayload(baseForm({ acceptedTerms: true }));

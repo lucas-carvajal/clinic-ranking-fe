@@ -62,6 +62,25 @@ describe("publishAtDate persistence", () => {
   });
 });
 
+describe("loadDraft — corrupted or incompatible storage", () => {
+  it("returns defaultFormState when storage contains invalid JSON", () => {
+    localStorage.setItem(STORAGE_KEYS.draft, "{broken");
+    expect(loadDraft()).toEqual(defaultFormState());
+  });
+
+  it("returns defaultFormState when stored object fails schema validation", () => {
+    localStorage.setItem(STORAGE_KEYS.draft, JSON.stringify({ state: 999 }));
+    expect(loadDraft()).toEqual(defaultFormState());
+  });
+
+  it("merges a partial draft over defaults (forward-compatible with new fields)", () => {
+    localStorage.setItem(STORAGE_KEYS.draft, JSON.stringify({ state: "Bayern" }));
+    const loaded = loadDraft();
+    expect(loaded?.state).toBe("Bayern");
+    expect(loaded?.city).toBe(defaultFormState().city);
+  });
+});
+
 describe("saveCurrentStep / loadCurrentStep", () => {
   it("round-trips a step number", () => {
     saveCurrentStep(3);

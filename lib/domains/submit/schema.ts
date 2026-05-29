@@ -140,6 +140,31 @@ export type ReviewFormState = {
   acceptedTerms: boolean;
 };
 
+/**
+ * Looser schema used only for persistence validation.
+ * Overrides the strict fields in reviewFormSchema (non-nullable grades,
+ * min(1) strings, z.literal(true) acceptedTerms, z.string().email()) to match
+ * the nullable/in-progress reality of ReviewFormState, then makes everything
+ * partial so older drafts with missing fields still load.
+ */
+export const storedDraftSchema = reviewFormSchema
+  .extend({
+    state: z.string(),
+    city: z.string(),
+    hospital: z.string(),
+    specialty: z.string(),
+    email: z.string(),
+    acceptedTerms: z.boolean(),
+    gradeTheoreticalKnowledge: z.number().int().min(1).max(6).nullable(),
+    gradePracticalKnowledge: z.number().int().min(1).max(6).nullable(),
+    gradeAtmosphere: z.number().int().min(1).max(6).nullable(),
+    gradeFacilities: z.number().int().min(1).max(6).nullable(),
+    gradeWorkingConditions: z.number().int().min(1).max(6).nullable(),
+    gradeFamilyFriendliness: z.number().int().min(1).max(6).nullable(),
+    totalGrade: z.number().int().min(1).max(6).nullable(),
+  })
+  .partial();
+
 export function defaultFormState(): ReviewFormState {
   return {
     state: "",
