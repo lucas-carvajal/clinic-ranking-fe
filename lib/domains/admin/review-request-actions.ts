@@ -10,6 +10,12 @@ export type ModerationActionPresentation = {
   intent: ModerationIntent;
   label: string;
   variant: "default" | "destructive" | "outline";
+  /** When present, show a confirmation dialog before running the action. */
+  confirm?: {
+    title: string;
+    description: string;
+    confirmLabel: string;
+  };
 };
 
 /**
@@ -28,12 +34,38 @@ export function moderationActionsForStatus(
           intent: "verify-affiliation",
           label: "Zugehörigkeit verifizieren",
           variant: "default",
+          confirm: {
+            title: "Zugehörigkeit verifizieren?",
+            description:
+              "Damit bestätigst du, dass der Nachweis der Zugehörigkeit zur Klinik geprüft wurde. Der Status wechselt zu „Zugehörigkeit geprüft“ und lässt sich über die Oberfläche nicht zurücksetzen.",
+            confirmLabel: "Verifizieren",
+          },
         },
       ];
     case "AFFILIATION_VERIFIED":
       return [
-        { intent: "approve", label: "Freigeben", variant: "default" },
-        { intent: "reject", label: "Ablehnen", variant: "destructive" },
+        {
+          intent: "approve",
+          label: "Freigeben",
+          variant: "default",
+          confirm: {
+            title: "Bewertung freigeben?",
+            description:
+              "Die Bewertung wird zur Veröffentlichung freigegeben. Dieser Schritt lässt sich über die Oberfläche nicht zurücksetzen.",
+            confirmLabel: "Freigeben",
+          },
+        },
+        {
+          intent: "reject",
+          label: "Ablehnen",
+          variant: "destructive",
+          confirm: {
+            title: "Bewertung ablehnen?",
+            description:
+              "Die Bewertungsanfrage wird abgelehnt. Der Vorgang kann nicht rückgängig gemacht werden.",
+            confirmLabel: "Ablehnen",
+          },
+        },
       ];
     default:
       return [];

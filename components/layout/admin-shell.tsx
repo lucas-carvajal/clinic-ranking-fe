@@ -21,7 +21,9 @@ export function AdminShell({ children }: Readonly<{ children: ReactNode }>) {
           <AdminLogoutForm />
         </div>
       </header>
-      <main className="flex flex-1 flex-col p-6">{children}</main>
+      <main className="mx-auto flex w-full max-w-7xl flex-1 flex-col px-4 py-6 sm:px-6 lg:px-8">
+        {children}
+      </main>
     </div>
   );
 }
