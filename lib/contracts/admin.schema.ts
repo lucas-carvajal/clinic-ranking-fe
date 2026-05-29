@@ -36,3 +36,21 @@ export const reviewRequestsResponseSchema = z.object({
 export type ReviewRequestSummary = z.infer<typeof reviewRequestSummarySchema>;
 export type ReviewRequest = z.infer<typeof reviewRequestSchema>;
 export type ReviewRequestsResponse = z.infer<typeof reviewRequestsResponseSchema>;
+
+// FEEDBACK
+export const adminFeedbackSchema = z.object({
+  id: z.string().uuid(),
+  type: z.string(),
+  email: z.string(),
+  feedback: z.string(),
+  processed: z.boolean(),
+  createdAt: adminApiDateTimeSchema,
+});
+
+export const adminFeedbackListResponseSchema = z.object({
+  data: z.array(adminFeedbackSchema),
+  pagination: offsetPaginationSchema,
+});
+
+export type AdminFeedback = z.infer<typeof adminFeedbackSchema>;
+export type AdminFeedbackListResponse = z.infer<typeof adminFeedbackListResponseSchema>;
