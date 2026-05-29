@@ -54,7 +54,11 @@ export const reviewFormSchema = z.object({
   correctOvertimeLogging: z.boolean(),
   onCallShiftsPerMonth: z.number().int().nullable(),
 
-  // Step 6: Grades (non-nullable — null fails the required-pick for step completion)
+  // Step 6: Grades
+  // Intentionally non-nullable even though ReviewFormState holds `number | null`.
+  // This makes null fail the step-6 pick check (isStepComplete) so an unset grade
+  // correctly marks the step incomplete. Do NOT add .nullable() here — it would
+  // break step completion. The type mismatch with ReviewFormState is deliberate.
   gradeTheoreticalKnowledge: gradeSchema,
   gradePracticalKnowledge: gradeSchema,
   gradeAtmosphere: gradeSchema,
@@ -68,8 +72,9 @@ export const reviewFormSchema = z.object({
   wouldRecommendHospital: z.boolean().nullable(),
   textReviewTraining: z.string(),
   textReviewApplication: z.string(),
-  // Raw "YYYY-MM-DD" string from <input type="date">; never a Date object
-  publishAtDate: z.string().nullable(),
+  // "YYYY-MM-DD" from <input type="date">; .date() enforces the format so an
+  // invalid string never reaches the mapper's new Date() call. Never a Date object.
+  publishAtDate: z.string().date().nullable(),
   email: z.string().email(),
   // Must be explicitly true; false = step incomplete
   acceptedTerms: z.literal(true),
