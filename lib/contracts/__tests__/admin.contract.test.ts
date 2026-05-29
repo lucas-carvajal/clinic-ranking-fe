@@ -105,7 +105,6 @@ describe("admin contracts", () => {
       wouldRecommendHospital: true,
       textReviewTraining: "Gut",
       textReviewApplication: "Schnell",
-      publishAtDate: null,
       email: "doctor@example.com",
       extra: "ignored",
     });

@@ -22,8 +22,8 @@ export const reviewRequestSummarySchema = z.object({
 
 export const reviewRequestSchema = z.object({
   id: z.string().uuid(),
-  createdAt: z.string().datetime(),
-  updatedAt: z.string().datetime(),
+  createdAt: adminApiDateTimeSchema,
+  updatedAt: adminApiDateTimeSchema,
   requestStatus: reviewRequestStatusSchema,
   ...reviewSubmitSchema.shape,
 });

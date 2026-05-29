@@ -72,7 +72,18 @@ function trainingYearLabel(value: number | null | undefined): string {
   return String(value);
 }
 
-export function ReviewDetailView({ review }: Readonly<{ review: ReviewDetail }>) {
+export function ReviewDetailView({
+  review,
+  listHref = "/app/reviews",
+  listLabel = "Alle Bewertungen",
+  detailCrumbLabel = "Details",
+}: Readonly<{
+  review: ReviewDetail;
+  /** When embedded in admin, point back to the admin list instead of public reviews. */
+  listHref?: string;
+  listLabel?: string;
+  detailCrumbLabel?: string;
+}>) {
   const rotationLabels = labelsFor([...ROTATION_OPTIONS], review.rotations);
   const surgeryRoleLabels = labelsFor([...SURGERY_ROLE_OPTIONS], review.surgeryRoles);
   const trainingLabels = labelsFor([...TRAINING_QUALITY_OPTIONS], review.trainingQuality);
@@ -88,13 +99,13 @@ export function ReviewDetailView({ review }: Readonly<{ review: ReviewDetail }>)
   return (
     <div className="text-foreground mx-auto max-w-4xl overflow-x-hidden px-3 py-4 md:p-4">
       <nav className="text-muted-foreground mb-6 text-sm">
-        <Link href="/app/reviews" className="hover:text-foreground underline-offset-4 hover:underline">
-          Alle Bewertungen
+        <Link href={listHref} className="hover:text-foreground underline-offset-4 hover:underline">
+          {listLabel}
         </Link>
         <span className="px-2" aria-hidden>
           /
         </span>
-        <span className="text-foreground">Details</span>
+        <span className="text-foreground">{detailCrumbLabel}</span>
       </nav>
 
       <header className="mb-6">

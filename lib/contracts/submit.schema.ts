@@ -98,7 +98,8 @@ export const reviewSubmitSchema = z.object({
   wouldRecommendHospital: z.boolean().nullable(),
   textReviewTraining: z.string(),
   textReviewApplication: z.string(),
-  publishAtDate: z.string().datetime().nullable(),
+  // Go emits RFC3339 timestamps; backend omits publishAtDate when null (`omitempty`).
+  publishAtDate: z.string().datetime({ offset: true }).nullable().optional(),
   email: z.string().email(),
 });
 
