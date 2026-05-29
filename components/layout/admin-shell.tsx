@@ -1,21 +1,29 @@
 import type { ReactNode } from "react";
+import Link from "next/link";
 
+import { AdminHeaderNav } from "@/components/layout/admin-header-nav";
 import { AdminLogoutForm } from "@/components/layout/admin-logout-form";
-import { AdminSidebar } from "@/components/layout/admin-sidebar";
 
 export function AdminShell({ children }: Readonly<{ children: ReactNode }>) {
   return (
-    <div className="bg-background flex min-h-screen">
-      <aside
-        className="border-border bg-card shadow-sm flex min-h-screen w-64 shrink-0 flex-col border-r p-4"
-        aria-label="Administration"
-      >
-        <AdminSidebar />
-        <div className="border-border mt-auto border-t pt-4">
+    <div className="bg-background flex min-h-screen flex-col">
+      <header className="border-border bg-card border-b shadow-sm">
+        <div className="flex h-16 items-center justify-between gap-6 px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center gap-8">
+            <Link
+              href="/admin/review-requests"
+              className="text-foreground hover:text-brand-red text-xl font-bold transition-colors"
+            >
+              Admin
+            </Link>
+            <AdminHeaderNav />
+          </div>
           <AdminLogoutForm />
         </div>
-      </aside>
-      <main className="flex flex-1 flex-col p-6">{children}</main>
+      </header>
+      <main className="mx-auto flex w-full max-w-7xl flex-1 flex-col px-4 py-6 sm:px-6 lg:px-8">
+        {children}
+      </main>
     </div>
   );
 }

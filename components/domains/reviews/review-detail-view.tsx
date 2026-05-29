@@ -77,12 +77,15 @@ export function ReviewDetailView({
   listHref = "/app/reviews",
   listLabel = "Alle Bewertungen",
   detailCrumbLabel = "Details",
+  showBreadcrumb = true,
 }: Readonly<{
   review: ReviewDetail;
   /** When embedded in admin, point back to the admin list instead of public reviews. */
   listHref?: string;
   listLabel?: string;
   detailCrumbLabel?: string;
+  /** Hide when a parent already renders breadcrumbs (e.g. admin detail page). */
+  showBreadcrumb?: boolean;
 }>) {
   const rotationLabels = labelsFor([...ROTATION_OPTIONS], review.rotations);
   const surgeryRoleLabels = labelsFor([...SURGERY_ROLE_OPTIONS], review.surgeryRoles);
@@ -98,15 +101,17 @@ export function ReviewDetailView({
 
   return (
     <div className="text-foreground mx-auto max-w-4xl overflow-x-hidden px-3 py-4 md:p-4">
-      <nav className="text-muted-foreground mb-6 text-sm">
-        <Link href={listHref} className="hover:text-foreground underline-offset-4 hover:underline">
-          {listLabel}
-        </Link>
-        <span className="px-2" aria-hidden>
-          /
-        </span>
-        <span className="text-foreground">{detailCrumbLabel}</span>
-      </nav>
+      {showBreadcrumb ? (
+        <nav className="text-muted-foreground mb-6 text-sm">
+          <Link href={listHref} className="hover:text-foreground underline-offset-4 hover:underline">
+            {listLabel}
+          </Link>
+          <span className="px-2" aria-hidden>
+            /
+          </span>
+          <span className="text-foreground">{detailCrumbLabel}</span>
+        </nav>
+      ) : null}
 
       <header className="mb-6">
         <h1 className="text-3xl font-bold tracking-tight">{review.hospital}</h1>

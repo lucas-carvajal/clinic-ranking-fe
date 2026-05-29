@@ -8,6 +8,14 @@ import { useState, useTransition } from "react";
 import { ReviewRequestStatusBadge } from "@/components/domains/admin/review-requests/review-request-status-badge";
 import { ReviewDetailView } from "@/components/domains/reviews/review-detail-view";
 import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import type { ReviewRequest } from "@/lib/contracts/admin.schema";
 import {
   affiliationEmailContent,
@@ -17,6 +25,7 @@ import {
 } from "@/lib/domains/admin/review-request/admin-email-templates";
 import {
   moderationActionsForStatus,
+  type ModerationActionPresentation,
   type ModerationIntent,
 } from "@/lib/domains/admin/review-request-actions";
 import { reviewRequestToReviewDetail } from "@/lib/domains/admin/review-request/review-request-to-review-detail";
@@ -85,6 +94,7 @@ export function AdminReviewRequestDetailClient({
   const [pending, startTransition] = useTransition();
   const [copiedKey, setCopiedKey] = useState<string | null>(null);
   const [showAffiliationTemplate, setShowAffiliationTemplate] = useState(false);
+  const [pendingConfirm, setPendingConfirm] = useState<ModerationActionPresentation | null>(null);
 
   const emailCtx = { hospital: request.hospital, city: request.city, email: request.email };
   const detail = reviewRequestToReviewDetail(request);
@@ -101,12 +111,6 @@ export function AdminReviewRequestDetailClient({
   };
 
   const runModeration = (intent: ModerationIntent) => {
-    if (intent === "reject") {
-      const ok = window.confirm(
-        "Diese Bewertungsanfrage wirklich ablehnen? Der Vorgang kann nicht rückgängig gemacht werden.",
-      );
-      if (!ok) return;
-    }
     setError(null);
     startTransition(async () => {
       const fd = new FormData();
@@ -121,8 +125,23 @@ export function AdminReviewRequestDetailClient({
     });
   };
 
+  const handleActionClick = (action: ModerationActionPresentation) => {
+    if (action.confirm) {
+      setPendingConfirm(action);
+      return;
+    }
+    runModeration(action.intent);
+  };
+
+  const confirmPending = () => {
+    if (!pendingConfirm) return;
+    const intent = pendingConfirm.intent;
+    setPendingConfirm(null);
+    runModeration(intent);
+  };
+
   return (
-    <div className="text-foreground max-w-4xl">
+    <div className="text-foreground mx-auto w-full max-w-4xl">
       <nav className="text-muted-foreground mb-4 text-sm">
         <Link href="/admin" className="hover:text-foreground underline-offset-4 hover:underline">
           Admin
@@ -177,7 +196,7 @@ export function AdminReviewRequestDetailClient({
                 type="button"
                 variant={action.variant}
                 disabled={pending}
-                onClick={() => runModeration(action.intent)}
+                onClick={() => handleActionClick(action)}
               >
                 {action.label}
               </Button>
@@ -251,12 +270,43 @@ export function AdminReviewRequestDetailClient({
         </section>
       ) : null}
 
-      <ReviewDetailView
-        review={detail}
-        listHref="/admin/review-requests"
-        listLabel="Bewertungsanfragen"
-        detailCrumbLabel="Inhalt der Bewertung"
-      />
+      <ReviewDetailView review={detail} showBreadcrumb={false} />
+
+      <Dialog
+        open={pendingConfirm !== null}
+        onOpenChange={(open) => {
+          if (!open) setPendingConfirm(null);
+        }}
+      >
+        <DialogContent>
+          {pendingConfirm?.confirm ? (
+            <>
+              <DialogHeader>
+                <DialogTitle>{pendingConfirm.confirm.title}</DialogTitle>
+                <DialogDescription>{pendingConfirm.confirm.description}</DialogDescription>
+              </DialogHeader>
+              <DialogFooter>
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => setPendingConfirm(null)}
+                  disabled={pending}
+                >
+                  Abbrechen
+                </Button>
+                <Button
+                  type="button"
+                  variant={pendingConfirm.variant}
+                  onClick={confirmPending}
+                  disabled={pending}
+                >
+                  {pendingConfirm.confirm.confirmLabel}
+                </Button>
+              </DialogFooter>
+            </>
+          ) : null}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

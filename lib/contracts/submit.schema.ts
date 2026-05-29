@@ -85,7 +85,8 @@ export const reviewSubmitSchema = z.object({
   workAtmosphere: z.array(workAtmosphereSchema),
   weeklyHours: z.number().int(),
   contractualHours: z.number().int(),
-  overtimeCompensationType: z.string().nullable(),
+  // Backend omits overtimeCompensationType when null (`omitempty`).
+  overtimeCompensationType: z.string().nullable().optional(),
   correctOvertimeLogging: z.boolean(),
   onCallShiftsPerMonth: z.number().int(),
   gradeTheoreticalKnowledge: gradeSchema,
@@ -95,7 +96,8 @@ export const reviewSubmitSchema = z.object({
   gradeWorkingConditions: gradeSchema,
   gradeFamilyFriendliness: gradeSchema,
   totalGrade: gradeSchema,
-  wouldRecommendHospital: z.boolean().nullable(),
+  // Backend omits wouldRecommendHospital when null (`omitempty`).
+  wouldRecommendHospital: z.boolean().nullable().optional(),
   textReviewTraining: z.string(),
   textReviewApplication: z.string(),
   // Go emits RFC3339 timestamps; backend omits publishAtDate when null (`omitempty`).
