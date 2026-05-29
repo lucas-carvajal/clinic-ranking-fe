@@ -1,47 +1,39 @@
-import { Suspense } from "react";
+import Link from "next/link";
 
-import { AdminFeedbackTable } from "@/components/domains/admin/feedback/admin-feedback-table";
-import { CenteredSpinner } from "@/components/ui/spinner";
-import {
-  adminFeedbackListResponseSchema,
-  type AdminFeedbackListResponse,
-} from "@/lib/contracts/admin.schema";
+import { AdminFeedbackCardList } from "@/components/domains/admin/feedback/admin-feedback-card-list";
+import { adminFeedbackListResponseSchema } from "@/lib/contracts/admin.schema";
 import { serverGet } from "@/lib/api/server";
-import { parseAdminFeedbackSearchParams } from "@/lib/domains/admin/feedback/feedback-url";
 
-type AdminFeedbackPageProps = {
-  searchParams?: Promise<Record<string, string | string[] | undefined>>;
-};
-
-async function AdminFeedbackContent({
-  searchParams,
-}: {
-  searchParams: Record<string, string | string[] | undefined>;
-}) {
-  const urlParams = parseAdminFeedbackSearchParams(searchParams);
-  const query = new URLSearchParams({
-    page: String(urlParams.page),
-    page_size: String(urlParams.pageSize),
+export default async function AdminFeedbackPage() {
+  const data = await serverGet("/admin/feedback?page=1&page_size=20", {
+    responseSchema: adminFeedbackListResponseSchema,
   });
 
-  const data: AdminFeedbackListResponse = await serverGet(
-    `/admin/feedback?${query.toString()}`,
-    {
-      responseSchema: adminFeedbackListResponseSchema,
-    },
-  );
-
   return (
-    <AdminFeedbackTable rows={data.data} pagination={data.pagination} urlParams={urlParams} />
-  );
-}
+    <div className="text-foreground max-w-3xl">
+      <nav className="text-muted-foreground mb-4 text-sm">
+        <Link href="/admin" className="hover:text-foreground underline-offset-4 hover:underline">
+          Admin
+        </Link>
+        <span className="px-2" aria-hidden>
+          /
+        </span>
+        <span className="text-foreground">Feedback</span>
+      </nav>
 
-export default async function AdminFeedbackPage({ searchParams }: AdminFeedbackPageProps) {
-  const sp = searchParams ? await searchParams : {};
+      <header className="mb-6">
+        <h1 className="text-2xl font-bold tracking-tight">Feedback</h1>
+        {data.pagination.totalItems > 0 && (
+          <p className="text-muted-foreground mt-1 text-sm">
+            {data.pagination.totalItems} Einträge insgesamt
+          </p>
+        )}
+      </header>
 
-  return (
-    <Suspense fallback={<CenteredSpinner label="Lade Feedback…" />}>
-      <AdminFeedbackContent searchParams={sp} />
-    </Suspense>
+      <AdminFeedbackCardList
+        initialItems={data.data}
+        initialPagination={data.pagination}
+      />
+    </div>
   );
 }
