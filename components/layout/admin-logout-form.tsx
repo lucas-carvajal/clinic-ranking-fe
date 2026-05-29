@@ -7,8 +7,8 @@ import { adminLogoutAction } from "@/lib/admin/logout-action";
  */
 export function AdminLogoutForm() {
   return (
-    <form action={adminLogoutAction} className="w-full">
-      <Button type="submit" variant="outline" size="sm" className="w-full">
+    <form action={adminLogoutAction}>
+      <Button type="submit" variant="outline" size="sm">
         Abmelden
       </Button>
     </form>
