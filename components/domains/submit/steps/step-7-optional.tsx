@@ -3,7 +3,6 @@
 import Link from "next/link";
 import { Controller, type UseFormReturn } from "react-hook-form";
 
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
@@ -109,14 +108,6 @@ export function Step7Optional({ form }: { form: UseFormReturn<ReviewFormState> }
         </label>
       </div>
 
-      <Button
-        type="submit"
-        disabled
-        title="T19B"
-        className="w-full"
-      >
-        Bewertung abschicken
-      </Button>
     </fieldset>
   );
 }

@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 
 import { Button } from "@/components/ui/button";
+import { Spinner } from "@/components/ui/spinner";
 import { defaultFormState, type ReviewFormState } from "@/lib/domains/submit/schema";
 import {
   loadCurrentStep,
@@ -12,6 +13,8 @@ import {
   saveDraft,
 } from "@/lib/domains/submit/persistence";
 import { FORM_STEPS, TOTAL_STEPS, isStepComplete } from "@/lib/domains/submit/steps";
+import { reviewFormSchema } from "@/lib/domains/submit/schema";
+import { useSubmitReview } from "@/lib/domains/submit/use-submit-review";
 import { SubmitMobileHeader } from "./submit-mobile-header";
 import { SubmitSidebar } from "./submit-sidebar";
 
@@ -24,6 +27,9 @@ export function SubmitForm() {
 
   const [currentStep, setCurrentStep] = useState<number>(1);
   const [visitedSteps, setVisitedSteps] = useState<ReadonlySet<number>>(new Set([1]));
+  const [submitError, setSubmitError] = useState<string | null>(null);
+
+  const submitMutation = useSubmitReview();
 
   // Load draft and current step on mount
   useEffect(() => {
@@ -76,6 +82,19 @@ export function SubmitForm() {
     if (currentStep < TOTAL_STEPS) goToStep(currentStep + 1);
   }
 
+  function handleSubmitAttempt() {
+    const values = form.getValues();
+    const result = reviewFormSchema.safeParse(values);
+    if (!result.success) {
+      const firstInvalid = FORM_STEPS.find((s) => !isStepComplete(s.number, values));
+      if (firstInvalid) goToStep(firstInvalid.number);
+      setSubmitError("Bitte fülle alle Pflichtfelder aus.");
+      return;
+    }
+    setSubmitError(null);
+    submitMutation.mutate(values);
+  }
+
   const stepConfig = FORM_STEPS[currentStep - 1];
   const StepComponent = stepConfig?.Component;
 
@@ -109,36 +128,61 @@ export function SubmitForm() {
 
         {/* Footer navigation bar */}
         <div className="shrink-0 border-t bg-background px-6 py-4">
-          <div className="mx-auto flex max-w-xl items-center justify-between gap-4">
-            <Button
-              type="button"
-              variant="outline"
-              onClick={handlePrev}
-              disabled={currentStep === 1}
-            >
-              Zurück
-            </Button>
-
-            <span className="text-sm text-muted-foreground">
-              {currentStep} / {TOTAL_STEPS}
-            </span>
-
-            {currentStep < TOTAL_STEPS ? (
-              <Button
-                type="button"
-                onClick={handleNext}
+          <div className="mx-auto max-w-xl">
+            {submitError && (
+              <p
+                role="alert"
+                aria-live="assertive"
+                className="mb-3 text-sm text-destructive text-center"
               >
-                Weiter
-              </Button>
-            ) : (
-              <Button
-                type="button"
-                disabled
-                title="T19B"
-              >
-                Abschicken
-              </Button>
+                {submitError}
+              </p>
             )}
+
+            {submitMutation.isError && (
+              <p role="alert" className="text-sm text-destructive mt-1 text-center mb-3">
+                Fehler beim Absenden. Deine Eingaben wurden gespeichert – bitte versuche es erneut.
+              </p>
+            )}
+
+            <div className="flex items-center justify-between gap-4">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={handlePrev}
+                disabled={currentStep === 1}
+              >
+                Zurück
+              </Button>
+
+              <span className="text-sm text-muted-foreground">
+                {currentStep} / {TOTAL_STEPS}
+              </span>
+
+              {currentStep < TOTAL_STEPS ? (
+                <Button
+                  type="button"
+                  onClick={handleNext}
+                >
+                  Weiter
+                </Button>
+              ) : (
+                <Button
+                  type="button"
+                  disabled={submitMutation.isPending}
+                  onClick={handleSubmitAttempt}
+                >
+                  {submitMutation.isPending ? (
+                    <>
+                      <Spinner size="sm" className="mr-2" />
+                      Wird abgeschickt…
+                    </>
+                  ) : (
+                    "Abschicken"
+                  )}
+                </Button>
+              )}
+            </div>
           </div>
         </div>
       </main>
