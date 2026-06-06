@@ -37,7 +37,7 @@ export function SubmitSidebar({ currentStep, visitedSteps, formValues, onStepSel
                 aria-current={isActive ? "step" : undefined}
                 onClick={() => onStepSelect(step.number)}
                 className={cn(
-                  "flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors",
+                  "flex w-full cursor-pointer items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors",
                   isActive
                     ? "bg-[#0a0a0a] text-white"
                     : "text-[#0a0a0a] hover:bg-[#0a0a0a]/8",
