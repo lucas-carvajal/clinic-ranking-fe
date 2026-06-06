@@ -10,7 +10,7 @@ export default async function AdminFeedbackPage() {
   });
 
   return (
-    <div className="text-foreground max-w-3xl">
+    <div className="text-foreground mx-auto max-w-3xl">
       <nav className="text-muted-foreground mb-4 text-sm">
         <Link href="/admin" className="hover:text-foreground underline-offset-4 hover:underline">
           Admin
