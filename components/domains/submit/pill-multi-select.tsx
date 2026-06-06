@@ -34,7 +34,7 @@ export function PillMultiSelect({ options, value, onChange, className }: Props) 
             aria-pressed={selected}
             onClick={() => toggle(opt.value)}
             className={cn(
-              "rounded-full border px-3 py-1 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1",
+              "cursor-pointer rounded-full border px-3 py-1 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1",
               selected
                 ? "border-transparent bg-[#0a0a0a] text-white"
                 : "border-border bg-background text-foreground hover:bg-muted",
