@@ -33,11 +33,7 @@ export const TRAINING_QUALITY_OPTIONS: readonly LabeledValue[] = [
 
 export const WORK_STRUCTURE_OPTIONS: readonly LabeledValue[] = [
   { label: "Strukturiertes Weiterbildungsprogramm", value: "structuredTrainingProgram" },
-  /** Legacy typo preserved for label parity */
-  {
-    label: "Facharzt in Regelzeit möglichArbeitsat",
-    value: "specialistInRegularTime",
-  },
+  { label: "Facharzt in Regelzeit möglich", value: "specialistInRegularTime" },
   { label: "Auslandsrotation möglich", value: "internationalRotation" },
   { label: "Forschung erwartet", value: "researchExpected" },
 ];
