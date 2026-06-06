@@ -99,14 +99,14 @@ export function Step7Optional({ form }: { form: UseFormReturn<ReviewFormState> }
             />
           )}
         />
-        <Label htmlFor="acceptedTerms" className="cursor-pointer leading-snug">
+        <label htmlFor="acceptedTerms" className="cursor-pointer text-sm font-medium leading-snug select-none">
           Ich habe die{" "}
           <Link href="/legal/terms" className="underline underline-offset-2 hover:opacity-70">
             Nutzungsbedingungen
           </Link>{" "}
           gelesen und akzeptiert.{" "}
           <span className="text-destructive">*</span>
-        </Label>
+        </label>
       </div>
 
       <Button
