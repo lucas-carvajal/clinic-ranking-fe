@@ -1,5 +1,7 @@
 "use client";
 
+import { Check, CircleAlert } from "lucide-react";
+
 import { cn } from "@/lib/utils";
 import { FORM_STEPS, TOTAL_STEPS, isStepComplete } from "@/lib/domains/submit/steps";
 import type { ReviewFormState } from "@/lib/domains/submit/schema";
@@ -43,18 +45,24 @@ export function SubmitSidebar({ currentStep, visitedSteps, formValues, onStepSel
               >
                 <span
                   className={cn(
-                    "flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-xs font-bold",
+                    "flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-xs font-semibold transition-colors",
                     isActive
                       ? "bg-white text-[#0a0a0a]"
                       : isComplete
                         ? "bg-[#39f5a6] text-[#0a0a0a]"
                         : hasBeenVisited && !isComplete
                           ? "bg-amber-400 text-[#0a0a0a]"
-                          : "bg-[#0a0a0a]/10 text-[#0a0a0a]",
+                          : "bg-[#0a0a0a]/10 text-[#0a0a0a]/50",
                   )}
                   aria-hidden="true"
                 >
-                  {isComplete && !isActive ? "✓" : hasBeenVisited && !isComplete && !isActive ? "!" : step.number}
+                  {isComplete && !isActive ? (
+                    <Check className="h-4 w-4 stroke-[2.5]" />
+                  ) : hasBeenVisited && !isComplete && !isActive ? (
+                    <CircleAlert className="h-4 w-4 stroke-[2]" />
+                  ) : (
+                    step.number
+                  )}
                 </span>
                 <span className="flex-1 text-left">{step.label}</span>
               </button>

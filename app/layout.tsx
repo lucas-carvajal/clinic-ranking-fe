@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
-import { SiteFooter } from "@/components/layout/site-footer";
+import { ConditionalFooter } from "@/components/layout/conditional-footer";
 import { QueryProvider } from "@/components/providers/QueryProvider";
 import "./globals.css";
 
@@ -36,7 +36,7 @@ export default function RootLayout({
         <QueryProvider>
           <div className="flex min-h-dvh flex-col">
             <div className="flex flex-1 flex-col">{children}</div>
-            <SiteFooter />
+            <ConditionalFooter />
           </div>
         </QueryProvider>
       </body>
