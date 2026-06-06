@@ -82,7 +82,7 @@ export function SubmitForm() {
   const formValues = form.getValues();
 
   return (
-    <div className="flex flex-1 overflow-hidden">
+    <div className="flex min-h-0 flex-1 overflow-hidden">
       {/* Desktop sidebar */}
       <SubmitSidebar
         currentStep={currentStep}
