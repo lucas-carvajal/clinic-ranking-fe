@@ -24,7 +24,7 @@ export function loadDraft(): ReviewFormState | null {
     if (!result.success) return defaultFormState();
     // Merge validated partial data over defaults so any newly added fields
     // get their initial value when loading a draft from an older schema version.
-    return { ...defaultFormState(), ...parsed } as ReviewFormState;
+    return { ...defaultFormState(), ...result.data } as ReviewFormState;
   } catch {
     return defaultFormState();
   }

@@ -1,5 +1,5 @@
-import { PlaceholderPage } from "@/components/layout/placeholder-page";
+import { SubmitForm } from "@/components/domains/submit/submit-form";
 
 export default function AppSubmitPage() {
-  return <PlaceholderPage title="Bewerten" ticket="T13" />;
+  return <SubmitForm />;
 }
