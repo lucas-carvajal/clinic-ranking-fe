@@ -41,7 +41,7 @@ export type ReviewRequestsResponse = z.infer<typeof reviewRequestsResponseSchema
 export const adminFeedbackSchema = z.object({
   id: z.string().uuid(),
   type: z.string(),
-  email: z.string(),
+  email: z.string().optional(),
   feedback: z.string(),
   processed: z.boolean(),
   createdAt: adminApiDateTimeSchema,

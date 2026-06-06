@@ -11,8 +11,6 @@ import {
 } from "@/lib/contracts/admin.schema";
 import type { OffsetPagination } from "@/lib/contracts/pagination.schema";
 
-const PAGE_SIZE = 20;
-
 type Props = {
   initialItems: AdminFeedback[];
   initialPagination: OffsetPagination;
@@ -29,14 +27,17 @@ export function AdminFeedbackCardList({ initialItems, initialPagination }: Props
     setError(null);
     try {
       const nextPage = pagination.page + 1;
-      const url = `/api/proxy/admin/feedback?page=${nextPage}&page_size=${PAGE_SIZE}`;
+      const url = `/api/proxy/admin/feedback?page=${nextPage}&page_size=${pagination.pageSize}`;
       const res = await fetch(url, { credentials: "same-origin" });
       if (!res.ok) {
         throw new Error(`Fehler beim Laden (${res.status})`);
       }
       const json = await res.json();
       const parsed = adminFeedbackListResponseSchema.parse(json);
-      setItems((prev) => [...prev, ...parsed.data]);
+      setItems((prev) => {
+        const seen = new Set(prev.map((fb) => fb.id));
+        return [...prev, ...parsed.data.filter((fb) => !seen.has(fb.id))];
+      });
       setPagination(parsed.pagination);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Unbekannter Fehler.");
