@@ -57,7 +57,7 @@ export function Step4Quality({ form }: { form: UseFormReturn<ReviewFormState> })
 
       <div className="space-y-2">
         <Label htmlFor="averageTrainingTimeYears">
-          Durchschnittliche Weiterbildungsdauer in Jahren
+          Durchschnittliche Dauer bis zum Erhalt des Facharztes in Jahren
         </Label>
         <Controller
           control={form.control}

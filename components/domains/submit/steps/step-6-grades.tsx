@@ -25,10 +25,10 @@ type GradeField =
   | "totalGrade";
 
 const GRADE_FIELDS: { name: GradeField; label: string }[] = [
-  { name: "gradeTheoreticalKnowledge", label: "Theoretische Ausbildung" },
-  { name: "gradePracticalKnowledge", label: "Praktische Ausbildung" },
+  { name: "gradeTheoreticalKnowledge", label: "Vermittlung von theoretischem Wissen" },
+  { name: "gradePracticalKnowledge", label: "Vermittlung von praktischem Wissen" },
   { name: "gradeAtmosphere", label: "Arbeitsatmosphäre" },
-  { name: "gradeFacilities", label: "Ausstattung" },
+  { name: "gradeFacilities", label: "Klinikausstattung" },
   { name: "gradeWorkingConditions", label: "Arbeitsbedingungen" },
   { name: "gradeFamilyFriendliness", label: "Familienfreundlichkeit" },
   { name: "totalGrade", label: "Gesamtnote" },
@@ -38,6 +38,12 @@ export function Step6Grades({ form }: { form: UseFormReturn<ReviewFormState> }) 
   return (
     <fieldset className="space-y-6">
       <legend className="sr-only">Noten</legend>
+
+      <div className="space-y-1">
+        <p className="text-sm text-muted-foreground">
+          Vergebe Schulnoten von 1 (beste) bis 6 (schlechteste)
+        </p>
+      </div>
 
       {GRADE_FIELDS.map(({ name, label }) => (
         <div key={name} className="space-y-2">
