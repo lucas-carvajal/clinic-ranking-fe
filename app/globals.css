@@ -13,6 +13,9 @@
   --cream-muted: #f7eddc;
   --cream-border: #e7d9c3;
   --text-muted: #6f6659;
+  /* Step-completion status colors (success = complete, warning = visited-incomplete). */
+  --success: #39f5a6;
+  --warning: #fbbf24;
 
   /**
    * One step above page background: warm lifted surface (suggestion A).
@@ -58,6 +61,8 @@
   --color-cream-surface: var(--cream-surface);
   --color-surface-lifted: var(--surface-lifted);
   --color-foreground: var(--foreground);
+  --color-success: var(--success);
+  --color-warning: var(--warning);
   --color-brand-red: var(--brand-red);
   --color-brand-mint: var(--brand-mint);
   --color-accent: var(--accent);

@@ -36,10 +36,12 @@ export function toReviewApiPayload(form: ReviewFormState): ReviewSubmit {
     trainingHospitalChanged: form.trainingHospitalChanged ?? false,
 
     // Step 3
-    rotations: form.rotations,
+    // ReviewFormState stores string[] while ReviewSubmit expects enum arrays.
+    // Runtime validation via reviewSubmitSchema.parse() enforces correctness.
+    rotations: form.rotations as ReviewSubmit["rotations"],
     // Clear free-text when the misc rotation is not selected
     otherRotations: form.rotations.includes("misc") ? form.otherRotations : "",
-    surgeryRoles: surgerySelected ? form.surgery.surgeryRoles : [],
+    surgeryRoles: (surgerySelected ? form.surgery.surgeryRoles : []) as ReviewSubmit["surgeryRoles"],
     surgeryComplexProcedures: surgerySelected ? form.surgery.surgeryComplexProcedures : false,
     surgeryTimePercentage: surgerySelected ? (form.surgery.surgeryTimePercentage ?? 0) : 0,
     ownDiagnosticsExecution: diagnosticsSelected ? form.diagnostics.ownExecution : false,
@@ -48,10 +50,10 @@ export function toReviewApiPayload(form: ReviewFormState): ReviewSubmit {
       : 0,
 
     // Step 4
-    trainingQuality: form.trainingQuality,
-    workStructure: form.workStructure,
+    trainingQuality: form.trainingQuality as ReviewSubmit["trainingQuality"],
+    workStructure: form.workStructure as ReviewSubmit["workStructure"],
     averageTrainingTimeYears: form.averageTrainingTimeYears ?? 0,
-    workAtmosphere: form.workAtmosphere,
+    workAtmosphere: form.workAtmosphere as ReviewSubmit["workAtmosphere"],
 
     // Step 5
     weeklyHours: form.weeklyHours ?? 0,
