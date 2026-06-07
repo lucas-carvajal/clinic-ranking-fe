@@ -11,7 +11,7 @@ import type { ReviewFormState } from "@/lib/domains/submit/schema";
 
 const YEAR_AT_HOSPITAL_OPTIONS = Array.from({ length: 10 }, (_, i) => ({
   value: String(i + 1),
-  label: `${i + 1} Jahr${i + 1 > 1 ? "e" : ""}`,
+  label: `${i + 1}. Jahr`,
 }));
 
 const TRAINING_YEAR_OPTIONS = Array.from({ length: 8 }, (_, i) => ({
