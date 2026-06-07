@@ -85,20 +85,34 @@ export function Step7Optional({ form }: { form: UseFormReturn<ReviewFormState> }
       </div>
 
       {/* E-Mail */}
-      <div className="space-y-2 border-t border-border pt-6">
-        <Label htmlFor="email">
-          E-Mail <span className="text-destructive">*</span>
-        </Label>
+      <div className="space-y-3 border-t border-border pt-6">
+        <div>
+          <h3 className="text-base font-semibold">
+            Krankenhaus Email für Verifikation <span className="text-destructive">*</span>
+          </h3>
+          <p className="mt-1 text-sm text-muted-foreground">
+            Um zu Verifizieren, dass du an dem Krankenhaus arbeitest, gebe bitte deine Krankenhaus
+            Email Adresse an.
+            <br />
+            Wenn du nicht mehr an dem Krankenhaus arbeitest, gebe eine andere Email Adresse an und
+            wir werden uns mit dir in Verbindung setzen.
+          </p>
+          <p className="mt-1 text-sm text-muted-foreground">
+            ⚠️ Dies dient ausschließlich dem Schutz vor Fake Bewertungen und wird niemals
+            veröffentlicht.
+          </p>
+        </div>
+        <Label htmlFor="email">Email Adresse</Label>
         <Input
           id="email"
           type="email"
-          placeholder="deine@email.de"
+          placeholder="deine.email@krankenhaus.de"
           {...form.register("email")}
         />
       </div>
 
       {/* Terms */}
-      <div className="space-y-3">
+      <div className="space-y-3 border-t border-border pt-6">
         <div className="flex items-start gap-3">
           <Controller
             control={form.control}
@@ -109,16 +123,17 @@ export function Step7Optional({ form }: { form: UseFormReturn<ReviewFormState> }
                 type="checkbox"
                 checked={field.value}
                 onChange={(e) => field.onChange(e.target.checked)}
-                className="mt-0.5 h-4 w-4 rounded border-input accent-[#0a0a0a]"
+                className="mt-0.5 h-4 w-4 shrink-0 rounded border-input accent-[#0a0a0a]"
               />
             )}
           />
-          <label htmlFor="acceptedTerms" className="cursor-pointer text-sm font-medium leading-snug select-none">
-            Ich habe die{" "}
+          <label htmlFor="acceptedTerms" className="cursor-pointer text-sm leading-snug select-none">
+            Ich akzeptiere die{" "}
             <Link href="/legal/terms" className="underline underline-offset-2 hover:opacity-70">
               Nutzungsbedingungen
             </Link>{" "}
-            gelesen und akzeptiert.{" "}
+            und bestätige, dass meine Bewertung wahrheitsgemäß ist und den Inhaltsregeln
+            entspricht.{" "}
             <span className="text-destructive">*</span>
           </label>
         </div>
