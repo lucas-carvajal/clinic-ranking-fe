@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { Controller, type UseFormReturn } from "react-hook-form";
 
+import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
@@ -118,12 +119,11 @@ export function Step7Optional({ form }: { form: UseFormReturn<ReviewFormState> }
             control={form.control}
             name="acceptedTerms"
             render={({ field }) => (
-              <input
+              <Checkbox
                 id="acceptedTerms"
-                type="checkbox"
                 checked={field.value}
                 onChange={(e) => field.onChange(e.target.checked)}
-                className="mt-0.5 h-4 w-4 shrink-0 rounded border-input accent-[#0a0a0a]"
+                className="mt-0.5 shrink-0"
               />
             )}
           />
