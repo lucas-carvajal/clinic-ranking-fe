@@ -1,9 +1,11 @@
 "use client";
 
+import { useMemo } from "react";
 import { Controller, type UseFormReturn } from "react-hook-form";
 
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Combobox } from "@/components/ui/combobox";
 import { BooleanCombobox } from "@/components/domains/submit/boolean-combobox";
 import { PillMultiSelect } from "@/components/domains/submit/pill-multi-select";
 import {
@@ -12,10 +14,13 @@ import {
 } from "@/lib/domains/form-options/review-field-options";
 import type { ReviewFormState } from "@/lib/domains/submit/schema";
 
-const SELECT_CLASS =
-  "h-8 w-full rounded-lg border border-input bg-transparent px-2.5 py-1 text-sm shadow-sm outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50";
+const PERCENTAGE_OPTIONS = Array.from({ length: 21 }, (_, i) => ({
+  value: String(i * 5),
+  label: `${i * 5}%`,
+}));
 
 export function Step3Rotations({ form }: { form: UseFormReturn<ReviewFormState> }) {
+  const percentageOptions = useMemo(() => PERCENTAGE_OPTIONS, []);
   const rotationsValue = form.watch("rotations");
   const showOtherRotations = rotationsValue.includes("misc");
   const isSurgerySelected = rotationsValue.includes("surgery");
@@ -96,22 +101,16 @@ export function Step3Rotations({ form }: { form: UseFormReturn<ReviewFormState> 
               control={form.control}
               name="surgery.surgeryTimePercentage"
               render={({ field }) => (
-                <select
+                <Combobox
                   id="surgeryTimePercentage"
-                  className={SELECT_CLASS}
-                  value={field.value === null ? "" : String(field.value)}
-                  onChange={(e) => {
-                    if (e.target.value === "") field.onChange(null);
-                    else field.onChange(Number(e.target.value));
-                  }}
-                >
-                  <option value="">Keine Angabe</option>
-                  {Array.from({ length: 21 }, (_, i) => i * 5).map((v) => (
-                    <option key={v} value={v}>
-                      {v}%
-                    </option>
-                  ))}
-                </select>
+                  options={percentageOptions}
+                  value={field.value === null ? undefined : String(field.value)}
+                  onChange={(v) => field.onChange(v === undefined ? null : Number(v))}
+                  placeholder="Keine Angabe"
+                  hideClearOption={false}
+                  clearLabel="Keine Angabe"
+                  triggerClassName="bg-background"
+                />
               )}
             />
           </div>
@@ -146,22 +145,16 @@ export function Step3Rotations({ form }: { form: UseFormReturn<ReviewFormState> 
               control={form.control}
               name="diagnostics.diagnosticsTimePercentage"
               render={({ field }) => (
-                <select
+                <Combobox
                   id="diagnosticsTimePercentage"
-                  className={SELECT_CLASS}
-                  value={field.value === null ? "" : String(field.value)}
-                  onChange={(e) => {
-                    if (e.target.value === "") field.onChange(null);
-                    else field.onChange(Number(e.target.value));
-                  }}
-                >
-                  <option value="">Keine Angabe</option>
-                  {Array.from({ length: 21 }, (_, i) => i * 5).map((v) => (
-                    <option key={v} value={v}>
-                      {v}%
-                    </option>
-                  ))}
-                </select>
+                  options={percentageOptions}
+                  value={field.value === null ? undefined : String(field.value)}
+                  onChange={(v) => field.onChange(v === undefined ? null : Number(v))}
+                  placeholder="Keine Angabe"
+                  hideClearOption={false}
+                  clearLabel="Keine Angabe"
+                  triggerClassName="bg-background"
+                />
               )}
             />
           </div>

@@ -3,9 +3,17 @@
 import { Controller, type UseFormReturn } from "react-hook-form";
 
 import { Label } from "@/components/ui/label";
+import { Combobox } from "@/components/ui/combobox";
 import type { ReviewFormState } from "@/lib/domains/submit/schema";
 
-const GRADE_OPTIONS = [1, 2, 3, 4, 5, 6] as const;
+const GRADE_OPTIONS = [
+  { value: "1", label: "1 – sehr gut" },
+  { value: "2", label: "2 – gut" },
+  { value: "3", label: "3 – befriedigend" },
+  { value: "4", label: "4 – ausreichend" },
+  { value: "5", label: "5 – mangelhaft" },
+  { value: "6", label: "6 – ungenügend" },
+];
 
 type GradeField =
   | "gradeTheoreticalKnowledge"
@@ -38,21 +46,16 @@ export function Step6Grades({ form }: { form: UseFormReturn<ReviewFormState> }) 
             control={form.control}
             name={name}
             render={({ field }) => (
-              <select
-                aria-label={label}
-                className="h-8 w-full rounded-lg border border-input bg-transparent px-2.5 py-1 text-sm shadow-sm outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50"
-                value={field.value ?? ""}
-                onChange={(e) => {
-                  field.onChange(e.target.value === "" ? null : parseInt(e.target.value, 10));
-                }}
-              >
-                <option value="">Note wählen</option>
-                {GRADE_OPTIONS.map((g) => (
-                  <option key={g} value={String(g)}>
-                    {g}
-                  </option>
-                ))}
-              </select>
+              <Combobox
+                ariaLabel={label}
+                options={GRADE_OPTIONS}
+                value={field.value ? String(field.value) : undefined}
+                onChange={(v) => field.onChange(v ? parseInt(v, 10) : null)}
+                placeholder="Note wählen"
+                hideClearOption={false}
+                clearLabel="Keine Note"
+                triggerClassName="bg-background"
+              />
             )}
           />
         </div>
