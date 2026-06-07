@@ -17,6 +17,8 @@ type DynamicOptionFieldProps = {
   placeholder: string;
   searchPlaceholder?: string;
   freeTextPlaceholder?: string;
+  /** Label for the "enter custom value" option at the bottom of the list. Defaults to "Anderes…" */
+  customOptionLabel?: string;
   onChange: (value: string) => void;
   onCustomToggle: (isCustom: boolean) => void;
   disabled?: boolean;
@@ -31,13 +33,14 @@ export function DynamicOptionField({
   placeholder,
   searchPlaceholder,
   freeTextPlaceholder,
+  customOptionLabel = "Anderes…",
   onChange,
   onCustomToggle,
   disabled,
 }: DynamicOptionFieldProps) {
   const allOptions = useMemo(
-    () => [...options, { value: CUSTOM_OPTION_VALUE, label: "Anderes…" }],
-    [options],
+    () => [...options, { value: CUSTOM_OPTION_VALUE, label: customOptionLabel }],
+    [options, customOptionLabel],
   );
 
   if (isCustom) {

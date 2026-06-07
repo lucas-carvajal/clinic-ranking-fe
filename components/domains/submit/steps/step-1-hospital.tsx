@@ -64,6 +64,7 @@ export function Step1Hospital({ form }: { form: UseFormReturn<ReviewFormState> }
                   placeholder="Bundesland wählen…"
                   searchPlaceholder="Bundesland suchen…"
                   freeTextPlaceholder="Bundesland eingeben…"
+                  customOptionLabel="ANDERES BUNDESLAND…"
                   onChange={(v) => {
                     field.onChange(v);
                     form.setValue("city", "");
@@ -108,6 +109,7 @@ export function Step1Hospital({ form }: { form: UseFormReturn<ReviewFormState> }
                   placeholder="Stadt wählen…"
                   searchPlaceholder="Stadt suchen…"
                   freeTextPlaceholder="Stadt eingeben…"
+                  customOptionLabel="ANDERE STADT…"
                   disabled={cityDisabled}
                   onChange={(v) => {
                     field.onChange(v);
@@ -149,6 +151,7 @@ export function Step1Hospital({ form }: { form: UseFormReturn<ReviewFormState> }
                   placeholder="Krankenhaus wählen…"
                   searchPlaceholder="Krankenhaus suchen…"
                   freeTextPlaceholder="Krankenhaus eingeben…"
+                  customOptionLabel="ANDERES KRANKENHAUS…"
                   disabled={hospitalDisabled}
                   onChange={(v) => {
                     field.onChange(v);
@@ -184,6 +187,7 @@ export function Step1Hospital({ form }: { form: UseFormReturn<ReviewFormState> }
                   placeholder="Fachrichtung wählen…"
                   searchPlaceholder="Fachrichtung suchen…"
                   freeTextPlaceholder="Fachrichtung eingeben…"
+                  customOptionLabel="ANDERE FACHRICHTUNG…"
                   onChange={(v) => {
                     field.onChange(v);
                   }}
