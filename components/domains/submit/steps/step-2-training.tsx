@@ -4,6 +4,7 @@ import { Controller, type UseFormReturn } from "react-hook-form";
 
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Select } from "@/components/ui/select";
 import type { ReviewFormState } from "@/lib/domains/submit/schema";
 
 export function Step2Training({ form }: { form: UseFormReturn<ReviewFormState> }) {
@@ -70,9 +71,8 @@ export function Step2Training({ form }: { form: UseFormReturn<ReviewFormState> }
           control={form.control}
           name="trainingHospitalChanged"
           render={({ field }) => (
-            <select
+            <Select
               id="trainingHospitalChanged"
-              className="h-8 w-full rounded-lg border border-input bg-transparent px-2.5 py-1 text-sm shadow-sm outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50"
               value={field.value === null ? "" : String(field.value)}
               onChange={(e) => {
                 if (e.target.value === "") field.onChange(null);
@@ -82,7 +82,7 @@ export function Step2Training({ form }: { form: UseFormReturn<ReviewFormState> }
               <option value="">Keine Angabe</option>
               <option value="true">Ja</option>
               <option value="false">Nein</option>
-            </select>
+            </Select>
           )}
         />
       </div>

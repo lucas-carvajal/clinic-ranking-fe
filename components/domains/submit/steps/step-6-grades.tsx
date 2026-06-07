@@ -3,6 +3,7 @@
 import { Controller, type UseFormReturn } from "react-hook-form";
 
 import { Label } from "@/components/ui/label";
+import { Select } from "@/components/ui/select";
 import type { ReviewFormState } from "@/lib/domains/submit/schema";
 
 const GRADE_OPTIONS = [1, 2, 3, 4, 5, 6] as const;
@@ -38,9 +39,8 @@ export function Step6Grades({ form }: { form: UseFormReturn<ReviewFormState> }) 
             control={form.control}
             name={name}
             render={({ field }) => (
-              <select
+              <Select
                 aria-label={label}
-                className="h-8 w-full rounded-lg border border-input bg-transparent px-2.5 py-1 text-sm shadow-sm outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50"
                 value={field.value ?? ""}
                 onChange={(e) => {
                   field.onChange(e.target.value === "" ? null : parseInt(e.target.value, 10));
@@ -52,7 +52,7 @@ export function Step6Grades({ form }: { form: UseFormReturn<ReviewFormState> }) 
                     {g}
                   </option>
                 ))}
-              </select>
+              </Select>
             )}
           />
         </div>

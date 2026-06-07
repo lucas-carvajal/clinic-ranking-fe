@@ -18,9 +18,9 @@ export function SubmitSidebar({ currentStep, visitedSteps, formValues, onStepSel
     <nav
       role="navigation"
       aria-label="Formular-Schritte"
-      className="hidden lg:flex lg:w-72 flex-col border-r overflow-y-auto bg-[#fff8ed] py-6"
+      className="hidden lg:flex lg:w-72 flex-col border-r overflow-y-auto bg-cream-warm py-6"
     >
-      <p className="px-6 pb-4 text-xs font-semibold uppercase tracking-wider text-[#0a0a0a]/50">
+      <p className="px-6 pb-4 text-xs font-semibold uppercase tracking-wider text-foreground/50">
         Schritte ({TOTAL_STEPS})
       </p>
 
@@ -39,20 +39,20 @@ export function SubmitSidebar({ currentStep, visitedSteps, formValues, onStepSel
                 className={cn(
                   "flex w-full cursor-pointer items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors",
                   isActive
-                    ? "bg-[#0a0a0a] text-white"
-                    : "text-[#0a0a0a] hover:bg-[#0a0a0a]/8",
+                    ? "bg-primary text-primary-foreground"
+                    : "text-foreground hover:bg-foreground/8",
                 )}
               >
                 <span
                   className={cn(
                     "flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-xs font-semibold transition-colors",
                     isActive
-                      ? "bg-white text-[#0a0a0a]"
+                      ? "bg-background text-foreground"
                       : isComplete
-                        ? "bg-[#39f5a6] text-[#0a0a0a]"
+                        ? "bg-success text-foreground"
                         : hasBeenVisited && !isComplete
-                          ? "bg-amber-400 text-[#0a0a0a]"
-                          : "bg-[#0a0a0a]/10 text-[#0a0a0a]/50",
+                          ? "bg-warning text-foreground"
+                          : "bg-foreground/10 text-foreground/50",
                   )}
                   aria-hidden="true"
                 >

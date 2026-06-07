@@ -4,8 +4,10 @@ import Link from "next/link";
 import { Controller, type UseFormReturn } from "react-hook-form";
 
 import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Select } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import type { ReviewFormState } from "@/lib/domains/submit/schema";
 
@@ -22,9 +24,8 @@ export function Step7Optional({ form }: { form: UseFormReturn<ReviewFormState> }
           control={form.control}
           name="wouldRecommendHospital"
           render={({ field }) => (
-            <select
+            <Select
               id="wouldRecommendHospital"
-              className="h-8 w-full rounded-lg border border-input bg-transparent px-2.5 py-1 text-sm shadow-sm outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50"
               value={field.value === null ? "" : String(field.value)}
               onChange={(e) => {
                 if (e.target.value === "") field.onChange(null);
@@ -34,7 +35,7 @@ export function Step7Optional({ form }: { form: UseFormReturn<ReviewFormState> }
               <option value="">Keine Angabe</option>
               <option value="true">Ja</option>
               <option value="false">Nein</option>
-            </select>
+            </Select>
           )}
         />
       </div>
@@ -90,12 +91,11 @@ export function Step7Optional({ form }: { form: UseFormReturn<ReviewFormState> }
           control={form.control}
           name="acceptedTerms"
           render={({ field }) => (
-            <input
+            <Checkbox
               id="acceptedTerms"
-              type="checkbox"
               checked={field.value}
               onChange={(e) => field.onChange(e.target.checked)}
-              className="mt-0.5 h-4 w-4 rounded border-input accent-[#0a0a0a]"
+              className="mt-0.5"
             />
           )}
         />

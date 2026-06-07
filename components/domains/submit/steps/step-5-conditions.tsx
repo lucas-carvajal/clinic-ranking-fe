@@ -2,8 +2,10 @@
 
 import { Controller, type UseFormReturn } from "react-hook-form";
 
+import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Select } from "@/components/ui/select";
 import { OVERTIME_COMPENSATION_OPTIONS } from "@/lib/domains/form-options/review-field-options";
 import type { ReviewFormState } from "@/lib/domains/submit/schema";
 
@@ -60,9 +62,8 @@ export function Step5Conditions({ form }: { form: UseFormReturn<ReviewFormState>
           control={form.control}
           name="overtimeCompensationType"
           render={({ field }) => (
-            <select
+            <Select
               id="overtimeCompensationType"
-              className="h-8 w-full rounded-lg border border-input bg-transparent px-2.5 py-1 text-sm shadow-sm outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50"
               value={field.value}
               onChange={(e) => field.onChange(e.target.value)}
             >
@@ -72,7 +73,7 @@ export function Step5Conditions({ form }: { form: UseFormReturn<ReviewFormState>
                   {opt.label}
                 </option>
               ))}
-            </select>
+            </Select>
           )}
         />
       </div>
@@ -82,12 +83,10 @@ export function Step5Conditions({ form }: { form: UseFormReturn<ReviewFormState>
           control={form.control}
           name="correctOvertimeLogging"
           render={({ field }) => (
-            <input
+            <Checkbox
               id="correctOvertimeLogging"
-              type="checkbox"
               checked={field.value}
               onChange={(e) => field.onChange(e.target.checked)}
-              className="h-4 w-4 rounded border-input accent-[#0a0a0a]"
             />
           )}
         />

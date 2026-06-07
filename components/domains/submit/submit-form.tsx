@@ -11,7 +11,7 @@ import {
   saveCurrentStep,
   saveDraft,
 } from "@/lib/domains/submit/persistence";
-import { FORM_STEPS, TOTAL_STEPS, isStepComplete } from "@/lib/domains/submit/steps";
+import { FORM_STEPS, TOTAL_STEPS } from "@/lib/domains/submit/steps";
 import { SubmitMobileHeader } from "./submit-mobile-header";
 import { SubmitSidebar } from "./submit-sidebar";
 
@@ -99,7 +99,7 @@ export function SubmitForm() {
         {/* Step content */}
         <div className="flex-1 overflow-y-auto px-6 py-6">
           <div className="mx-auto max-w-xl">
-            <h2 className="mb-6 text-xl font-semibold text-[#0a0a0a]">
+            <h2 className="mb-6 text-xl font-semibold text-foreground">
               {stepConfig?.label}
             </h2>
 
