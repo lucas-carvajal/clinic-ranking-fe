@@ -12,7 +12,7 @@ export function SubmitMobileHeader({ currentStep }: Props) {
   const progressPercent = Math.round((currentStep / TOTAL_STEPS) * 100);
 
   return (
-    <div className="shrink-0 border-b bg-cream-warm px-4 py-3 lg:hidden">
+    <div className="shrink-0 border-b bg-background px-4 py-3 lg:hidden">
       <div className="mb-2 flex items-center justify-between text-sm">
         <span className="font-semibold text-foreground">{label}</span>
         <span className="text-foreground/60">

@@ -18,7 +18,7 @@ export function SubmitSidebar({ currentStep, visitedSteps, formValues, onStepSel
     <nav
       role="navigation"
       aria-label="Formular-Schritte"
-      className="hidden lg:flex lg:w-72 flex-col border-r overflow-y-auto bg-cream-warm py-6"
+      className="hidden lg:flex lg:w-72 flex-col border-r overflow-y-auto bg-background py-6"
     >
       <p className="px-6 pb-4 text-xs font-semibold uppercase tracking-wider text-foreground/50">
         Schritte ({TOTAL_STEPS})

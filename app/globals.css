@@ -11,7 +11,6 @@
   --brand-mint: #0d9488;
   --cream-surface: #ffffff;
   --cream-muted: #f7eddc;
-  --cream-warm: #fff8ed;
   --cream-border: #e7d9c3;
   --text-muted: #6f6659;
   /* Step-completion status colors (success = complete, warning = visited-incomplete). */
@@ -60,7 +59,6 @@
 @theme inline {
   --color-background: var(--background);
   --color-cream-surface: var(--cream-surface);
-  --color-cream-warm: var(--cream-warm);
   --color-surface-lifted: var(--surface-lifted);
   --color-foreground: var(--foreground);
   --color-success: var(--success);
