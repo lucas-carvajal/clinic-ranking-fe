@@ -3,12 +3,11 @@
 import Link from "next/link";
 import { Controller, type UseFormReturn } from "react-hook-form";
 
-import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Select } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
+import { BooleanCombobox } from "@/components/domains/submit/boolean-combobox";
 import type { ReviewFormState } from "@/lib/domains/submit/schema";
 
 export function Step7Optional({ form }: { form: UseFormReturn<ReviewFormState> }) {
@@ -16,6 +15,7 @@ export function Step7Optional({ form }: { form: UseFormReturn<ReviewFormState> }
     <fieldset className="space-y-6">
       <legend className="sr-only">Freiwilliges</legend>
 
+      {/* Weiterempfehlung */}
       <div className="space-y-2">
         <Label htmlFor="wouldRecommendHospital">
           Würdest du dieses Krankenhaus weiterempfehlen?
@@ -24,42 +24,53 @@ export function Step7Optional({ form }: { form: UseFormReturn<ReviewFormState> }
           control={form.control}
           name="wouldRecommendHospital"
           render={({ field }) => (
-            <Select
+            <BooleanCombobox
               id="wouldRecommendHospital"
-              value={field.value === null ? "" : String(field.value)}
-              onChange={(e) => {
-                if (e.target.value === "") field.onChange(null);
-                else field.onChange(e.target.value === "true");
-              }}
-            >
-              <option value="">Keine Angabe</option>
-              <option value="true">Ja</option>
-              <option value="false">Nein</option>
-            </Select>
+              value={field.value}
+              onChange={field.onChange}
+              nullable
+            />
           )}
         />
       </div>
 
-      <div className="space-y-2">
-        <Label htmlFor="textReviewTraining">Wie war deine Weiterbildung?</Label>
+      {/* Weiterbildung */}
+      <div className="space-y-2 border-t border-border pt-6">
+        <h3 className="text-base font-semibold">Wie bewertest du deine Weiterbildung insgesamt?</h3>
+        <p className="text-sm text-muted-foreground">
+          Schreibe kurz, was dir bei deiner Weiterbildung gefallen hat und was nicht. Erwähne gerne alles, was anderen helfen könnte :)
+        </p>
         <Textarea
           id="textReviewTraining"
-          placeholder="Beschreibe deine Erfahrungen mit der Weiterbildung..."
+          placeholder="Deine Bewertung..."
+          rows={3}
+          className="resize-y"
           {...form.register("textReviewTraining")}
         />
       </div>
 
-      <div className="space-y-2">
-        <Label htmlFor="textReviewApplication">Wie war dein Bewerbungsprozess?</Label>
+      {/* Bewerbungsprozess */}
+      <div className="space-y-2 border-t border-border pt-6">
+        <h3 className="text-base font-semibold">Wie war der Bewerbungsprozess?</h3>
+        <p className="text-sm text-muted-foreground">
+          Schreibe kurz, wie du dich beworben hast und wie der Bewerbungsprozess ablief. Gibt es irgendwelche Tipps, die anderen helfen könnten? :)
+        </p>
         <Textarea
           id="textReviewApplication"
-          placeholder="Beschreibe deinen Bewerbungsprozess..."
+          placeholder="Deine Bewerbung..."
+          rows={3}
+          className="resize-y"
           {...form.register("textReviewApplication")}
         />
       </div>
 
-      <div className="space-y-2">
-        <Label htmlFor="publishAtDate">Veröffentlichungsdatum</Label>
+      {/* Veröffentlichungsdatum */}
+      <div className="space-y-2 border-t border-border pt-6">
+        <h3 className="text-base font-semibold">Datum der Freigabe <span className="text-muted-foreground font-normal text-sm">(Optional)</span></h3>
+        <p className="text-sm text-muted-foreground">
+          Du willst, dass deine Bewertung erst nach einem bestimmten Datum sichtbar wird? Dann gebe es hier an.
+        </p>
+        <Label htmlFor="publishAtDate" className="sr-only">Freigabedatum</Label>
         <Controller
           control={form.control}
           name="publishAtDate"
@@ -74,49 +85,66 @@ export function Step7Optional({ form }: { form: UseFormReturn<ReviewFormState> }
         />
       </div>
 
-      <div className="space-y-2">
-        <Label htmlFor="email">
-          E-Mail <span className="text-destructive">*</span>
-        </Label>
+      {/* E-Mail */}
+      <div className="space-y-3 border-t border-border pt-6">
+        <div>
+          <h3 className="text-base font-semibold">
+            Krankenhaus Email für Verifikation <span className="text-destructive">*</span>
+          </h3>
+          <p className="mt-1 text-sm text-muted-foreground">
+            Um zu Verifizieren, dass du an dem Krankenhaus arbeitest, gebe bitte deine Krankenhaus
+            Email Adresse an.
+            <br />
+            Wenn du nicht mehr an dem Krankenhaus arbeitest, gebe eine andere Email Adresse an und
+            wir werden uns mit dir in Verbindung setzen.
+          </p>
+          <p className="mt-1 text-sm text-muted-foreground">
+            ⚠️ Dies dient ausschließlich dem Schutz vor Fake Bewertungen und wird niemals
+            veröffentlicht.
+          </p>
+        </div>
+        <Label htmlFor="email">Email Adresse</Label>
         <Input
           id="email"
           type="email"
-          placeholder="deine@email.de"
+          placeholder="deine.email@krankenhaus.de"
           {...form.register("email")}
         />
       </div>
 
-      <div className="flex items-start gap-3">
-        <Controller
-          control={form.control}
-          name="acceptedTerms"
-          render={({ field }) => (
-            <Checkbox
-              id="acceptedTerms"
-              checked={field.value}
-              onChange={(e) => field.onChange(e.target.checked)}
-              className="mt-0.5"
-            />
-          )}
-        />
-        <label htmlFor="acceptedTerms" className="cursor-pointer text-sm font-medium leading-snug select-none">
-          Ich habe die{" "}
-          <Link href="/legal/terms" className="underline underline-offset-2 hover:opacity-70">
-            Nutzungsbedingungen
-          </Link>{" "}
-          gelesen und akzeptiert.{" "}
-          <span className="text-destructive">*</span>
-        </label>
+      {/* Terms */}
+      <div className="space-y-3 border-t border-border pt-6">
+        <div className="flex items-start gap-3">
+          <Controller
+            control={form.control}
+            name="acceptedTerms"
+            render={({ field }) => (
+              <Checkbox
+                id="acceptedTerms"
+                checked={field.value}
+                onChange={(e) => field.onChange(e.target.checked)}
+                className="mt-0.5 shrink-0"
+              />
+            )}
+          />
+          <label htmlFor="acceptedTerms" className="cursor-pointer text-sm leading-snug select-none">
+            Ich akzeptiere die{" "}
+            <Link href="/legal/terms" className="underline underline-offset-2 hover:opacity-70">
+              Nutzungsbedingungen
+            </Link>{" "}
+            und bestätige, dass meine Bewertung wahrheitsgemäß ist und den Inhaltsregeln
+            entspricht.{" "}
+            <span className="text-destructive">*</span>
+          </label>
+        </div>
+        <p className="text-xs text-muted-foreground">
+          Informationen zur Verarbeitung deiner Daten findest du in unserer{" "}
+          <Link href="/legal/privacy" className="underline underline-offset-2 hover:opacity-70">
+            Datenschutzerklärung
+          </Link>
+          .
+        </p>
       </div>
-
-      <Button
-        type="submit"
-        disabled
-        title="T19B"
-        className="w-full"
-      >
-        Bewertung abschicken
-      </Button>
     </fieldset>
   );
 }

@@ -4,65 +4,74 @@ import { Controller, type UseFormReturn } from "react-hook-form";
 
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Select } from "@/components/ui/select";
+import { Combobox } from "@/components/ui/combobox";
+import { BooleanCombobox } from "@/components/domains/submit/boolean-combobox";
 import type { ReviewFormState } from "@/lib/domains/submit/schema";
+
+const YEAR_AT_HOSPITAL_OPTIONS = Array.from({ length: 10 }, (_, i) => ({
+  value: String(i + 1),
+  label: `${i + 1}. Jahr`,
+}));
+
+const TRAINING_YEAR_OPTIONS = Array.from({ length: 8 }, (_, i) => ({
+  value: String(i + 1),
+  label: `${i + 1}. Jahr`,
+}));
 
 export function Step2Training({ form }: { form: UseFormReturn<ReviewFormState> }) {
   return (
     <fieldset className="space-y-6">
       <legend className="sr-only">Deine Weiterbildung</legend>
 
+      {/* Jahr an diesem Krankenhaus */}
       <div className="space-y-2">
-        <Label htmlFor="yearOfTraining">In welchem Weiterbildungsjahr befindest du dich?</Label>
-        <Controller
-          control={form.control}
-          name="yearOfTraining"
-          render={({ field }) => (
-            <Input
-              id="yearOfTraining"
-              type="number"
-              min={1}
-              max={8}
-              placeholder="z. B. 3"
-              value={field.value ?? ""}
-              onChange={(e) =>
-                field.onChange(e.target.value === "" ? null : parseInt(e.target.value, 10))
-              }
-            />
-          )}
-        />
-      </div>
-
-      <div className="space-y-2">
-        <Label htmlFor="yearAtHospital">Wie lange bist du schon an diesem Krankenhaus? (Jahre)</Label>
+        <Label htmlFor="yearAtHospital">Jahr an diesem Krankenhaus</Label>
         <Controller
           control={form.control}
           name="yearAtHospital"
           render={({ field }) => (
-            <Input
+            <Combobox
               id="yearAtHospital"
-              type="number"
-              min={0}
-              placeholder="z. B. 2"
-              value={field.value ?? ""}
-              onChange={(e) =>
-                field.onChange(e.target.value === "" ? null : parseInt(e.target.value, 10))
-              }
+              options={YEAR_AT_HOSPITAL_OPTIONS}
+              value={field.value ? String(field.value) : undefined}
+              onChange={(v) => field.onChange(v ? parseInt(v, 10) : null)}
+              placeholder="Wähle ein Jahr"
+              hideClearOption={false}
+              clearLabel="Keine Angabe"
+              triggerClassName="bg-background"
             />
           )}
         />
+        <p className="text-xs text-muted-foreground">
+          Wie lange hast du bisher schon an dem Krankenhaus gearbeitet? (inkl. angefangener Jahre)
+        </p>
       </div>
 
+      {/* Weiterbildungsjahr */}
       <div className="space-y-2">
-        <Label htmlFor="homeUniversity">Heimatuniversität</Label>
-        <Input
-          id="homeUniversity"
-          type="text"
-          placeholder="z. B. LMU München"
-          {...form.register("homeUniversity")}
+        <Label htmlFor="yearOfTraining">Weiterbildungsjahr</Label>
+        <Controller
+          control={form.control}
+          name="yearOfTraining"
+          render={({ field }) => (
+            <Combobox
+              id="yearOfTraining"
+              options={TRAINING_YEAR_OPTIONS}
+              value={field.value ? String(field.value) : undefined}
+              onChange={(v) => field.onChange(v ? parseInt(v, 10) : null)}
+              placeholder="Wähle ein Jahr"
+              hideClearOption={false}
+              clearLabel="Keine Angabe"
+              triggerClassName="bg-background"
+            />
+          )}
         />
+        <p className="text-xs text-muted-foreground">
+          In welchem Weiterbildungsjahr befindest du dich?
+        </p>
       </div>
 
+      {/* Krankenhaus gewechselt */}
       <div className="space-y-2">
         <Label htmlFor="trainingHospitalChanged">
           Hast du während deiner Weiterbildung das Krankenhaus gewechselt?
@@ -71,20 +80,28 @@ export function Step2Training({ form }: { form: UseFormReturn<ReviewFormState> }
           control={form.control}
           name="trainingHospitalChanged"
           render={({ field }) => (
-            <Select
+            <BooleanCombobox
               id="trainingHospitalChanged"
-              value={field.value === null ? "" : String(field.value)}
-              onChange={(e) => {
-                if (e.target.value === "") field.onChange(null);
-                else field.onChange(e.target.value === "true");
-              }}
-            >
-              <option value="">Keine Angabe</option>
-              <option value="true">Ja</option>
-              <option value="false">Nein</option>
-            </Select>
+              value={field.value}
+              onChange={field.onChange}
+              nullable
+            />
           )}
         />
+      </div>
+
+      {/* Heimatuniversität */}
+      <div className="space-y-2">
+        <Label htmlFor="homeUniversity">Heimatuniversität</Label>
+        <Input
+          id="homeUniversity"
+          type="text"
+          placeholder="z. B. Ludwig-Maximilians-Universität München"
+          {...form.register("homeUniversity")}
+        />
+        <p className="text-xs text-muted-foreground">
+          Optional: An welcher Universität hast du studiert?
+        </p>
       </div>
     </fieldset>
   );

@@ -78,20 +78,30 @@ export const FORM_STEPS: readonly StepConfig[] = [
 export const TOTAL_STEPS = FORM_STEPS.length;
 
 /**
+ * Per-step validators, built once at module load. `requiredFields` is static, so
+ * picking the sub-schema on every isStepComplete call (it runs for all steps on
+ * each sidebar render) would be wasteful. `null` = no required fields (always complete).
+ */
+const STEP_VALIDATORS = new Map(
+  FORM_STEPS.map((step) => {
+    if (step.requiredFields.length === 0) return [step.number, null] as const;
+    const mask = step.requiredFields.reduce<PickMask>(
+      (acc, k) => ({ ...acc, [k]: true }),
+      {},
+    );
+    return [step.number, reviewFormSchema.pick(mask)] as const;
+  }),
+);
+
+/**
  * Returns true when all of a step's required fields pass the reviewFormSchema sub-schema.
  * Completeness is determined by safeParse, not by ad-hoc type checks — so the schema
  * rules (z.literal(true) for acceptedTerms, non-nullable grades, z.string().email(), etc.)
  * are the single source of truth.
  */
 export function isStepComplete(stepNumber: number, data: ReviewFormState): boolean {
-  const step = FORM_STEPS.find((s) => s.number === stepNumber);
-  if (!step) return false;
-  if (step.requiredFields.length === 0) return true;
-
-  const mask = step.requiredFields.reduce<PickMask>(
-    (acc, k) => ({ ...acc, [k]: true }),
-    {},
-  );
-
-  return reviewFormSchema.pick(mask).safeParse(data).success;
+  if (!STEP_VALIDATORS.has(stepNumber)) return false; // unknown step
+  const validator = STEP_VALIDATORS.get(stepNumber);
+  if (!validator) return true; // no required fields
+  return validator.safeParse(data).success;
 }

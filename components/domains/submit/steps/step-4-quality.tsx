@@ -2,8 +2,8 @@
 
 import { Controller, type UseFormReturn } from "react-hook-form";
 
-import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Combobox } from "@/components/ui/combobox";
 import { PillMultiSelect } from "@/components/domains/submit/pill-multi-select";
 import {
   TRAINING_QUALITY_OPTIONS,
@@ -11,6 +11,11 @@ import {
   WORK_ATMOSPHERE_OPTIONS,
 } from "@/lib/domains/form-options/review-field-options";
 import type { ReviewFormState } from "@/lib/domains/submit/schema";
+
+const AVG_TRAINING_YEARS_OPTIONS = Array.from({ length: 15 }, (_, i) => ({
+  value: String(i + 1),
+  label: `${i + 1} Jahr${i + 1 > 1 ? "e" : ""}`,
+}));
 
 export function Step4Quality({ form }: { form: UseFormReturn<ReviewFormState> }) {
   return (
@@ -49,22 +54,21 @@ export function Step4Quality({ form }: { form: UseFormReturn<ReviewFormState> })
 
       <div className="space-y-2">
         <Label htmlFor="averageTrainingTimeYears">
-          Durchschnittliche Weiterbildungsdauer in Jahren
+          Durchschnittliche Dauer bis zum Erhalt des Facharztes in Jahren
         </Label>
         <Controller
           control={form.control}
           name="averageTrainingTimeYears"
           render={({ field }) => (
-            <Input
+            <Combobox
               id="averageTrainingTimeYears"
-              type="number"
-              min={1}
-              max={20}
-              placeholder="z. B. 5"
-              value={field.value ?? ""}
-              onChange={(e) =>
-                field.onChange(e.target.value === "" ? null : parseInt(e.target.value, 10))
-              }
+              options={AVG_TRAINING_YEARS_OPTIONS}
+              value={field.value ? String(field.value) : undefined}
+              onChange={(v) => field.onChange(v ? parseInt(v, 10) : null)}
+              placeholder="Wähle ein Jahr"
+              hideClearOption={false}
+              clearLabel="Keine Angabe"
+              triggerClassName="bg-background"
             />
           )}
         />
