@@ -4,6 +4,7 @@ import { Controller, type UseFormReturn } from "react-hook-form";
 
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { BooleanCombobox } from "@/components/domains/submit/boolean-combobox";
 import { PillMultiSelect } from "@/components/domains/submit/pill-multi-select";
 import {
   ROTATION_OPTIONS,
@@ -78,19 +79,12 @@ export function Step3Rotations({ form }: { form: UseFormReturn<ReviewFormState> 
               control={form.control}
               name="surgery.surgeryComplexProcedures"
               render={({ field }) => (
-                <select
+                <BooleanCombobox
                   id="surgeryComplexProcedures"
-                  className={SELECT_CLASS}
-                  value={field.value === null ? "" : String(field.value)}
-                  onChange={(e) => {
-                    if (e.target.value === "") field.onChange(false);
-                    else field.onChange(e.target.value === "true");
-                  }}
-                >
-                  <option value="">Keine Angabe</option>
-                  <option value="true">Ja</option>
-                  <option value="false">Nein</option>
-                </select>
+                  value={field.value}
+                  onChange={(v) => field.onChange(v ?? false)}
+                  nullable={false}
+                />
               )}
             />
           </div>
@@ -135,19 +129,12 @@ export function Step3Rotations({ form }: { form: UseFormReturn<ReviewFormState> 
               control={form.control}
               name="diagnostics.ownExecution"
               render={({ field }) => (
-                <select
+                <BooleanCombobox
                   id="diagnosticsOwnExecution"
-                  className={SELECT_CLASS}
-                  value={field.value === null ? "" : String(field.value)}
-                  onChange={(e) => {
-                    if (e.target.value === "") field.onChange(false);
-                    else field.onChange(e.target.value === "true");
-                  }}
-                >
-                  <option value="">Keine Angabe</option>
-                  <option value="true">Ja</option>
-                  <option value="false">Nein</option>
-                </select>
+                  value={field.value}
+                  onChange={(v) => field.onChange(v ?? false)}
+                  nullable={false}
+                />
               )}
             />
           </div>

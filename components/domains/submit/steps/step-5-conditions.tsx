@@ -4,6 +4,7 @@ import { Controller, type UseFormReturn } from "react-hook-form";
 
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { BooleanCombobox } from "@/components/domains/submit/boolean-combobox";
 import { OVERTIME_COMPENSATION_OPTIONS } from "@/lib/domains/form-options/review-field-options";
 import type { ReviewFormState } from "@/lib/domains/submit/schema";
 
@@ -77,21 +78,20 @@ export function Step5Conditions({ form }: { form: UseFormReturn<ReviewFormState>
         />
       </div>
 
-      <div className="flex items-center gap-3">
+      <div className="space-y-2">
+        <Label htmlFor="correctOvertimeLogging">Werden Überstunden korrekt erfasst?</Label>
         <Controller
           control={form.control}
           name="correctOvertimeLogging"
           render={({ field }) => (
-            <input
+            <BooleanCombobox
               id="correctOvertimeLogging"
-              type="checkbox"
-              checked={field.value}
-              onChange={(e) => field.onChange(e.target.checked)}
-              className="h-4 w-4 rounded border-input accent-[#0a0a0a]"
+              value={field.value}
+              onChange={(v) => field.onChange(v ?? false)}
+              nullable={false}
             />
           )}
         />
-        <Label htmlFor="correctOvertimeLogging">Werden Überstunden korrekt erfasst?</Label>
       </div>
 
       <div className="space-y-2">

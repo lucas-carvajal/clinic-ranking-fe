@@ -64,7 +64,14 @@ export function SubmitSidebar({ currentStep, visitedSteps, formValues, onStepSel
                     step.number
                   )}
                 </span>
-                <span className="flex-1 text-left">{step.label}</span>
+                <span className="flex-1 text-left">
+                  {step.label}
+                  {hasBeenVisited && !isComplete && !isActive && (
+                    <span className="block text-xs font-normal text-amber-700">
+                      Fehlende Pflichtfelder
+                    </span>
+                  )}
+                </span>
               </button>
             </li>
           );
