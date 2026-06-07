@@ -37,7 +37,9 @@ export function Step1Hospital({ form }: { form: UseFormReturn<ReviewFormState> }
   const specialtyOptions = toOptions(specialtiesQuery.data?.data ?? []);
 
   const cityDisabled = !stateValue || isCustomState;
-  const hospitalDisabled = !stateValue || isCustomState;
+  // Hospitals are only queryable for a concrete state + (optional) city, so the
+  // list is unavailable when the state or city is custom/free-typed.
+  const hospitalDisabled = !stateValue || isCustomState || isCustomCity;
 
   return (
     <fieldset className="space-y-6">
@@ -74,12 +76,12 @@ export function Step1Hospital({ form }: { form: UseFormReturn<ReviewFormState> }
                   }}
                   onCustomToggle={(isCustom) => {
                     customField.onChange(isCustom);
-                    if (isCustom) {
-                      form.setValue("city", "");
-                      form.setValue("isCustomCity", false);
-                      form.setValue("hospital", "");
-                      form.setValue("isCustomHospital", false);
-                    }
+                    // A custom (free-typed) state has no queryable cities or
+                    // hospitals, so cascade both into custom mode and clear them.
+                    form.setValue("city", "");
+                    form.setValue("hospital", "");
+                    form.setValue("isCustomCity", isCustom);
+                    form.setValue("isCustomHospital", isCustom);
                   }}
                 />
               )}
@@ -118,10 +120,10 @@ export function Step1Hospital({ form }: { form: UseFormReturn<ReviewFormState> }
                   }}
                   onCustomToggle={(isCustom) => {
                     customField.onChange(isCustom);
-                    if (isCustom) {
-                      form.setValue("hospital", "");
-                      form.setValue("isCustomHospital", false);
-                    }
+                    // A custom (free-typed) city has no queryable hospitals,
+                    // so cascade the hospital into custom mode and clear it.
+                    form.setValue("hospital", "");
+                    form.setValue("isCustomHospital", isCustom);
                   }}
                 />
               )}

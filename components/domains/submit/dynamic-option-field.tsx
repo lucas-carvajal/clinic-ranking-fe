@@ -30,6 +30,7 @@ export function DynamicOptionField({
   value,
   isCustom,
   isLoading,
+  isError,
   placeholder,
   searchPlaceholder,
   freeTextPlaceholder,
@@ -68,24 +69,32 @@ export function DynamicOptionField({
   }
 
   return (
-    <Combobox
-      id={id}
-      options={allOptions}
-      value={value || undefined}
-      onChange={(v) => {
-        if (v === CUSTOM_OPTION_VALUE) {
-          onCustomToggle(true);
-          onChange("");
-        } else {
-          onCustomToggle(false);
-          onChange(v ?? "");
-        }
-      }}
-      placeholder={isLoading ? "Laden…" : placeholder}
-      searchPlaceholder={searchPlaceholder}
-      disabled={isLoading || disabled}
-      hideClearOption={false}
-      triggerClassName="bg-background"
-    />
+    <>
+      <Combobox
+        id={id}
+        options={allOptions}
+        value={value || undefined}
+        onChange={(v) => {
+          if (v === CUSTOM_OPTION_VALUE) {
+            onCustomToggle(true);
+            onChange("");
+          } else {
+            onCustomToggle(false);
+            onChange(v ?? "");
+          }
+        }}
+        placeholder={isLoading ? "Laden…" : placeholder}
+        searchPlaceholder={searchPlaceholder}
+        disabled={isLoading || disabled}
+        hideClearOption={false}
+        triggerClassName="bg-background"
+      />
+      {isError && (
+        <p className="mt-1 text-xs text-destructive">
+          Optionen konnten nicht geladen werden. Wähle „{customOptionLabel}“, um
+          den Wert manuell einzugeben.
+        </p>
+      )}
+    </>
   );
 }
