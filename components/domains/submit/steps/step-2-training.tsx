@@ -1,6 +1,5 @@
 "use client";
 
-import { useMemo } from "react";
 import { Controller, type UseFormReturn } from "react-hook-form";
 
 import { Input } from "@/components/ui/input";
@@ -20,9 +19,6 @@ const TRAINING_YEAR_OPTIONS = Array.from({ length: 8 }, (_, i) => ({
 }));
 
 export function Step2Training({ form }: { form: UseFormReturn<ReviewFormState> }) {
-  const yearAtHospitalOptions = useMemo(() => YEAR_AT_HOSPITAL_OPTIONS, []);
-  const trainingYearOptions = useMemo(() => TRAINING_YEAR_OPTIONS, []);
-
   return (
     <fieldset className="space-y-6">
       <legend className="sr-only">Deine Weiterbildung</legend>
@@ -36,7 +32,7 @@ export function Step2Training({ form }: { form: UseFormReturn<ReviewFormState> }
           render={({ field }) => (
             <Combobox
               id="yearAtHospital"
-              options={yearAtHospitalOptions}
+              options={YEAR_AT_HOSPITAL_OPTIONS}
               value={field.value ? String(field.value) : undefined}
               onChange={(v) => field.onChange(v ? parseInt(v, 10) : null)}
               placeholder="Wähle ein Jahr"
@@ -60,7 +56,7 @@ export function Step2Training({ form }: { form: UseFormReturn<ReviewFormState> }
           render={({ field }) => (
             <Combobox
               id="yearOfTraining"
-              options={trainingYearOptions}
+              options={TRAINING_YEAR_OPTIONS}
               value={field.value ? String(field.value) : undefined}
               onChange={(v) => field.onChange(v ? parseInt(v, 10) : null)}
               placeholder="Wähle ein Jahr"

@@ -1,5 +1,6 @@
 "use client";
 
+import type { ComponentProps } from "react";
 import { Controller, type UseFormReturn } from "react-hook-form";
 
 import { Label } from "@/components/ui/label";
@@ -17,6 +18,52 @@ function toOptions(items: { name: string }[]): ComboboxOption[] {
   return items.map((item) => ({ value: item.name, label: item.name }));
 }
 
+type StringField = "state" | "city" | "hospital" | "specialty";
+type CustomFlag =
+  | "isCustomState"
+  | "isCustomCity"
+  | "isCustomHospital"
+  | "isCustomSpecialty";
+
+type DynamicFieldProps = Omit<
+  ComponentProps<typeof DynamicOptionField>,
+  "value" | "isCustom" | "onChange" | "onCustomToggle"
+> & {
+  form: UseFormReturn<ReviewFormState>;
+  name: StringField;
+  customName: CustomFlag;
+  /**
+   * Extra cascade to run after the custom flag flips. Note the Combobox also
+   * fires onCustomToggle(false) on every concrete selection and on clear, so
+   * this is the single place to reset dependent fields — onChange only ever
+   * sets the value (which keeps free-text typing from re-triggering cascades).
+   */
+  onCascade?: (isCustom: boolean) => void;
+};
+
+/** Binds a single string field + its `isCustom*` flag to a DynamicOptionField. */
+function DynamicField({ form, name, customName, onCascade, ...rest }: DynamicFieldProps) {
+  const isCustom = form.watch(customName);
+  return (
+    <Controller
+      control={form.control}
+      name={name}
+      render={({ field }) => (
+        <DynamicOptionField
+          {...rest}
+          value={field.value}
+          isCustom={isCustom}
+          onChange={(v) => field.onChange(v)}
+          onCustomToggle={(custom) => {
+            form.setValue(customName, custom);
+            onCascade?.(custom);
+          }}
+        />
+      )}
+    />
+  );
+}
+
 export function Step1Hospital({ form }: { form: UseFormReturn<ReviewFormState> }) {
   const stateValue = form.watch("state");
   const cityValue = form.watch("city");
@@ -31,11 +78,6 @@ export function Step1Hospital({ form }: { form: UseFormReturn<ReviewFormState> }
   });
   const specialtiesQuery = useSpecialties();
 
-  const stateOptions = toOptions(statesQuery.data?.data ?? []);
-  const cityOptions = toOptions(citiesQuery.data?.data ?? []);
-  const hospitalOptions = toOptions(hospitalsQuery.data?.data ?? []);
-  const specialtyOptions = toOptions(specialtiesQuery.data?.data ?? []);
-
   const cityDisabled = !stateValue || isCustomState;
   // Hospitals are only queryable for a concrete state + (optional) city, so the
   // list is unavailable when the state or city is custom/free-typed.
@@ -48,158 +90,87 @@ export function Step1Hospital({ form }: { form: UseFormReturn<ReviewFormState> }
       {/* Bundesland */}
       <div className="space-y-2">
         <Label htmlFor="state">Bundesland</Label>
-        <Controller
-          control={form.control}
+        <DynamicField
+          form={form}
           name="state"
-          render={({ field }) => (
-            <Controller
-              control={form.control}
-              name="isCustomState"
-              render={({ field: customField }) => (
-                <DynamicOptionField
-                  id="state"
-                  options={stateOptions}
-                  value={field.value}
-                  isCustom={customField.value}
-                  isLoading={statesQuery.isLoading}
-                  isError={statesQuery.isError}
-                  placeholder="Bundesland wählen…"
-                  searchPlaceholder="Bundesland suchen…"
-                  freeTextPlaceholder="Bundesland eingeben…"
-                  customOptionLabel="ANDERES BUNDESLAND…"
-                  onChange={(v) => {
-                    field.onChange(v);
-                    form.setValue("city", "");
-                    form.setValue("isCustomCity", false);
-                    form.setValue("hospital", "");
-                    form.setValue("isCustomHospital", false);
-                  }}
-                  onCustomToggle={(isCustom) => {
-                    customField.onChange(isCustom);
-                    // A custom (free-typed) state has no queryable cities or
-                    // hospitals, so cascade both into custom mode and clear them.
-                    form.setValue("city", "");
-                    form.setValue("hospital", "");
-                    form.setValue("isCustomCity", isCustom);
-                    form.setValue("isCustomHospital", isCustom);
-                  }}
-                />
-              )}
-            />
-          )}
+          customName="isCustomState"
+          id="state"
+          options={toOptions(statesQuery.data?.data ?? [])}
+          isLoading={statesQuery.isLoading}
+          isError={statesQuery.isError}
+          placeholder="Bundesland wählen…"
+          searchPlaceholder="Bundesland suchen…"
+          freeTextPlaceholder="Bundesland eingeben…"
+          customOptionLabel="ANDERES BUNDESLAND…"
+          onCascade={(isCustom) => {
+            // A free-typed state has no queryable cities/hospitals, so cascade
+            // both into custom mode; a concrete state resets them to list mode.
+            form.setValue("city", "");
+            form.setValue("hospital", "");
+            form.setValue("isCustomCity", isCustom);
+            form.setValue("isCustomHospital", isCustom);
+          }}
         />
       </div>
 
       {/* Stadt */}
       <div className="space-y-2">
         <Label htmlFor="city">Stadt</Label>
-        <Controller
-          control={form.control}
+        <DynamicField
+          form={form}
           name="city"
-          render={({ field }) => (
-            <Controller
-              control={form.control}
-              name="isCustomCity"
-              render={({ field: customField }) => (
-                <DynamicOptionField
-                  id="city"
-                  options={cityOptions}
-                  value={field.value}
-                  isCustom={customField.value}
-                  isLoading={citiesQuery.isLoading}
-                  isError={citiesQuery.isError}
-                  placeholder="Stadt wählen…"
-                  searchPlaceholder="Stadt suchen…"
-                  freeTextPlaceholder="Stadt eingeben…"
-                  customOptionLabel="ANDERE STADT…"
-                  disabled={cityDisabled}
-                  onChange={(v) => {
-                    field.onChange(v);
-                    form.setValue("hospital", "");
-                    form.setValue("isCustomHospital", false);
-                  }}
-                  onCustomToggle={(isCustom) => {
-                    customField.onChange(isCustom);
-                    // A custom (free-typed) city has no queryable hospitals,
-                    // so cascade the hospital into custom mode and clear it.
-                    form.setValue("hospital", "");
-                    form.setValue("isCustomHospital", isCustom);
-                  }}
-                />
-              )}
-            />
-          )}
+          customName="isCustomCity"
+          id="city"
+          options={toOptions(citiesQuery.data?.data ?? [])}
+          isLoading={citiesQuery.isLoading}
+          isError={citiesQuery.isError}
+          placeholder="Stadt wählen…"
+          searchPlaceholder="Stadt suchen…"
+          freeTextPlaceholder="Stadt eingeben…"
+          customOptionLabel="ANDERE STADT…"
+          disabled={cityDisabled}
+          onCascade={(isCustom) => {
+            // A free-typed city has no queryable hospitals → cascade the hospital.
+            form.setValue("hospital", "");
+            form.setValue("isCustomHospital", isCustom);
+          }}
         />
       </div>
 
       {/* Krankenhaus */}
       <div className="space-y-2">
         <Label htmlFor="hospital">Krankenhaus</Label>
-        <Controller
-          control={form.control}
+        <DynamicField
+          form={form}
           name="hospital"
-          render={({ field }) => (
-            <Controller
-              control={form.control}
-              name="isCustomHospital"
-              render={({ field: customField }) => (
-                <DynamicOptionField
-                  id="hospital"
-                  options={hospitalOptions}
-                  value={field.value}
-                  isCustom={customField.value}
-                  isLoading={hospitalsQuery.isLoading}
-                  isError={hospitalsQuery.isError}
-                  placeholder="Krankenhaus wählen…"
-                  searchPlaceholder="Krankenhaus suchen…"
-                  freeTextPlaceholder="Krankenhaus eingeben…"
-                  customOptionLabel="ANDERES KRANKENHAUS…"
-                  disabled={hospitalDisabled}
-                  onChange={(v) => {
-                    field.onChange(v);
-                  }}
-                  onCustomToggle={(isCustom) => {
-                    customField.onChange(isCustom);
-                  }}
-                />
-              )}
-            />
-          )}
+          customName="isCustomHospital"
+          id="hospital"
+          options={toOptions(hospitalsQuery.data?.data ?? [])}
+          isLoading={hospitalsQuery.isLoading}
+          isError={hospitalsQuery.isError}
+          placeholder="Krankenhaus wählen…"
+          searchPlaceholder="Krankenhaus suchen…"
+          freeTextPlaceholder="Krankenhaus eingeben…"
+          customOptionLabel="ANDERES KRANKENHAUS…"
+          disabled={hospitalDisabled}
         />
       </div>
 
       {/* Fachrichtung */}
       <div className="space-y-2">
         <Label htmlFor="specialty">Fachrichtung</Label>
-        <Controller
-          control={form.control}
+        <DynamicField
+          form={form}
           name="specialty"
-          render={({ field }) => (
-            <Controller
-              control={form.control}
-              name="isCustomSpecialty"
-              render={({ field: customField }) => (
-                <DynamicOptionField
-                  id="specialty"
-                  options={specialtyOptions}
-                  value={field.value}
-                  isCustom={customField.value}
-                  isLoading={specialtiesQuery.isLoading}
-                  isError={specialtiesQuery.isError}
-                  placeholder="Fachrichtung wählen…"
-                  searchPlaceholder="Fachrichtung suchen…"
-                  freeTextPlaceholder="Fachrichtung eingeben…"
-                  customOptionLabel="ANDERE FACHRICHTUNG…"
-                  onChange={(v) => {
-                    field.onChange(v);
-                  }}
-                  onCustomToggle={(isCustom) => {
-                    customField.onChange(isCustom);
-                  }}
-                />
-              )}
-            />
-          )}
+          customName="isCustomSpecialty"
+          id="specialty"
+          options={toOptions(specialtiesQuery.data?.data ?? [])}
+          isLoading={specialtiesQuery.isLoading}
+          isError={specialtiesQuery.isError}
+          placeholder="Fachrichtung wählen…"
+          searchPlaceholder="Fachrichtung suchen…"
+          freeTextPlaceholder="Fachrichtung eingeben…"
+          customOptionLabel="ANDERE FACHRICHTUNG…"
         />
       </div>
     </fieldset>

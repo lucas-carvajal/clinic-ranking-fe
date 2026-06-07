@@ -1,6 +1,5 @@
 "use client";
 
-import { useMemo } from "react";
 import { Controller, type UseFormReturn } from "react-hook-form";
 
 import { Label } from "@/components/ui/label";
@@ -19,8 +18,6 @@ const AVG_TRAINING_YEARS_OPTIONS = Array.from({ length: 15 }, (_, i) => ({
 }));
 
 export function Step4Quality({ form }: { form: UseFormReturn<ReviewFormState> }) {
-  const avgTrainingYearsOptions = useMemo(() => AVG_TRAINING_YEARS_OPTIONS, []);
-
   return (
     <fieldset className="space-y-6">
       <legend className="sr-only">Weiterbildungsqualität</legend>
@@ -65,7 +62,7 @@ export function Step4Quality({ form }: { form: UseFormReturn<ReviewFormState> })
           render={({ field }) => (
             <Combobox
               id="averageTrainingTimeYears"
-              options={avgTrainingYearsOptions}
+              options={AVG_TRAINING_YEARS_OPTIONS}
               value={field.value ? String(field.value) : undefined}
               onChange={(v) => field.onChange(v ? parseInt(v, 10) : null)}
               placeholder="Wähle ein Jahr"

@@ -1,13 +1,11 @@
 "use client";
 
-import { useMemo } from "react";
-
 import { Combobox } from "@/components/ui/combobox";
 
 const BOOLEAN_OPTIONS = [
   { value: "true", label: "Ja" },
   { value: "false", label: "Nein" },
-] as const;
+];
 
 type Props = {
   id?: string;
@@ -25,12 +23,10 @@ export function BooleanCombobox({
   placeholder = "Ja oder Nein?",
   nullable = true,
 }: Props) {
-  const options = useMemo(() => [...BOOLEAN_OPTIONS], []);
-
   return (
     <Combobox
       id={id}
-      options={options}
+      options={BOOLEAN_OPTIONS}
       value={value === null ? undefined : String(value)}
       onChange={(v) => {
         if (v === undefined) onChange(null);

@@ -1,6 +1,5 @@
 "use client";
 
-import { useMemo } from "react";
 import { Controller, type UseFormReturn } from "react-hook-form";
 
 import { Input } from "@/components/ui/input";
@@ -20,7 +19,6 @@ const PERCENTAGE_OPTIONS = Array.from({ length: 21 }, (_, i) => ({
 }));
 
 export function Step3Rotations({ form }: { form: UseFormReturn<ReviewFormState> }) {
-  const percentageOptions = useMemo(() => PERCENTAGE_OPTIONS, []);
   const rotationsValue = form.watch("rotations");
   const showOtherRotations = rotationsValue.includes("misc");
   const isSurgerySelected = rotationsValue.includes("surgery");
@@ -103,7 +101,7 @@ export function Step3Rotations({ form }: { form: UseFormReturn<ReviewFormState> 
               render={({ field }) => (
                 <Combobox
                   id="surgeryTimePercentage"
-                  options={percentageOptions}
+                  options={PERCENTAGE_OPTIONS}
                   value={field.value === null ? undefined : String(field.value)}
                   onChange={(v) => field.onChange(v === undefined ? null : Number(v))}
                   placeholder="Keine Angabe"
@@ -147,7 +145,7 @@ export function Step3Rotations({ form }: { form: UseFormReturn<ReviewFormState> 
               render={({ field }) => (
                 <Combobox
                   id="diagnosticsTimePercentage"
-                  options={percentageOptions}
+                  options={PERCENTAGE_OPTIONS}
                   value={field.value === null ? undefined : String(field.value)}
                   onChange={(v) => field.onChange(v === undefined ? null : Number(v))}
                   placeholder="Keine Angabe"
