@@ -7,9 +7,9 @@ import {
 } from "@/lib/domains/form-options";
 
 describe("display label helpers", () => {
-  it("falls back to raw values when absent from options", () => {
+  it("capitalizes unknown values when absent from options", () => {
     expect(labelFor(ROTATION_OPTIONS, "generalWard")).toBe("Normalstation");
-    expect(labelFor(ROTATION_OPTIONS, "unknownEnum")).toBe("unknownEnum");
+    expect(labelFor(ROTATION_OPTIONS, "unknownEnum")).toBe("UnknownEnum");
   });
 
   it("maps arrays in stable order", () => {

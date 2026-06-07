@@ -51,8 +51,8 @@ Route groups in parentheses do not affect URLs. Top-level layout (`app/layout.ts
 wraps all pages with the global footer (`SiteFooter`). Public marketing content
 lives under `app/(public)/` (for example the home page at `/`). Legal pages under
 `/legal/*` use a nested layout that adds the public app header (`AppSiteHeader`).
-Authenticated user-facing features under `/app/*` use `app/(authed)/app/` and
-share the same header. Admin tooling lives under `app/(admin)/admin/` with a
+Public user-facing features under `/app/*` live at `app/app/` and share the same
+header. Admin tooling lives under `app/(admin)/admin/` with a
 protected layout that adds the admin sidebar (`AdminSidebar`).
 
 ## UI Components
