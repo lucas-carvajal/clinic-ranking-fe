@@ -39,6 +39,7 @@ export function BooleanCombobox({
       placeholder={placeholder}
       hideClearOption={!nullable}
       clearLabel="Keine Angabe"
+      triggerClassName="bg-background"
     />
   );
 }

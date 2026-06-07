@@ -42,6 +42,7 @@ export function Step2Training({ form }: { form: UseFormReturn<ReviewFormState> }
               placeholder="Wähle ein Jahr"
               hideClearOption={false}
               clearLabel="Keine Angabe"
+              triggerClassName="bg-background"
             />
           )}
         />
@@ -65,6 +66,7 @@ export function Step2Training({ form }: { form: UseFormReturn<ReviewFormState> }
               placeholder="Wähle ein Jahr"
               hideClearOption={false}
               clearLabel="Keine Angabe"
+              triggerClassName="bg-background"
             />
           )}
         />

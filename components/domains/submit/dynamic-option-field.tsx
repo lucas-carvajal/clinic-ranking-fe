@@ -85,6 +85,7 @@ export function DynamicOptionField({
       searchPlaceholder={searchPlaceholder}
       disabled={isLoading || disabled}
       hideClearOption={false}
+      triggerClassName="bg-background"
     />
   );
 }
