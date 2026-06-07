@@ -9,6 +9,7 @@ export const metadata: Metadata = {
   title: "Feedback",
   description:
     "Feedback zum Produkt oder zum Bewertungsprozess — wir freuen uns über deine Hinweise.",
+  alternates: { canonical: "/app/feedback" },
 };
 
 type AppFeedbackPageProps = {

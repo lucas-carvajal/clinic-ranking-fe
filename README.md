@@ -77,7 +77,7 @@ cp .env.example .env
 |----------|----------|---------|
 | **`BACKEND_URL`** | **Yes** (for real API/admin) | Base URL of the Go backend. Used by `app/api/proxy/[...path]`, server-side fetch helpers, `proxy.ts` admin `/admin/me` checks, and actions such as feedback submit. Example: `http://localhost:8080`. |
 | **`SESSION_COOKIE_NAME`** | No — defaults to `admin_auth_token` | **Must exactly match** the session cookie name in backend `Set-Cookie` after login. Used by `proxy.ts`, `requireAdminUser()`, and logout cookie clearing. See [Admin Session Cookie Contract](#admin-session-cookie-contract) below. |
-| **`SITE_URL`** | Recommended locally | Public origin of this Next app (e.g. `http://localhost:3000`). Documented for future sitemap/robots/canonical work; set it to your dev URL so it is ready when those features read this variable. |
+| **`SITE_URL`** | **Yes** (required for `next build`) | Public origin of this Next app (e.g. `http://localhost:3000` in dev, `https://assistenz-arzt-ranking.de` in prod). Used by `robots.ts`, `sitemap.ts`, and `metadataBase` for canonical URLs. |
 | **`NEXT_PUBLIC_CLOUDFLARE_ANALYTICS_TOKEN`** | No | Optional public token. Not wired in application code yet; leave empty. |
 | **`NODE_ENV`** | Automatic | Set by Next.js (`development` / `production`). Do not put in `.env` unless you know you need an override. |
 

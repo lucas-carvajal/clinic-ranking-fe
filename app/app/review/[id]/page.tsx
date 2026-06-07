@@ -16,7 +16,14 @@ export async function generateMetadata({
   if (result.status !== "ok") {
     return { title: "Bewertung" };
   }
-  return { title: `${result.review.hospital} · Bewertung` };
+
+  const { hospital, city, state, specialty, totalGrade } = result.review;
+
+  return {
+    title: `${hospital} · Bewertung`,
+    description: `Bewertung für ${hospital} (${city}, ${state}) — Fachrichtung ${specialty}, Gesamtnote ${totalGrade}.`,
+    alternates: { canonical: `/app/review/${id}` },
+  };
 }
 
 function ReviewDetailError({
