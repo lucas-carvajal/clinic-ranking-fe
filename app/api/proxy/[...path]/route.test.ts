@@ -5,6 +5,7 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import {
   GET,
   POST,
+  isAllowedProxyPath,
   sanitizeSetCookieHeaders,
   stripDomainFromSetCookie,
 } from "@/app/api/proxy/[...path]/route";
@@ -37,7 +38,7 @@ describe("proxy route handler", () => {
     ) as typeof fetch;
 
     const request = new NextRequest(
-      "http://localhost:3000/api/proxy/reviews/search?state=Bayern",
+      "http://localhost:3000/api/proxy/admin/feedback?page=2",
       {
         method: "POST",
         headers: {
@@ -49,7 +50,7 @@ describe("proxy route handler", () => {
     );
 
     const response = await POST(request, {
-      params: Promise.resolve({ path: ["reviews", "search"] }),
+      params: Promise.resolve({ path: ["admin", "feedback"] }),
     });
 
     expect(response.status).toBe(201);
@@ -59,10 +60,44 @@ describe("proxy route handler", () => {
       URL,
       RequestInit,
     ];
-    expect(url.toString()).toBe("http://backend.internal:8080/reviews/search?state=Bayern");
+    expect(url.toString()).toBe("http://backend.internal:8080/admin/feedback?page=2");
     expect(options.method).toBe("POST");
     expect((options.headers as Headers).get("cookie")).toContain("session=abc");
     expect(options.body).toBeTruthy();
+  });
+
+  it("rejects paths outside the allowlist with 404 and never contacts the backend", async () => {
+    process.env.BACKEND_URL = "http://backend.internal:8080";
+    global.fetch = vi.fn() as typeof fetch;
+
+    const request = new NextRequest("http://localhost:3000/api/proxy/metrics");
+    const response = await GET(request, {
+      params: Promise.resolve({ path: ["metrics"] }),
+    });
+    const payload = await response.json();
+
+    expect(response.status).toBe(404);
+    expect(payload).toMatchObject({
+      status: 404,
+      code: "PROXY_PATH_NOT_ALLOWED",
+    });
+    expect(global.fetch).not.toHaveBeenCalled();
+  });
+
+  it("matches allowlist prefixes on segment boundaries only", () => {
+    expect(isAllowedProxyPath("/auth/login")).toBe(true);
+    expect(isAllowedProxyPath("/reviews")).toBe(true);
+    expect(isAllowedProxyPath("/review")).toBe(true);
+    expect(isAllowedProxyPath("/admin/feedback")).toBe(true);
+    expect(isAllowedProxyPath("/types/states")).toBe(true);
+
+    expect(isAllowedProxyPath("/auth/register")).toBe(false);
+    expect(isAllowedProxyPath("/reviews/search")).toBe(false);
+    expect(isAllowedProxyPath("/administrator/me")).toBe(false);
+    expect(isAllowedProxyPath("/admin")).toBe(false);
+    expect(isAllowedProxyPath("/types")).toBe(false);
+    expect(isAllowedProxyPath("/health")).toBe(false);
+    expect(isAllowedProxyPath("/debug/pprof")).toBe(false);
   });
 
   it("returns explicit error when BACKEND_URL is missing", async () => {

@@ -39,7 +39,9 @@ This document explains how admin authentication works in this repository end-to-
 ## Two proxies: do not confuse them
 
 - root `proxy.ts`: route gate for admin navigation/auth checks
-- `app/api/proxy/[...path]/route.ts`: API proxy route for browser API calls
+- `app/api/proxy/[...path]/route.ts`: API proxy route for browser API calls — forwards only an
+  explicit allowlist of backend paths (`isAllowedProxyPath`) and rejects everything else with
+  404, since it relays cookies and must not expose unintended backend routes to the internet
 
 `requireAdminUser()` and the root `proxy.ts` use `BACKEND_URL` directly for auth checks.
 They do not call `/api/proxy/admin/me`.

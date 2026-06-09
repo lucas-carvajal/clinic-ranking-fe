@@ -71,6 +71,8 @@ Public user-facing features under `/app/*` live at `app/app/` (not inside a rout
 
 Browser API calls go through `app/api/proxy/[...path]` to the Go backend (`BACKEND_URL`). Server components and actions use `lib/api/server.ts` directly.
 
+The proxy only forwards an explicit allowlist of backend paths (`/auth/login`, `/reviews`, `/review`, `/admin/*`, `/types/*` — see `isAllowedProxyPath` in `app/api/proxy/[...path]/route.ts`); anything else returns 404 without contacting the backend. When a client-side feature starts calling a new backend route, add it to the allowlist (server-side calls via `lib/api/server.ts` are unaffected).
+
 ## SEO
 
 - **`SITE_URL`** — public origin used by `lib/site-url.ts`, `app/robots.ts`, `app/sitemap.ts`, and root `metadataBase` for canonical URLs.
