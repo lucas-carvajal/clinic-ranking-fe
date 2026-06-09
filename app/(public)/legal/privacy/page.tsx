@@ -4,6 +4,8 @@ import { LegalPageShell } from "@/components/legal/legal-page-shell";
 
 export const metadata: Metadata = {
   title: "Datenschutzerklärung",
+  description: "Datenschutzerklärung des Assistenz Arzt Ranking.",
+  alternates: { canonical: "/legal/privacy" },
 };
 
 export default function LegalPrivacyPage() {

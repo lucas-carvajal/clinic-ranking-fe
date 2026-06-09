@@ -4,6 +4,8 @@ import { LegalPageShell } from "@/components/legal/legal-page-shell";
 
 export const metadata: Metadata = {
   title: "AGB",
+  description: "Allgemeine Geschäftsbedingungen für die Nutzung des Assistenz Arzt Ranking.",
+  alternates: { canonical: "/legal/terms" },
 };
 
 export default function LegalTermsPage() {

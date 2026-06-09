@@ -4,6 +4,8 @@ import { LegalPageShell } from "@/components/legal/legal-page-shell";
 
 export const metadata: Metadata = {
   title: "Impressum",
+  description: "Impressum und Anbieterkennzeichnung des Assistenz Arzt Ranking.",
+  alternates: { canonical: "/legal/imprint" },
 };
 
 export default function LegalImprintPage() {

@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { ConditionalFooter } from "@/components/layout/conditional-footer";
 import { QueryProvider } from "@/components/providers/QueryProvider";
+import { getSiteUrl } from "@/lib/site-url";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -15,11 +16,13 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL(getSiteUrl()),
   title: {
     default: "Assistenz Arzt Ranking",
     template: "%s | Assistenz Arzt Ranking",
   },
-  description: "Clinic Ranking Next.js rewrite scaffold.",
+  description:
+    "Ärzte helfen Ärzten: Bewertungen und Erfahrungsberichte zur Facharztweiterbildung in deutschen Krankenhäusern.",
 };
 
 export default function RootLayout({
