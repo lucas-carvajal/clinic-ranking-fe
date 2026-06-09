@@ -1,6 +1,6 @@
 # Clinic Ranking FE
 
-Next.js App Router frontend for [Assistenz Arzt Ranking](https://assistenz-arzt-ranking.de) — a rewrite of the legacy Svelte app with shared Go backend.
+Next.js App Router frontend for [Assistenz Arzt Ranking](https://assistenz-arzt-ranking.de) — the clinic ranking website, backed by a Go backend.
 
 ## Local Setup
 
