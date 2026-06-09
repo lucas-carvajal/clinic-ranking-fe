@@ -10,6 +10,23 @@ type UpstreamHeaders = Headers & {
 
 type ProxyHandler = (request: NextRequest, context: RouteContext) => Promise<Response>;
 
+/**
+ * Only backend paths the browser actually consumes may pass through the proxy.
+ * Everything else (health/metrics/debug endpoints, internal APIs, future backend
+ * routes) is rejected with 404 so the proxy does not widen the backend's attack
+ * surface — it forwards cookies, so an open proxy would also relay admin sessions.
+ * Add new entries here when a client-side feature starts calling a new backend route.
+ */
+const ALLOWED_EXACT_PATHS = new Set(["/auth/login", "/reviews", "/review"]);
+const ALLOWED_PATH_PREFIXES = ["/admin/", "/types/"];
+
+export function isAllowedProxyPath(path: string): boolean {
+  return (
+    ALLOWED_EXACT_PATHS.has(path) ||
+    ALLOWED_PATH_PREFIXES.some((prefix) => path.startsWith(prefix))
+  );
+}
+
 export function stripDomainFromSetCookie(cookie: string): string {
   return cookie
     .split(";")
@@ -60,6 +77,15 @@ async function getPathFromContext(context: RouteContext): Promise<string[]> {
 }
 
 async function proxy(request: NextRequest, context: RouteContext): Promise<Response> {
+  const pathSegments = await getPathFromContext(context);
+  if (!isAllowedProxyPath(`/${pathSegments.join("/")}`)) {
+    return normalizeProxyError(
+      404,
+      "PROXY_PATH_NOT_ALLOWED",
+      "The requested path is not exposed through the API proxy.",
+    );
+  }
+
   const backendUrl = process.env.BACKEND_URL;
   if (!backendUrl) {
     return normalizeProxyError(
@@ -69,7 +95,6 @@ async function proxy(request: NextRequest, context: RouteContext): Promise<Respo
     );
   }
 
-  const pathSegments = await getPathFromContext(context);
   const targetUrl = new URL(
     `/${pathSegments.map((segment) => encodeURIComponent(segment)).join("/")}${
       request.nextUrl.search
