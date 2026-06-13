@@ -67,7 +67,7 @@ function GradeCell({ label, value }: { label: string; value: number | null | und
 }
 
 function trainingYearLabel(value: number | null | undefined): string {
-  if (value === null || value === undefined) return "—";
+  if (value === null || value === undefined || value === -1) return "—";
   if (value === 99) return "Fertig";
   return String(value);
 }
@@ -135,7 +135,7 @@ export function ReviewDetailView({
               label="Weiterbildungsjahr"
               value={trainingYearLabel(review.yearOfTraining)}
             />
-            <DetailField label="Jahr am Krankenhaus" value={review.yearAtHospital ?? "—"} />
+            <DetailField label="Jahr am Krankenhaus" value={review.yearAtHospital === -1 ? "—" : review.yearAtHospital} />
             <DetailField
               label="Weiterempfehlung"
               value={
@@ -177,16 +177,18 @@ export function ReviewDetailView({
             </div>
           ) : null}
 
-          {review.surgeryRoles.length > 0 ? (
+          {review.rotations.includes("surgery") ? (
             <>
-              <div>
-                <p className="text-muted-foreground mb-2 text-sm">Rollen im OP</p>
-                <div className="flex flex-wrap gap-2">
-                  {surgeryRoleLabels.map((label) => (
-                    <DetailChip key={label}>{label}</DetailChip>
-                  ))}
+              {surgeryRoleLabels.length > 0 ? (
+                <div>
+                  <p className="text-muted-foreground mb-2 text-sm">Rollen im OP</p>
+                  <div className="flex flex-wrap gap-2">
+                    {surgeryRoleLabels.map((label) => (
+                      <DetailChip key={label}>{label}</DetailChip>
+                    ))}
+                  </div>
                 </div>
-              </div>
+              ) : null}
               <div className="grid grid-cols-2 gap-x-4 gap-y-3 md:grid-cols-4">
                 <div>
                   <p className="text-muted-foreground text-sm">Komplexe Eingriffe</p>
@@ -194,22 +196,28 @@ export function ReviewDetailView({
                 </div>
                 <div>
                   <p className="text-muted-foreground text-sm">Anteil OP-Zeit</p>
-                  <p className="text-base font-medium">{review.surgeryTimePercentage}%</p>
+                  <p className="text-base font-medium">
+                    {review.surgeryTimePercentage === -1 ? "—" : `${review.surgeryTimePercentage}%`}
+                  </p>
                 </div>
               </div>
             </>
           ) : null}
 
-          <div className="grid grid-cols-2 gap-x-4 gap-y-3 md:grid-cols-4">
-            <div>
-              <p className="text-muted-foreground text-sm">Eigenständige Diagnostik</p>
-              <YesNo value={review.ownDiagnosticsExecution} />
+          {review.rotations.includes("functionaldiagnostics") ? (
+            <div className="grid grid-cols-2 gap-x-4 gap-y-3 md:grid-cols-4">
+              <div>
+                <p className="text-muted-foreground text-sm">Eigenständige Diagnostik</p>
+                <YesNo value={review.ownDiagnosticsExecution} />
+              </div>
+              <div>
+                <p className="text-muted-foreground text-sm">Anteil Diagnostik-Zeit</p>
+                <p className="text-base font-medium">
+                  {review.diagnosticsTimePercentage === -1 ? "—" : `${review.diagnosticsTimePercentage}%`}
+                </p>
+              </div>
             </div>
-            <div>
-              <p className="text-muted-foreground text-sm">Anteil Diagnostik-Zeit</p>
-              <p className="text-base font-medium">{review.diagnosticsTimePercentage}%</p>
-            </div>
-          </div>
+          ) : null}
 
         </div>
       </SectionCard>
@@ -250,10 +258,10 @@ export function ReviewDetailView({
           <hr className="border-border" />
 
           <div className="grid grid-cols-2 gap-x-4 gap-y-3 md:grid-cols-3">
-            <DetailStat label="Weiterbildungsdauer" value={`${review.averageTrainingTimeYears} Jahre`} />
-            <DetailStat label="Vertragsstunden/Woche" value={`${review.contractualHours}h`} />
-            <DetailStat label="Tatsächliche Stunden" value={`${review.weeklyHours}h`} />
-            <DetailStat label="Dienste/Monat" value={String(review.onCallShiftsPerMonth)} />
+            <DetailStat label="Weiterbildungsdauer" value={review.averageTrainingTimeYears === -1 ? "—" : `${review.averageTrainingTimeYears} Jahre`} />
+            <DetailStat label="Vertragsstunden/Woche" value={review.contractualHours === -1 ? "—" : `${review.contractualHours}h`} />
+            <DetailStat label="Tatsächliche Stunden" value={review.weeklyHours === -1 ? "—" : `${review.weeklyHours}h`} />
+            <DetailStat label="Dienste/Monat" value={review.onCallShiftsPerMonth === -1 ? "—" : String(review.onCallShiftsPerMonth)} />
             {overtimeLabel ? (
               <div>
                 <p className="text-muted-foreground text-sm">Überstundenausgleich</p>
