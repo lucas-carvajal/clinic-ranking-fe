@@ -23,6 +23,16 @@ export const metadata: Metadata = {
   },
   description:
     "Ärzte helfen Ärzten: Bewertungen und Erfahrungsberichte zur Facharztweiterbildung in deutschen Krankenhäusern.",
+  openGraph: {
+    siteName: "Assistenz Arzt Ranking",
+    locale: "de_DE",
+    type: "website",
+    images: [{ url: "/opengraph-image.png", width: 1200, height: 630 }],
+  },
+  twitter: {
+    card: "summary_large_image",
+    images: ["/opengraph-image.png"],
+  },
 };
 
 export default function RootLayout({

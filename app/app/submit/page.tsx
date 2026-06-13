@@ -7,6 +7,18 @@ export const metadata: Metadata = {
   description:
     "Teile deine Erfahrungen aus der Facharztweiterbildung in wenigen Schritten und hilf anderen Ärzten bei der Wahl des richtigen Krankenhauses.",
   alternates: { canonical: "/app/submit" },
+  openGraph: {
+    title: "Bewertung abgeben | Assistenz Arzt Ranking",
+    description:
+      "Teile deine Erfahrungen aus der Facharztweiterbildung in wenigen Schritten und hilf anderen Ärzten bei der Wahl des richtigen Krankenhauses.",
+    url: "/app/submit",
+    type: "website",
+  },
+  twitter: {
+    title: "Bewertung abgeben | Assistenz Arzt Ranking",
+    description:
+      "Teile deine Erfahrungen aus der Facharztweiterbildung in wenigen Schritten und hilf anderen Ärzten bei der Wahl des richtigen Krankenhauses.",
+  },
 };
 
 export default function AppSubmitPage() {

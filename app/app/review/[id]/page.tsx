@@ -14,15 +14,31 @@ export async function generateMetadata({
   const { id } = await params;
   const result = await fetchReviewDetail(id);
   if (result.status !== "ok") {
-    return { title: "Bewertung" };
+    return {
+      title: "Bewertung",
+      openGraph: { title: "Bewertung | Assistenz Arzt Ranking", type: "article" },
+      twitter: { title: "Bewertung | Assistenz Arzt Ranking" },
+    };
   }
 
   const { hospital, city, state, specialty, totalGrade } = result.review;
+  const title = `${hospital} · Bewertung`;
+  const description = `Bewertung für ${hospital} (${city}, ${state}) — Fachrichtung ${specialty}, Gesamtnote ${totalGrade}.`;
 
   return {
-    title: `${hospital} · Bewertung`,
-    description: `Bewertung für ${hospital} (${city}, ${state}) — Fachrichtung ${specialty}, Gesamtnote ${totalGrade}.`,
+    title,
+    description,
     alternates: { canonical: `/app/review/${id}` },
+    openGraph: {
+      title: `${title} | Assistenz Arzt Ranking`,
+      description,
+      url: `/app/review/${id}`,
+      type: "article",
+    },
+    twitter: {
+      title: `${title} | Assistenz Arzt Ranking`,
+      description,
+    },
   };
 }
 
@@ -56,7 +72,36 @@ export default async function AppReviewDetailPage({ params }: AppReviewDetailPag
   const result = await fetchReviewDetail(id);
 
   if (result.status === "ok") {
-    return <ReviewDetailView review={result.review} />;
+    const { hospital, city, state, totalGrade } = result.review;
+    const jsonLd = {
+      "@context": "https://schema.org",
+      "@type": "Review",
+      itemReviewed: {
+        "@type": "Hospital",
+        name: hospital,
+        address: {
+          "@type": "PostalAddress",
+          addressLocality: city,
+          addressRegion: state,
+        },
+      },
+      reviewRating: {
+        "@type": "Rating",
+        ratingValue: totalGrade,
+        bestRating: 1,
+        worstRating: 6,
+      },
+      publisher: { "@type": "Organization", name: "Assistenz Arzt Ranking" },
+    };
+    return (
+      <>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        />
+        <ReviewDetailView review={result.review} />
+      </>
+    );
   }
 
   if (result.status === "not_found") {
