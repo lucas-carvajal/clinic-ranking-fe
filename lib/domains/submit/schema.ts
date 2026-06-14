@@ -21,8 +21,10 @@ export const reviewFormSchema = z.object({
   isCustomSpecialty: z.boolean(),
 
   // Step 2: Training Info
-  yearOfTraining: z.number().int().nullable(),
-  yearAtHospital: z.number().int().nullable(),
+  // .min(0) so real input can never collide with the -1 "unknown" sentinel the
+  // mapper emits for blank fields. (99 = "graduated" is still allowed.)
+  yearOfTraining: z.number().int().min(0).nullable(),
+  yearAtHospital: z.number().int().min(0).nullable(),
   homeUniversity: z.string(),
   // null = not yet answered; false/true = real answer — z.boolean() so null fails required-pick
   trainingHospitalChanged: z.boolean().nullable(),
@@ -44,15 +46,16 @@ export const reviewFormSchema = z.object({
   // Step 4: Training Quality
   trainingQuality: z.array(trainingQualitySchema),
   workStructure: z.array(workStructureSchema),
-  averageTrainingTimeYears: z.number().int().nullable(),
+  averageTrainingTimeYears: z.number().int().min(0).nullable(),
   workAtmosphere: z.array(workAtmosphereSchema),
 
   // Step 5: Working Conditions
-  weeklyHours: z.number().int().nullable(),
-  contractualHours: z.number().int().nullable(),
+  // .min(0) guards the -1 "unknown" sentinel (see Step 2 note).
+  weeklyHours: z.number().int().min(0).nullable(),
+  contractualHours: z.number().int().min(0).nullable(),
   overtimeCompensationType: z.string(),
   correctOvertimeLogging: z.boolean(),
-  onCallShiftsPerMonth: z.number().int().nullable(),
+  onCallShiftsPerMonth: z.number().int().min(0).nullable(),
 
   // Step 6: Grades
   // Intentionally non-nullable even though ReviewFormState holds `number | null`.

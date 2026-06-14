@@ -7,8 +7,12 @@ import type { ReviewFormState } from "./schema";
  * Responsibilities:
  * - Flattens nested surgery/diagnostics objects.
  * - Renames ownExecution → ownDiagnosticsExecution.
- * - Zeros out surgery/diagnostics fields when the corresponding rotation is absent.
- * - Converts null numerics to the Go int zero value (0).
+ * - Sets surgery/diagnostics fields to the "unknown" sentinel (-1) when the
+ *   corresponding rotation is absent.
+ * - Converts null numerics to the backend "unknown" sentinel (-1). The backend
+ *   uses -1 (not 0) for "not provided" because 0 is a legitimate value for
+ *   fields like onCallShiftsPerMonth and the OP/diagnostics time percentages.
+ *   Grades are the exception: null → 0, which the contract's min(1) rejects.
  * - Converts null booleans to false (Go bool zero value).
  * - Converts publishAtDate "YYYY-MM-DD" → RFC-3339 UTC timestamp; null → null.
  * - Converts empty overtimeCompensationType → null (Go *string omitempty).
@@ -29,9 +33,9 @@ export function toReviewApiPayload(form: ReviewFormState): ReviewSubmit {
     isCustomHospital: form.isCustomHospital,
     isCustomSpecialty: form.isCustomSpecialty,
 
-    // Step 2 — null ints default to Go zero value 0
-    yearOfTraining: form.yearOfTraining ?? 0,
-    yearAtHospital: form.yearAtHospital ?? 0,
+    // Step 2 — null ints default to the "unknown" sentinel (-1)
+    yearOfTraining: form.yearOfTraining ?? -1,
+    yearAtHospital: form.yearAtHospital ?? -1,
     homeUniversity: form.homeUniversity,
     trainingHospitalChanged: form.trainingHospitalChanged ?? false,
 
@@ -43,25 +47,26 @@ export function toReviewApiPayload(form: ReviewFormState): ReviewSubmit {
     otherRotations: form.rotations.includes("misc") ? form.otherRotations : "",
     surgeryRoles: (surgerySelected ? form.surgery.surgeryRoles : []) as ReviewSubmit["surgeryRoles"],
     surgeryComplexProcedures: surgerySelected ? form.surgery.surgeryComplexProcedures : false,
-    surgeryTimePercentage: surgerySelected ? (form.surgery.surgeryTimePercentage ?? 0) : 0,
+    // -1 ("unknown") when surgery wasn't selected, or selected but left blank
+    surgeryTimePercentage: surgerySelected ? (form.surgery.surgeryTimePercentage ?? -1) : -1,
     ownDiagnosticsExecution: diagnosticsSelected ? form.diagnostics.ownExecution : false,
     diagnosticsTimePercentage: diagnosticsSelected
-      ? (form.diagnostics.diagnosticsTimePercentage ?? 0)
-      : 0,
+      ? (form.diagnostics.diagnosticsTimePercentage ?? -1)
+      : -1,
 
     // Step 4
     trainingQuality: form.trainingQuality as ReviewSubmit["trainingQuality"],
     workStructure: form.workStructure as ReviewSubmit["workStructure"],
-    averageTrainingTimeYears: form.averageTrainingTimeYears ?? 0,
+    averageTrainingTimeYears: form.averageTrainingTimeYears ?? -1,
     workAtmosphere: form.workAtmosphere as ReviewSubmit["workAtmosphere"],
 
     // Step 5
-    weeklyHours: form.weeklyHours ?? 0,
-    contractualHours: form.contractualHours ?? 0,
+    weeklyHours: form.weeklyHours ?? -1,
+    contractualHours: form.contractualHours ?? -1,
     // empty string → null so Go *string omitempty works correctly
     overtimeCompensationType: form.overtimeCompensationType || null,
     correctOvertimeLogging: form.correctOvertimeLogging,
-    onCallShiftsPerMonth: form.onCallShiftsPerMonth ?? 0,
+    onCallShiftsPerMonth: form.onCallShiftsPerMonth ?? -1,
 
     // Step 6 — null grades map to 0; reviewSubmitSchema min(1) will catch this
     gradeTheoreticalKnowledge: form.gradeTheoreticalKnowledge ?? 0,
