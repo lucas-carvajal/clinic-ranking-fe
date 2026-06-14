@@ -7,6 +7,18 @@ export const metadata: Metadata = {
   description:
     "Das Assistenz Arzt Ranking: Finde das richtige Krankenhaus für deine Facharztweiterbildung und teile deine Erfahrungen mit anderen Ärzten.",
   alternates: { canonical: "/" },
+  openGraph: {
+    title: "Assistenz Arzt Ranking",
+    description:
+      "Ärzte helfen Ärzten: Finde das richtige Krankenhaus für deine Facharztweiterbildung.",
+    url: "/",
+    type: "website",
+  },
+  twitter: {
+    title: "Assistenz Arzt Ranking",
+    description:
+      "Ärzte helfen Ärzten: Finde das richtige Krankenhaus für deine Facharztweiterbildung.",
+  },
 };
 
 /** Layout only — colors come from `Button variant="brand"` (see docs/design-philosophy.md). */
