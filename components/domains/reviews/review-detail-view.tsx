@@ -67,9 +67,19 @@ function GradeCell({ label, value }: { label: string; value: number | null | und
 }
 
 function trainingYearLabel(value: number | null | undefined): string {
-  if (value === null || value === undefined) return "—";
+  if (value === null || value === undefined || value === -1) return "—";
   if (value === 99) return "Fertig";
   return String(value);
+}
+
+/**
+ * Numeric counterpart to {@link displayText}: the backend uses `-1` as the
+ * "unknown / not provided" sentinel for numeric fields. Render that (and any
+ * missing value) as an em dash; otherwise append the optional unit suffix.
+ */
+function displayNumber(value: number | null | undefined, suffix = ""): string {
+  if (value === null || value === undefined || value === -1) return "—";
+  return `${value}${suffix}`;
 }
 
 export function ReviewDetailView({
@@ -135,7 +145,7 @@ export function ReviewDetailView({
               label="Weiterbildungsjahr"
               value={trainingYearLabel(review.yearOfTraining)}
             />
-            <DetailField label="Jahr am Krankenhaus" value={review.yearAtHospital ?? "—"} />
+            <DetailField label="Jahr am Krankenhaus" value={displayNumber(review.yearAtHospital)} />
             <DetailField
               label="Weiterempfehlung"
               value={
@@ -177,16 +187,18 @@ export function ReviewDetailView({
             </div>
           ) : null}
 
-          {review.surgeryRoles.length > 0 ? (
+          {review.rotations.includes("surgery") ? (
             <>
-              <div>
-                <p className="text-muted-foreground mb-2 text-sm">Rollen im OP</p>
-                <div className="flex flex-wrap gap-2">
-                  {surgeryRoleLabels.map((label) => (
-                    <DetailChip key={label}>{label}</DetailChip>
-                  ))}
+              {surgeryRoleLabels.length > 0 ? (
+                <div>
+                  <p className="text-muted-foreground mb-2 text-sm">Rollen im OP</p>
+                  <div className="flex flex-wrap gap-2">
+                    {surgeryRoleLabels.map((label) => (
+                      <DetailChip key={label}>{label}</DetailChip>
+                    ))}
+                  </div>
                 </div>
-              </div>
+              ) : null}
               <div className="grid grid-cols-2 gap-x-4 gap-y-3 md:grid-cols-4">
                 <div>
                   <p className="text-muted-foreground text-sm">Komplexe Eingriffe</p>
@@ -194,22 +206,28 @@ export function ReviewDetailView({
                 </div>
                 <div>
                   <p className="text-muted-foreground text-sm">Anteil OP-Zeit</p>
-                  <p className="text-base font-medium">{review.surgeryTimePercentage}%</p>
+                  <p className="text-base font-medium">
+                    {displayNumber(review.surgeryTimePercentage, "%")}
+                  </p>
                 </div>
               </div>
             </>
           ) : null}
 
-          <div className="grid grid-cols-2 gap-x-4 gap-y-3 md:grid-cols-4">
-            <div>
-              <p className="text-muted-foreground text-sm">Eigenständige Diagnostik</p>
-              <YesNo value={review.ownDiagnosticsExecution} />
+          {review.rotations.includes("functionaldiagnostics") ? (
+            <div className="grid grid-cols-2 gap-x-4 gap-y-3 md:grid-cols-4">
+              <div>
+                <p className="text-muted-foreground text-sm">Eigenständige Diagnostik</p>
+                <YesNo value={review.ownDiagnosticsExecution} />
+              </div>
+              <div>
+                <p className="text-muted-foreground text-sm">Anteil Diagnostik-Zeit</p>
+                <p className="text-base font-medium">
+                  {displayNumber(review.diagnosticsTimePercentage, "%")}
+                </p>
+              </div>
             </div>
-            <div>
-              <p className="text-muted-foreground text-sm">Anteil Diagnostik-Zeit</p>
-              <p className="text-base font-medium">{review.diagnosticsTimePercentage}%</p>
-            </div>
-          </div>
+          ) : null}
 
         </div>
       </SectionCard>
@@ -250,10 +268,10 @@ export function ReviewDetailView({
           <hr className="border-border" />
 
           <div className="grid grid-cols-2 gap-x-4 gap-y-3 md:grid-cols-3">
-            <DetailStat label="Weiterbildungsdauer" value={`${review.averageTrainingTimeYears} Jahre`} />
-            <DetailStat label="Vertragsstunden/Woche" value={`${review.contractualHours}h`} />
-            <DetailStat label="Tatsächliche Stunden" value={`${review.weeklyHours}h`} />
-            <DetailStat label="Dienste/Monat" value={String(review.onCallShiftsPerMonth)} />
+            <DetailStat label="Weiterbildungsdauer" value={displayNumber(review.averageTrainingTimeYears, " Jahre")} />
+            <DetailStat label="Vertragsstunden/Woche" value={displayNumber(review.contractualHours, "h")} />
+            <DetailStat label="Tatsächliche Stunden" value={displayNumber(review.weeklyHours, "h")} />
+            <DetailStat label="Dienste/Monat" value={displayNumber(review.onCallShiftsPerMonth)} />
             {overtimeLabel ? (
               <div>
                 <p className="text-muted-foreground text-sm">Überstundenausgleich</p>

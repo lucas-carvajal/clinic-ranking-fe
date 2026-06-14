@@ -46,7 +46,7 @@ describe("toReviewApiPayload — isCustom* fields", () => {
 });
 
 describe("toReviewApiPayload — surgery section", () => {
-  it("zeroes surgery fields when surgery rotation is not selected", () => {
+  it("clears surgery fields (percentage → -1) when surgery rotation is not selected", () => {
     const payload = toReviewApiPayload(
       baseForm({
         rotations: ["generalWard"],
@@ -59,7 +59,7 @@ describe("toReviewApiPayload — surgery section", () => {
     );
     expect(payload.surgeryRoles).toEqual([]);
     expect(payload.surgeryComplexProcedures).toBe(false);
-    expect(payload.surgeryTimePercentage).toBe(0);
+    expect(payload.surgeryTimePercentage).toBe(-1);
   });
 
   it("preserves surgery fields when surgery rotation is selected", () => {
@@ -78,7 +78,7 @@ describe("toReviewApiPayload — surgery section", () => {
     expect(payload.surgeryTimePercentage).toBe(30);
   });
 
-  it("defaults null surgeryTimePercentage to 0 when surgery is selected", () => {
+  it("defaults null surgeryTimePercentage to -1 when surgery is selected", () => {
     const payload = toReviewApiPayload(
       baseForm({
         rotations: ["surgery"],
@@ -89,12 +89,26 @@ describe("toReviewApiPayload — surgery section", () => {
         },
       }),
     );
+    expect(payload.surgeryTimePercentage).toBe(-1);
+  });
+
+  it("preserves a legitimate 0% surgeryTimePercentage (not the -1 sentinel)", () => {
+    const payload = toReviewApiPayload(
+      baseForm({
+        rotations: ["surgery"],
+        surgery: {
+          surgeryRoles: ["firstAssist"],
+          surgeryComplexProcedures: false,
+          surgeryTimePercentage: 0,
+        },
+      }),
+    );
     expect(payload.surgeryTimePercentage).toBe(0);
   });
 });
 
 describe("toReviewApiPayload — diagnostics section", () => {
-  it("zeroes diagnostics fields when functionaldiagnostics rotation is not selected", () => {
+  it("clears diagnostics fields (percentage → -1) when functionaldiagnostics rotation is not selected", () => {
     const payload = toReviewApiPayload(
       baseForm({
         rotations: ["generalWard"],
@@ -102,7 +116,7 @@ describe("toReviewApiPayload — diagnostics section", () => {
       }),
     );
     expect(payload.ownDiagnosticsExecution).toBe(false);
-    expect(payload.diagnosticsTimePercentage).toBe(0);
+    expect(payload.diagnosticsTimePercentage).toBe(-1);
   });
 
   it("preserves diagnostics fields when functionaldiagnostics is selected", () => {
@@ -177,12 +191,29 @@ describe("toReviewApiPayload — acceptedTerms dropped", () => {
 });
 
 describe("toReviewApiPayload — null numeric defaults", () => {
-  it("maps null yearOfTraining to 0", () => {
-    expect(toReviewApiPayload(baseForm({ yearOfTraining: null })).yearOfTraining).toBe(0);
+  it("maps unknown (null) numerics to the -1 sentinel", () => {
+    const payload = toReviewApiPayload(
+      baseForm({
+        yearOfTraining: null,
+        yearAtHospital: null,
+        averageTrainingTimeYears: null,
+        weeklyHours: null,
+        contractualHours: null,
+        onCallShiftsPerMonth: null,
+      }),
+    );
+    expect(payload.yearOfTraining).toBe(-1);
+    expect(payload.yearAtHospital).toBe(-1);
+    expect(payload.averageTrainingTimeYears).toBe(-1);
+    expect(payload.weeklyHours).toBe(-1);
+    expect(payload.contractualHours).toBe(-1);
+    expect(payload.onCallShiftsPerMonth).toBe(-1);
   });
 
-  it("maps null weeklyHours to 0", () => {
-    expect(toReviewApiPayload(baseForm({ weeklyHours: null })).weeklyHours).toBe(0);
+  it("preserves a legitimate 0 (e.g. zero on-call shifts) instead of the -1 sentinel", () => {
+    expect(
+      toReviewApiPayload(baseForm({ onCallShiftsPerMonth: 0 })).onCallShiftsPerMonth,
+    ).toBe(0);
   });
 
   it("maps null grade to 0 (caught by contract validation min:1)", () => {
