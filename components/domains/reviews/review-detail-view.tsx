@@ -72,6 +72,16 @@ function trainingYearLabel(value: number | null | undefined): string {
   return String(value);
 }
 
+/**
+ * Numeric counterpart to {@link displayText}: the backend uses `-1` as the
+ * "unknown / not provided" sentinel for numeric fields. Render that (and any
+ * missing value) as an em dash; otherwise append the optional unit suffix.
+ */
+function displayNumber(value: number | null | undefined, suffix = ""): string {
+  if (value === null || value === undefined || value === -1) return "—";
+  return `${value}${suffix}`;
+}
+
 export function ReviewDetailView({
   review,
   listHref = "/app/reviews",
@@ -135,7 +145,7 @@ export function ReviewDetailView({
               label="Weiterbildungsjahr"
               value={trainingYearLabel(review.yearOfTraining)}
             />
-            <DetailField label="Jahr am Krankenhaus" value={review.yearAtHospital === -1 ? "—" : review.yearAtHospital} />
+            <DetailField label="Jahr am Krankenhaus" value={displayNumber(review.yearAtHospital)} />
             <DetailField
               label="Weiterempfehlung"
               value={
@@ -197,7 +207,7 @@ export function ReviewDetailView({
                 <div>
                   <p className="text-muted-foreground text-sm">Anteil OP-Zeit</p>
                   <p className="text-base font-medium">
-                    {review.surgeryTimePercentage === -1 ? "—" : `${review.surgeryTimePercentage}%`}
+                    {displayNumber(review.surgeryTimePercentage, "%")}
                   </p>
                 </div>
               </div>
@@ -213,7 +223,7 @@ export function ReviewDetailView({
               <div>
                 <p className="text-muted-foreground text-sm">Anteil Diagnostik-Zeit</p>
                 <p className="text-base font-medium">
-                  {review.diagnosticsTimePercentage === -1 ? "—" : `${review.diagnosticsTimePercentage}%`}
+                  {displayNumber(review.diagnosticsTimePercentage, "%")}
                 </p>
               </div>
             </div>
@@ -258,10 +268,10 @@ export function ReviewDetailView({
           <hr className="border-border" />
 
           <div className="grid grid-cols-2 gap-x-4 gap-y-3 md:grid-cols-3">
-            <DetailStat label="Weiterbildungsdauer" value={review.averageTrainingTimeYears === -1 ? "—" : `${review.averageTrainingTimeYears} Jahre`} />
-            <DetailStat label="Vertragsstunden/Woche" value={review.contractualHours === -1 ? "—" : `${review.contractualHours}h`} />
-            <DetailStat label="Tatsächliche Stunden" value={review.weeklyHours === -1 ? "—" : `${review.weeklyHours}h`} />
-            <DetailStat label="Dienste/Monat" value={review.onCallShiftsPerMonth === -1 ? "—" : String(review.onCallShiftsPerMonth)} />
+            <DetailStat label="Weiterbildungsdauer" value={displayNumber(review.averageTrainingTimeYears, " Jahre")} />
+            <DetailStat label="Vertragsstunden/Woche" value={displayNumber(review.contractualHours, "h")} />
+            <DetailStat label="Tatsächliche Stunden" value={displayNumber(review.weeklyHours, "h")} />
+            <DetailStat label="Dienste/Monat" value={displayNumber(review.onCallShiftsPerMonth)} />
             {overtimeLabel ? (
               <div>
                 <p className="text-muted-foreground text-sm">Überstundenausgleich</p>
