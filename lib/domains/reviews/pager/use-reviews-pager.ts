@@ -22,12 +22,13 @@ function serializeFiltersKey(filters: ReviewsFilterParams): string {
   });
 }
 
-function parsePageFromUrl(sp: URLSearchParams): number {
+function parsePageFromUrl(sp: URLSearchParams): { page: number; wasInvalid: boolean } {
   const raw = sp.get("page");
-  if (!raw) return 1;
+  if (!raw) return { page: 1, wasInvalid: false };
   const n = Number(raw);
-  if (!Number.isFinite(n) || !Number.isInteger(n) || n < 1) return 1;
-  return n;
+  if (!Number.isFinite(n) || !Number.isInteger(n) || n < 1)
+    return { page: 1, wasInvalid: true };
+  return { page: n, wasInvalid: false };
 }
 
 function buildReviewsUrl(filters: ReviewsFilterParams, page: number): string {
@@ -65,7 +66,10 @@ export function useReviewsPager(filters: ReviewsFilterParams) {
   const queryClient = useQueryClient();
 
   const filtersKey = useMemo(() => serializeFiltersKey(filters), [filters]);
-  const requestedPage = useMemo(() => parsePageFromUrl(searchParams), [searchParams]);
+  const { page: requestedPage, wasInvalid: pageParamWasInvalid } = useMemo(
+    () => parsePageFromUrl(searchParams),
+    [searchParams],
+  );
 
   // Reset cursor list when filters change.
   useLayoutEffect(() => {
@@ -82,13 +86,13 @@ export function useReviewsPager(filters: ReviewsFilterParams) {
     : 1;
   const currentPage = reachablePage;
 
-  // If the URL page param is unreachable (cold load, manual edit), fix the URL.
+  // If the URL page param is unreachable or invalid (cold load, manual edit), fix the URL.
   useLayoutEffect(() => {
     if (!filtersAligned) return;
-    if (requestedPage !== currentPage) {
+    if (requestedPage !== currentPage || pageParamWasInvalid) {
       router.replace(buildReviewsUrl(filters, currentPage), { scroll: false });
     }
-  }, [filtersAligned, requestedPage, currentPage, filters, router]);
+  }, [filtersAligned, requestedPage, currentPage, pageParamWasInvalid, filters, router]);
 
   // Cursor for the current page (null = first page, no cursor).
   const currentCursor = filtersAligned
