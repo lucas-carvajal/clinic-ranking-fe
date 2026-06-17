@@ -32,9 +32,10 @@ export function ReviewsPageClient() {
   const { normalized, didCoerce } = useMemo(() => {
     const raw = parseReviewsUrlParams(new URLSearchParams(urlKey));
     // The new pager owns the `page` query param; strip any stray `cursor` from URL too.
+    const hadStrayCursor = !!raw.cursor;
     delete raw.cursor;
     const coerced = coerceReviewsParamsFromUrl(raw);
-    return { normalized: coerced.params, didCoerce: coerced.didCoerce };
+    return { normalized: coerced.params, didCoerce: coerced.didCoerce || hadStrayCursor };
   }, [urlKey]);
 
   // The filter object is used as a stable identity for filters only.
