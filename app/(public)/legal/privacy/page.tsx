@@ -30,7 +30,21 @@ export default function LegalPrivacyPage() {
       </section>
 
       <section>
-        <h2>3. Ihre Rechte</h2>
+        <h2>3. Hosting</h2>
+        <p>
+          Die Website und die dort gespeicherten personenbezogenen Daten
+          (insbesondere Bewertungen und E-Mail-Adressen zur Verifizierung)
+          werden bei einem Hosting-Anbieter als Auftragsverarbeiter (Art. 28
+          DSGVO) verarbeitet. Die Anwendung und die Datenspeicher liegen in der
+          EU, in Amsterdam (Niederlande). Für den Betrieb der Plattform werden
+          personenbezogene Daten auch in ein Drittland übermittelt. Das ist
+          durch die Standardvertragsklauseln der EU-Kommission abgesichert.
+          Eine Kopie der Klauseln stellen wir auf Anfrage zur Verfügung.
+        </p>
+      </section>
+
+      <section>
+        <h2>4. Ihre Rechte</h2>
         <p>
           Sie haben jederzeit das Recht, unentgeltlich Auskunft über Herkunft,
           Empfänger und Zweck Ihrer gespeicherten personenbezogenen Daten zu
@@ -40,7 +54,7 @@ export default function LegalPrivacyPage() {
       </section>
 
       <section>
-        <h2>4. Cookies</h2>
+        <h2>5. Cookies</h2>
         <p>
           Diese Website verwendet Cookies. Cookies sind kleine Textdateien, die
           auf Ihrem Rechner abgelegt werden und die Ihr Browser speichern. Sie
@@ -49,7 +63,7 @@ export default function LegalPrivacyPage() {
       </section>
 
       <section>
-        <h2>5. Kontakt</h2>
+        <h2>6. Kontakt</h2>
         <p>
           Bei Fragen zum Datenschutz können Sie sich jederzeit an uns wenden.
         </p>
