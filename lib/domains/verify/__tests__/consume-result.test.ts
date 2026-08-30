@@ -15,6 +15,14 @@ describe("consumeVerificationResultFromError", () => {
     },
   );
 
+  it("maps a code in the error message field to dead_link", () => {
+    expect(
+      consumeVerificationResultFromError(
+        new ApiError({ status: 400, code: "PROXY_ERROR", message: "expired" }),
+      ),
+    ).toEqual({ kind: "dead_link" });
+  });
+
   it("maps other API errors to failed without inventing success", () => {
     expect(
       consumeVerificationResultFromError(
