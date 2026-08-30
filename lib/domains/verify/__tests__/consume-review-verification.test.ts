@@ -31,7 +31,7 @@ describe("consumeReviewVerification", () => {
 
   it("POSTs the token to /review-requests/verify without cookies", async () => {
     global.fetch = vi.fn().mockResolvedValue(
-      new Response(JSON.stringify({}), {
+      new Response(JSON.stringify({ ok: true }), {
         status: 200,
         headers: { "Content-Type": "application/json" },
       }),

@@ -3,6 +3,7 @@ import { describe, expect, it } from "vitest";
 import {
   consumeVerificationErrorCodeSchema,
   consumeVerificationRequestSchema,
+  consumeVerificationSuccessSchema,
   verificationLinkResponseSchema,
 } from "@/lib/contracts/verify.schema";
 
@@ -24,6 +25,11 @@ describe("verify contracts", () => {
 
   it("rejects unknown consume error codes", () => {
     expect(consumeVerificationErrorCodeSchema.safeParse("nope").success).toBe(false);
+  });
+
+  it("parses a consume success body", () => {
+    expect(consumeVerificationSuccessSchema.parse({ ok: true }).ok).toBe(true);
+    expect(consumeVerificationSuccessSchema.safeParse({}).success).toBe(false);
   });
 
   it("parses a generated verification URL", () => {

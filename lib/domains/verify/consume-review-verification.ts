@@ -1,7 +1,10 @@
 import "server-only";
 
 import { serverPost } from "@/lib/api/server";
-import { consumeVerificationRequestSchema } from "@/lib/contracts/verify.schema";
+import {
+  consumeVerificationRequestSchema,
+  consumeVerificationSuccessSchema,
+} from "@/lib/contracts/verify.schema";
 import {
   consumeVerificationResultFromError,
   type ConsumeVerificationResult,
@@ -14,6 +17,7 @@ export async function consumeReviewVerification(token: string): Promise<ConsumeV
   try {
     await serverPost("/review-requests/verify", { token }, {
       requestSchema: consumeVerificationRequestSchema,
+      responseSchema: consumeVerificationSuccessSchema,
       forwardCookies: false,
     });
     return { kind: "success" };
