@@ -5,3 +5,4 @@ export * from "@/lib/contracts/options.schema";
 export * from "@/lib/contracts/pagination.schema";
 export * from "@/lib/contracts/reviews.schema";
 export * from "@/lib/contracts/submit.schema";
+export * from "@/lib/contracts/verify.schema";

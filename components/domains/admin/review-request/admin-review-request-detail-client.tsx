@@ -5,6 +5,8 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
 
+import { runReviewRequestModerationAction } from "@/app/(admin)/admin/(protected)/review-request/[id]/actions";
+import { CopyVerificationLinkButton } from "@/components/domains/admin/review-request/copy-verification-link-button";
 import { ReviewRequestStatusBadge } from "@/components/domains/admin/review-requests/review-request-status-badge";
 import { ReviewDetailView } from "@/components/domains/reviews/review-detail-view";
 import { Button } from "@/components/ui/button";
@@ -23,14 +25,13 @@ import {
   verificationEmailContent,
   verificationEmailSubject,
 } from "@/lib/domains/admin/review-request/admin-email-templates";
+import { isEmailInboxConfirmed } from "@/lib/domains/admin/review-request/is-email-inbox-confirmed";
+import { reviewRequestToReviewDetail } from "@/lib/domains/admin/review-request/review-request-to-review-detail";
 import {
   moderationActionsForStatus,
   type ModerationActionPresentation,
   type ModerationIntent,
 } from "@/lib/domains/admin/review-request-actions";
-import { reviewRequestToReviewDetail } from "@/lib/domains/admin/review-request/review-request-to-review-detail";
-
-import { runReviewRequestModerationAction } from "@/app/(admin)/admin/(protected)/review-request/[id]/actions";
 
 function formatDateTime(iso: string) {
   return new Intl.DateTimeFormat("de-DE", {
@@ -95,6 +96,7 @@ export function AdminReviewRequestDetailClient({
   const [copiedKey, setCopiedKey] = useState<string | null>(null);
   const [showAffiliationTemplate, setShowAffiliationTemplate] = useState(false);
   const [pendingConfirm, setPendingConfirm] = useState<ModerationActionPresentation | null>(null);
+  const [generatedVerifyUrl, setGeneratedVerifyUrl] = useState<string | null>(null);
 
   const emailCtx = { hospital: request.hospital, city: request.city, email: request.email };
   const detail = reviewRequestToReviewDetail(request);
@@ -178,7 +180,14 @@ export function AdminReviewRequestDetailClient({
         <dl className="mt-4 grid grid-cols-1 gap-3 text-sm sm:grid-cols-2">
           <div>
             <dt className="text-muted-foreground">E-Mail</dt>
-            <dd className="font-medium break-all">{request.email}</dd>
+            <dd className="font-medium break-all">
+              {request.email}
+              {isEmailInboxConfirmed(request.requestStatus) ? (
+                <span className="mt-1 block text-sm font-medium text-blue-800">
+                  Bestätigt (Link geklickt)
+                </span>
+              ) : null}
+            </dd>
           </div>
           <div>
             <dt className="text-muted-foreground">Veröffentlichung geplant</dt>
@@ -216,7 +225,25 @@ export function AdminReviewRequestDetailClient({
 
       {request.requestStatus === "SUBMITTED" ? (
         <section className="border-border bg-surface-lifted mb-6 rounded-lg border p-5 shadow-sm">
-          <h2 className="text-foreground mb-3 text-lg font-semibold">E-Mail-Vorlage (Verifizierung)</h2>
+          <div className="mb-3 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <h2 className="text-foreground text-lg font-semibold">E-Mail-Vorlage (Verifizierung)</h2>
+            <CopyVerificationLinkButton
+              requestId={request.id}
+              label="Link erzeugen und kopieren"
+              onCopied={setGeneratedVerifyUrl}
+            />
+          </div>
+          {generatedVerifyUrl ? (
+            <div className="mb-3">
+              <CopyField
+                label="Link"
+                text={generatedVerifyUrl}
+                copiedKey={copiedKey}
+                copyKey="verify-url"
+                onCopy={copyText}
+              />
+            </div>
+          ) : null}
           <CopyField
             label="Betreff"
             text={verificationEmailSubject(emailCtx)}
@@ -227,7 +254,10 @@ export function AdminReviewRequestDetailClient({
           <div className="mt-3">
             <CopyField
               label="Inhalt"
-              text={verificationEmailContent(emailCtx)}
+              text={verificationEmailContent({
+                ...emailCtx,
+                verificationUrl: generatedVerifyUrl,
+              })}
               copiedKey={copiedKey}
               copyKey="verify-body"
               onCopy={copyText}
