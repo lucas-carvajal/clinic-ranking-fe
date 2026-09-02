@@ -42,4 +42,4 @@ Preconditions:
 - Footer is hidden on `/app/submit` and `/app/submit/success`. Prove footer links from `/` or `/app/reviews`, not from submit.
 - Mobile header hides the desktop links. Open with button `Menü öffnen` (`aria-expanded` becomes true; a dialog appears) before clicking `Alle Bewertungen`.
 - Reviews after the landing CTA may show an error or empty state without a backend. The heading `Alle Bewertungen` is still the success signal for this feature; list rows belong to [Reviews](./reviews.md).
-- `fetch /` is SSR proof of copy and hrefs. It does not prove the click. Record that the browser was used, or that it was unavailable.
+- `next dev` paints a Next.js “N” badge on screenshots. Ignore it; it is not product UI.

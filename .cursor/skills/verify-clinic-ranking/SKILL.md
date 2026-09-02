@@ -65,6 +65,8 @@ ORIGIN="$(.cursor/skills/verify-clinic-ranking/scripts/control-clinic-ranking or
 
 `fetch` is the HTML document (SSR). `snapshot` is Chrome `--dump-dom` after JS. `screenshot` is a 1280×800 PNG. Prefer **role + accessible name** over CSS or coordinates.
 
+The helper uses the real Chrome binary (`/opt/google/chrome/chrome` when present) and a per-run `--user-data-dir`. Do not point it at a PATH `google-chrome` wrapper that shares the desktop profile — that hangs headless captures.
+
 Stable handles from this repo (German copy is the UI):
 
 | Surface | Handle |

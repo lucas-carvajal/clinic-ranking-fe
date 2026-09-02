@@ -102,8 +102,20 @@ is_pid_alive() {
   [[ -n "${pid}" ]] && kill -0 "${pid}" 2>/dev/null
 }
 
+# PIDs listening on TCP $1. Prefer netstat: lsof -i is often empty in this sandbox
+# even when the socket is live (/proc/net/tcp + netstat still see it).
 port_pids() {
   local port="$1"
+  if command -v netstat >/dev/null 2>&1; then
+    netstat -tlnp 2>/dev/null \
+      | awk -v p=":${port}" '
+          $4 ~ p"$" && $6 == "LISTEN" {
+            split($7, a, "/");
+            if (a[1] ~ /^[0-9]+$/) print a[1];
+          }' \
+      | sort -u
+    return
+  fi
   if command -v ss >/dev/null 2>&1; then
     ss -ltnp "sport = :${port}" 2>/dev/null \
       | grep -oE 'pid=[0-9]+' \
@@ -115,7 +127,18 @@ port_pids() {
     lsof -nP -iTCP:"${port}" -sTCP:LISTEN -t 2>/dev/null | sort -u
     return
   fi
-  die "need ss or lsof to check port ownership"
+  die "need netstat, ss, or lsof to check port ownership"
+}
+
+descendant_pids() {
+  local pid="$1"
+  echo "${pid}"
+  local child
+  if command -v pgrep >/dev/null 2>&1; then
+    while IFS= read -r child; do
+      descendant_pids "${child}"
+    done < <(pgrep -P "${pid}" || true)
+  fi
 }
 
 port_in_use() {
@@ -142,13 +165,45 @@ chrome_bin() {
     return
   fi
   local cand
-  for cand in google-chrome google-chrome-stable chromium chromium-browser; do
+  # Prefer the real binary. PATH `google-chrome` in Cursor cloud VMs is a wrapper
+  # that forces a shared --user-data-dir and hangs in headless screenshot mode.
+  for cand in \
+    /opt/google/chrome/chrome \
+    /usr/bin/google-chrome-stable \
+    /usr/bin/chromium \
+    /usr/bin/chromium-browser; do
+    if [[ -x "${cand}" ]]; then
+      echo "${cand}"
+      return
+    fi
+  done
+  for cand in google-chrome-stable chromium chromium-browser; do
     if command -v "${cand}" >/dev/null 2>&1; then
       echo "${cand}"
       return
     fi
   done
   die "Chrome/Chromium not found. Set CLINIC_RANKING_VERIFY_CHROME."
+}
+
+# Isolated headless Chrome: unique profile, 30s cap, no shared desktop session.
+chrome_run() {
+  local chrome udir
+  chrome="$(chrome_bin)"
+  udir="$(state_dir "${RUN_ID}")/chrome-profile"
+  mkdir -p "${udir}"
+  timeout 30 "${chrome}" \
+    --headless=new \
+    --no-sandbox \
+    --disable-gpu \
+    --disable-dev-shm-usage \
+    --no-first-run \
+    --no-default-browser-check \
+    --user-data-dir="${udir}" \
+    --hide-scrollbars \
+    --window-size=1280,800 \
+    --virtual-time-budget=4000 \
+    "$@"
 }
 
 normalize_path() {
@@ -252,7 +307,7 @@ EOF
       tail -n 40 "${log_file}" >&2 || true
       die "next process ${pid} died before ready"
     fi
-    code="$(curl -sS -o /dev/null -w '%{http_code}' --max-time 2 "${origin}/" || true)"
+    code="$(curl -sS -o /dev/null -w '%{http_code}' --max-time 2 "${origin}/" 2>/dev/null || true)"
     if [[ "${code}" == "200" ]]; then
       echo "ready  ${origin}  (pid ${pid}, ${waited}s)"
       echo "export CLINIC_RANKING_VERIFY_RUN_ID=${run_id}"
@@ -297,17 +352,15 @@ cmd_doctor() {
   elif echo "${listeners}" | grep -qx "${PID}"; then
     port_owner="us"
   else
-    # next often keeps the listen socket on a child; accept the pid tree.
-    local child
+    # next-server listens on a grandchild of `npm exec next dev`.
     local tree_hit=false
-    if command -v pgrep >/dev/null 2>&1; then
-      while IFS= read -r child; do
-        if echo "${listeners}" | grep -qx "${child}"; then
-          tree_hit=true
-          break
-        fi
-      done < <(pgrep -P "${PID}" || true)
-    fi
+    local desc
+    while IFS= read -r desc; do
+      if echo "${listeners}" | grep -qx "${desc}"; then
+        tree_hit=true
+        break
+      fi
+    done < <(descendant_pids "${PID}")
     if ${tree_hit}; then
       port_owner="us-child"
     else
@@ -435,17 +488,8 @@ cmd_snapshot() {
   mkdir -p "${edir}"
   local out="${OUT_FILE:-${edir}/snapshot-$(slug_path "${path}").html}"
   mkdir -p "$(dirname "${out}")"
-  local chrome
-  chrome="$(chrome_bin)"
-  "${chrome}" \
-    --headless=new \
-    --disable-gpu \
-    --no-sandbox \
-    --disable-dev-shm-usage \
-    --virtual-time-budget=8000 \
-    --dump-dom \
-    "${ORIGIN}${path}" \
-    >"${out}" 2>/dev/null
+  chrome_run --dump-dom "${ORIGIN}${path}" >"${out}" 2>"${out}.chrome.log"
+  [[ -s "${out}" ]] || die "chrome dump-dom produced empty output (see ${out}.chrome.log)"
   echo "saved=${out}"
 }
 
@@ -461,27 +505,8 @@ cmd_screenshot() {
   mkdir -p "${edir}"
   local out="${OUT_FILE:-${edir}/screenshot-$(slug_path "${path}").png}"
   mkdir -p "$(dirname "${out}")"
-  local chrome
-  chrome="$(chrome_bin)"
-  local work
-  work="$(mktemp -d)"
-  (
-    cd "${work}"
-    "${chrome}" \
-      --headless=new \
-      --disable-gpu \
-      --no-sandbox \
-      --disable-dev-shm-usage \
-      --hide-scrollbars \
-      --window-size=1280,800 \
-      --virtual-time-budget=8000 \
-      --screenshot=capture.png \
-      "${ORIGIN}${path}" \
-      >/dev/null 2>&1
-  )
-  [[ -f "${work}/capture.png" ]] || die "chrome did not write a screenshot"
-  mv "${work}/capture.png" "${out}"
-  rm -rf "${work}"
+  chrome_run --screenshot="${out}" "${ORIGIN}${path}" >"${out}.chrome.log" 2>&1
+  [[ -f "${out}" ]] || die "chrome did not write a screenshot (see ${out}.chrome.log)"
   echo "saved=${out}"
 }
 
