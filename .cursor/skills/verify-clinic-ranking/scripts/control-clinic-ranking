@@ -1,0 +1,583 @@
+#!/usr/bin/env bash
+# Isolated launch / doctor / capture / cleanup for Clinic Ranking FE verification.
+# Invocation examples live in ../SKILL.md — do not reverse-engineer this file.
+set -euo pipefail
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+SKILL_DIR="$(cd "${SCRIPT_DIR}/.." && pwd)"
+REPO_ROOT="$(cd "${SCRIPT_DIR}/../../../.." && pwd)"
+
+STATE_ROOT="${CLINIC_RANKING_VERIFY_STATE_ROOT:-/tmp/clinic-ranking-verify}"
+EVIDENCE_ROOT="${CLINIC_RANKING_VERIFY_EVIDENCE_ROOT:-/tmp/clinic-ranking-verify-evidence}"
+DEFAULT_PORT="${CLINIC_RANKING_VERIFY_PORT:-4173}"
+HOSTNAME_BIND="127.0.0.1"
+# Unused by default so a leftover local Go API is not shared with this run.
+DEFAULT_BACKEND_URL="${CLINIC_RANKING_VERIFY_BACKEND_URL:-http://127.0.0.1:18080}"
+READY_TIMEOUT_SECS="${CLINIC_RANKING_VERIFY_READY_TIMEOUT:-90}"
+HOMEPAGE_MARKER="Das Assistenz Arzt Ranking"
+
+usage() {
+  cat <<'EOF'
+control-clinic-ranking — isolated Clinic Ranking FE verification helper
+
+Usage:
+  control-clinic-ranking launch
+  control-clinic-ranking doctor
+  control-clinic-ranking status
+  control-clinic-ranking origin
+  control-clinic-ranking fetch <path> [--out <file>]
+  control-clinic-ranking snapshot <path> [--out <file>]
+  control-clinic-ranking screenshot <path> [--out <file>]
+  control-clinic-ranking cleanup
+
+Environment:
+  CLINIC_RANKING_VERIFY_RUN_ID          Reuse a run (required after launch unless using latest)
+  CLINIC_RANKING_VERIFY_PORT            Preferred listen port (default 4173; scans upward if taken)
+  CLINIC_RANKING_VERIFY_BACKEND_URL     Optional Go backend (default http://127.0.0.1:18080, unused)
+  CLINIC_RANKING_VERIFY_STATE_ROOT      Default /tmp/clinic-ranking-verify
+  CLINIC_RANKING_VERIFY_EVIDENCE_ROOT   Default /tmp/clinic-ranking-verify-evidence
+  CLINIC_RANKING_VERIFY_CHROME          Override Chrome/Chromium binary
+
+Paths for fetch/snapshot/screenshot are origin-relative (e.g. / or /app/reviews).
+EOF
+}
+
+die() {
+  echo "error: $*" >&2
+  exit 1
+}
+
+need_cmd() {
+  command -v "$1" >/dev/null 2>&1 || die "missing required command: $1"
+}
+
+ensure_dirs() {
+  mkdir -p "${STATE_ROOT}" "${EVIDENCE_ROOT}"
+}
+
+run_id_from_latest() {
+  local latest="${STATE_ROOT}/latest"
+  if [[ -L "${latest}" || -f "${latest}" ]]; then
+    basename "$(readlink -f "${latest}")"
+  fi
+}
+
+resolve_run_id() {
+  if [[ -n "${CLINIC_RANKING_VERIFY_RUN_ID:-}" ]]; then
+    echo "${CLINIC_RANKING_VERIFY_RUN_ID}"
+    return
+  fi
+  local from_latest
+  from_latest="$(run_id_from_latest || true)"
+  if [[ -n "${from_latest}" ]]; then
+    echo "${from_latest}"
+    return
+  fi
+  die "no run id. Launch first, or set CLINIC_RANKING_VERIFY_RUN_ID."
+}
+
+state_dir() {
+  echo "${STATE_ROOT}/$1"
+}
+
+evidence_dir() {
+  echo "${EVIDENCE_ROOT}/$1"
+}
+
+instance_file() {
+  echo "$(state_dir "$1")/instance.env"
+}
+
+load_instance() {
+  local id="$1"
+  local file
+  file="$(instance_file "${id}")"
+  [[ -f "${file}" ]] || die "no instance for run ${id} at ${file}. Launch first."
+  # shellcheck disable=SC1090
+  source "${file}"
+}
+
+is_pid_alive() {
+  local pid="$1"
+  [[ -n "${pid}" ]] && kill -0 "${pid}" 2>/dev/null
+}
+
+# PIDs listening on TCP $1. Prefer netstat: lsof -i is often empty in this sandbox
+# even when the socket is live (/proc/net/tcp + netstat still see it).
+port_pids() {
+  local port="$1"
+  if command -v netstat >/dev/null 2>&1; then
+    netstat -tlnp 2>/dev/null \
+      | awk -v p=":${port}" '
+          $4 ~ p"$" && $6 == "LISTEN" {
+            split($7, a, "/");
+            if (a[1] ~ /^[0-9]+$/) print a[1];
+          }' \
+      | sort -u
+    return
+  fi
+  if command -v ss >/dev/null 2>&1; then
+    ss -ltnp "sport = :${port}" 2>/dev/null \
+      | grep -oE 'pid=[0-9]+' \
+      | cut -d= -f2 \
+      | sort -u
+    return
+  fi
+  if command -v lsof >/dev/null 2>&1; then
+    lsof -nP -iTCP:"${port}" -sTCP:LISTEN -t 2>/dev/null | sort -u
+    return
+  fi
+  die "need netstat, ss, or lsof to check port ownership"
+}
+
+descendant_pids() {
+  local pid="$1"
+  echo "${pid}"
+  local child
+  if command -v pgrep >/dev/null 2>&1; then
+    while IFS= read -r child; do
+      descendant_pids "${child}"
+    done < <(pgrep -P "${pid}" || true)
+  fi
+}
+
+port_in_use() {
+  local port="$1"
+  [[ -n "$(port_pids "${port}")" ]]
+}
+
+pick_port() {
+  local candidate="${DEFAULT_PORT}"
+  local max=$((DEFAULT_PORT + 80))
+  while (( candidate <= max )); do
+    if ! port_in_use "${candidate}"; then
+      echo "${candidate}"
+      return
+    fi
+    candidate=$((candidate + 1))
+  done
+  die "no free port in ${DEFAULT_PORT}-${max}"
+}
+
+chrome_bin() {
+  if [[ -n "${CLINIC_RANKING_VERIFY_CHROME:-}" ]]; then
+    echo "${CLINIC_RANKING_VERIFY_CHROME}"
+    return
+  fi
+  local cand
+  # Prefer the real binary. PATH `google-chrome` in Cursor cloud VMs is a wrapper
+  # that forces a shared --user-data-dir and hangs in headless screenshot mode.
+  for cand in \
+    /opt/google/chrome/chrome \
+    /usr/bin/google-chrome-stable \
+    /usr/bin/chromium \
+    /usr/bin/chromium-browser; do
+    if [[ -x "${cand}" ]]; then
+      echo "${cand}"
+      return
+    fi
+  done
+  for cand in google-chrome-stable chromium chromium-browser; do
+    if command -v "${cand}" >/dev/null 2>&1; then
+      echo "${cand}"
+      return
+    fi
+  done
+  die "Chrome/Chromium not found. Set CLINIC_RANKING_VERIFY_CHROME."
+}
+
+# Isolated headless Chrome: unique profile, 30s cap, no shared desktop session.
+chrome_run() {
+  local chrome udir
+  chrome="$(chrome_bin)"
+  udir="$(state_dir "${RUN_ID}")/chrome-profile"
+  mkdir -p "${udir}"
+  timeout 30 "${chrome}" \
+    --headless=new \
+    --no-sandbox \
+    --disable-gpu \
+    --disable-dev-shm-usage \
+    --no-first-run \
+    --no-default-browser-check \
+    --user-data-dir="${udir}" \
+    --hide-scrollbars \
+    --window-size=1280,800 \
+    --virtual-time-budget=4000 \
+    "$@"
+}
+
+normalize_path() {
+  local path="$1"
+  if [[ "${path}" != /* ]]; then
+    path="/${path}"
+  fi
+  echo "${path}"
+}
+
+slug_path() {
+  local path="$1"
+  if [[ "${path}" == "/" ]]; then
+    echo "root"
+    return
+  fi
+  echo "${path}" | sed 's#^/##; s#[^A-Za-z0-9._-]#_#g'
+}
+
+http_get() {
+  local url="$1"
+  local out="$2"
+  local code
+  code="$(curl -sS -L --max-time 20 -o "${out}" -w '%{http_code}' "${url}")"
+  echo "${code}"
+}
+
+cmd_launch() {
+  need_cmd node
+  need_cmd npm
+  need_cmd curl
+  ensure_dirs
+
+  [[ -d "${REPO_ROOT}/node_modules/next" ]] \
+    || die "node_modules/next missing. From ${REPO_ROOT} run: npm install"
+
+  local run_id="${CLINIC_RANKING_VERIFY_RUN_ID:-}"
+  if [[ -z "${run_id}" ]]; then
+    run_id="$(date +%Y%m%dT%H%M%S)-$$"
+  fi
+
+  local latest_id
+  latest_id="$(run_id_from_latest || true)"
+  if [[ -n "${latest_id}" && -f "$(instance_file "${latest_id}")" ]]; then
+    # shellcheck disable=SC1090
+    source "$(instance_file "${latest_id}")"
+    if is_pid_alive "${PID:-}"; then
+      die "a verification instance is already running (run ${latest_id}, pid ${PID}, ${ORIGIN}). Run cleanup, or set a new CLINIC_RANKING_VERIFY_RUN_ID for a second isolated instance."
+    fi
+  fi
+
+  local port
+  port="$(pick_port)"
+  local origin="http://${HOSTNAME_BIND}:${port}"
+  local sdir
+  sdir="$(state_dir "${run_id}")"
+  mkdir -p "${sdir}" "$(evidence_dir "${run_id}")"
+
+  local log_file="${sdir}/next.log"
+  local pid_file="${sdir}/next.pid"
+
+  echo "launching Clinic Ranking FE"
+  echo "  repo     ${REPO_ROOT}"
+  echo "  run      ${run_id}"
+  echo "  origin   ${origin}"
+  echo "  log      ${log_file}"
+  echo "  evidence $(evidence_dir "${run_id}")"
+
+  (
+    cd "${REPO_ROOT}"
+    export SITE_URL="${origin}"
+    export BACKEND_URL="${DEFAULT_BACKEND_URL}"
+    export SESSION_COOKIE_NAME="${SESSION_COOKIE_NAME:-admin_auth_token}"
+    export NEXT_TELEMETRY_DISABLED=1
+    export PORT="${port}"
+    exec npx next dev --hostname "${HOSTNAME_BIND}" --port "${port}"
+  ) >"${log_file}" 2>&1 &
+  local pid=$!
+  echo "${pid}" >"${pid_file}"
+
+  cat >"$(instance_file "${run_id}")" <<EOF
+RUN_ID=${run_id}
+PID=${pid}
+PORT=${port}
+HOSTNAME_BIND=${HOSTNAME_BIND}
+ORIGIN=${origin}
+REPO_ROOT=${REPO_ROOT}
+LOG_FILE=${log_file}
+BACKEND_URL=${DEFAULT_BACKEND_URL}
+STARTED_AT=$(date -u +%Y-%m-%dT%H:%M:%SZ)
+EOF
+
+  ln -sfn "$(state_dir "${run_id}")" "${STATE_ROOT}/latest"
+  export CLINIC_RANKING_VERIFY_RUN_ID="${run_id}"
+
+  local waited=0
+  local code="000"
+  while (( waited < READY_TIMEOUT_SECS )); do
+    if ! is_pid_alive "${pid}"; then
+      echo "next exited during startup. last log lines:" >&2
+      tail -n 40 "${log_file}" >&2 || true
+      die "next process ${pid} died before ready"
+    fi
+    code="$(curl -sS -o /dev/null -w '%{http_code}' --max-time 2 "${origin}/" 2>/dev/null || true)"
+    if [[ "${code}" == "200" ]]; then
+      echo "ready  ${origin}  (pid ${pid}, ${waited}s)"
+      echo "export CLINIC_RANKING_VERIFY_RUN_ID=${run_id}"
+      return
+    fi
+    sleep 1
+    waited=$((waited + 1))
+  done
+
+  echo "timed out waiting for ${origin}/ (last status ${code}). log:" >&2
+  tail -n 60 "${log_file}" >&2 || true
+  die "instance did not become ready in ${READY_TIMEOUT_SECS}s"
+}
+
+cmd_doctor() {
+  need_cmd curl
+  ensure_dirs
+  local run_id
+  run_id="$(resolve_run_id)"
+  load_instance "${run_id}"
+
+  local ok=true
+  local pid_alive=false
+  local port_owner="none"
+  local homepage_status="000"
+  local homepage_has_marker=false
+  local robots_disallow_admin=false
+  local tmp
+  tmp="$(mktemp)"
+
+  if is_pid_alive "${PID}"; then
+    pid_alive=true
+  else
+    ok=false
+  fi
+
+  local listeners
+  listeners="$(port_pids "${PORT}" || true)"
+  if [[ -z "${listeners}" ]]; then
+    port_owner="none"
+    ok=false
+  elif echo "${listeners}" | grep -qx "${PID}"; then
+    port_owner="us"
+  else
+    # next-server listens on a grandchild of `npm exec next dev`.
+    local tree_hit=false
+    local desc
+    while IFS= read -r desc; do
+      if echo "${listeners}" | grep -qx "${desc}"; then
+        tree_hit=true
+        break
+      fi
+    done < <(descendant_pids "${PID}")
+    if ${tree_hit}; then
+      port_owner="us-child"
+    else
+      port_owner="foreign:${listeners//$'\n'/,}"
+      ok=false
+    fi
+  fi
+
+  homepage_status="$(http_get "${ORIGIN}/" "${tmp}" || echo "000")"
+  if [[ "${homepage_status}" == "200" ]] && grep -q "${HOMEPAGE_MARKER}" "${tmp}"; then
+    homepage_has_marker=true
+  else
+    ok=false
+  fi
+
+  local robots
+  robots="$(mktemp)"
+  local robots_status
+  robots_status="$(http_get "${ORIGIN}/robots.txt" "${robots}" || echo "000")"
+  if [[ "${robots_status}" == "200" ]] && grep -q "Disallow: /admin" "${robots}"; then
+    robots_disallow_admin=true
+  else
+    ok=false
+  fi
+  rm -f "${robots}" "${tmp}"
+
+  cat <<EOF
+ok=${ok}
+run_id=${run_id}
+origin=${ORIGIN}
+pid=${PID}
+pid_alive=${pid_alive}
+port=${PORT}
+port_owner=${port_owner}
+homepage_status=${homepage_status}
+homepage_has_marker=${homepage_has_marker}
+robots_disallow_admin=${robots_disallow_admin}
+backend_url=${BACKEND_URL}
+repo=${REPO_ROOT}
+log=${LOG_FILE}
+evidence=$(evidence_dir "${run_id}")
+EOF
+
+  ${ok} || die "doctor failed — do not drive this instance"
+}
+
+cmd_status() {
+  local run_id
+  run_id="$(resolve_run_id)"
+  load_instance "${run_id}"
+  echo "run_id=${run_id}"
+  echo "origin=${ORIGIN}"
+  echo "pid=${PID}"
+  echo "alive=$(is_pid_alive "${PID}" && echo true || echo false)"
+  echo "evidence=$(evidence_dir "${run_id}")"
+}
+
+cmd_origin() {
+  local run_id
+  run_id="$(resolve_run_id)"
+  load_instance "${run_id}"
+  echo "${ORIGIN}"
+}
+
+parse_out_flag() {
+  OUT_FILE=""
+  PATH_ARG=""
+  while [[ $# -gt 0 ]]; do
+    case "$1" in
+      --out)
+        [[ $# -ge 2 ]] || die "--out requires a path"
+        OUT_FILE="$2"
+        shift 2
+        ;;
+      *)
+        if [[ -z "${PATH_ARG}" ]]; then
+          PATH_ARG="$1"
+          shift
+        else
+          die "unexpected argument: $1"
+        fi
+        ;;
+    esac
+  done
+  [[ -n "${PATH_ARG}" ]] || die "missing path (e.g. / or /app/reviews)"
+}
+
+cmd_fetch() {
+  need_cmd curl
+  parse_out_flag "$@"
+  local run_id
+  run_id="$(resolve_run_id)"
+  load_instance "${run_id}"
+  local path
+  path="$(normalize_path "${PATH_ARG}")"
+  local edir
+  edir="$(evidence_dir "${run_id}")"
+  mkdir -p "${edir}"
+  local out="${OUT_FILE:-${edir}/fetch-$(slug_path "${path}").html}"
+  mkdir -p "$(dirname "${out}")"
+  local meta="${out}.meta"
+  local code
+  code="$(http_get "${ORIGIN}${path}" "${out}")"
+  {
+    echo "url=${ORIGIN}${path}"
+    echo "status=${code}"
+    echo "saved=${out}"
+    echo "captured_at=$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+  } >"${meta}"
+  echo "status=${code}"
+  echo "saved=${out}"
+  echo "meta=${meta}"
+  [[ "${code}" =~ ^[23] ]] || die "GET ${path} returned ${code}"
+}
+
+cmd_snapshot() {
+  parse_out_flag "$@"
+  local run_id
+  run_id="$(resolve_run_id)"
+  load_instance "${run_id}"
+  local path
+  path="$(normalize_path "${PATH_ARG}")"
+  local edir
+  edir="$(evidence_dir "${run_id}")"
+  mkdir -p "${edir}"
+  local out="${OUT_FILE:-${edir}/snapshot-$(slug_path "${path}").html}"
+  mkdir -p "$(dirname "${out}")"
+  chrome_run --dump-dom "${ORIGIN}${path}" >"${out}" 2>"${out}.chrome.log"
+  [[ -s "${out}" ]] || die "chrome dump-dom produced empty output (see ${out}.chrome.log)"
+  echo "saved=${out}"
+}
+
+cmd_screenshot() {
+  parse_out_flag "$@"
+  local run_id
+  run_id="$(resolve_run_id)"
+  load_instance "${run_id}"
+  local path
+  path="$(normalize_path "${PATH_ARG}")"
+  local edir
+  edir="$(evidence_dir "${run_id}")"
+  mkdir -p "${edir}"
+  local out="${OUT_FILE:-${edir}/screenshot-$(slug_path "${path}").png}"
+  mkdir -p "$(dirname "${out}")"
+  chrome_run --screenshot="${out}" "${ORIGIN}${path}" >"${out}.chrome.log" 2>&1
+  [[ -f "${out}" ]] || die "chrome did not write a screenshot (see ${out}.chrome.log)"
+  echo "saved=${out}"
+}
+
+kill_tree() {
+  local pid="$1"
+  local child
+  if command -v pgrep >/dev/null 2>&1; then
+    while IFS= read -r child; do
+      kill_tree "${child}"
+    done < <(pgrep -P "${pid}" || true)
+  fi
+  kill "${pid}" 2>/dev/null || true
+}
+
+cmd_cleanup() {
+  ensure_dirs
+  local run_id
+  if [[ -n "${CLINIC_RANKING_VERIFY_RUN_ID:-}" ]]; then
+    run_id="${CLINIC_RANKING_VERIFY_RUN_ID}"
+  else
+    run_id="$(run_id_from_latest || true)"
+  fi
+  [[ -n "${run_id}" ]] || die "nothing to clean up"
+
+  local file
+  file="$(instance_file "${run_id}")"
+  if [[ -f "${file}" ]]; then
+    # shellcheck disable=SC1090
+    source "${file}"
+    if is_pid_alive "${PID}"; then
+      kill_tree "${PID}"
+      local i=0
+      while is_pid_alive "${PID}" && (( i < 10 )); do
+        sleep 0.2
+        i=$((i + 1))
+      done
+      if is_pid_alive "${PID}"; then
+        kill -KILL "${PID}" 2>/dev/null || true
+        kill_tree "${PID}"
+      fi
+    fi
+  fi
+
+  local edir
+  edir="$(evidence_dir "${run_id}")"
+  rm -rf "$(state_dir "${run_id}")"
+  if [[ "$(run_id_from_latest || true)" == "${run_id}" ]]; then
+    rm -f "${STATE_ROOT}/latest"
+  fi
+  echo "cleaned run ${run_id} (pid ${PID:-unknown})"
+  echo "evidence preserved at ${edir}"
+}
+
+main() {
+  local cmd="${1:-}"
+  shift || true
+  case "${cmd}" in
+    launch) cmd_launch "$@" ;;
+    doctor) cmd_doctor "$@" ;;
+    status) cmd_status "$@" ;;
+    origin) cmd_origin "$@" ;;
+    fetch) cmd_fetch "$@" ;;
+    snapshot) cmd_snapshot "$@" ;;
+    screenshot) cmd_screenshot "$@" ;;
+    cleanup) cmd_cleanup "$@" ;;
+    -h|--help|help|"") usage ;;
+    *)
+      usage >&2
+      die "unknown command: ${cmd}"
+      ;;
+  esac
+}
+
+main "$@"
