@@ -165,6 +165,10 @@ describe("isStepComplete — step 7", () => {
   it("is incomplete when email is empty", () => {
     expect(isStepComplete(7, { ...completeStep7, email: "" })).toBe(false);
   });
+
+  it("accepts a private Gmail address", () => {
+    expect(isStepComplete(7, { ...completeStep7, email: "name@gmail.com" })).toBe(true);
+  });
 });
 
 describe("isStepComplete — unknown step", () => {

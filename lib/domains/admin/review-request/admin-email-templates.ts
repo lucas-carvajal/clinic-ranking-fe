@@ -2,6 +2,7 @@ export type AdminVerificationEmailContext = {
   hospital: string;
   city: string;
   email: string;
+  verificationUrl?: string | null;
 };
 
 export function verificationEmailSubject(ctx: AdminVerificationEmailContext): string {
@@ -12,13 +13,20 @@ export function verificationEmailContent(ctx: AdminVerificationEmailContext): st
   const hospitalSlug = ctx.hospital.toLowerCase().replace(/\s+/g, "");
   const looksOfficial = ctx.email.toLowerCase().includes(hospitalSlug);
 
+  const linkBlock = ctx.verificationUrl
+    ? `Bitte öffne diesen Link, um dein Postfach zu bestätigen:
+${ctx.verificationUrl}
+
+`
+    : "";
+
   return `Hallo,
 
 vielen Dank für deine eingereichte Bewertung für ${ctx.hospital} in ${ctx.city}!
 
 Um deine Bewertung veröffentlichen zu können, müssen wir zunächst deine E-Mail-Adresse und deine Zugehörigkeit zum Krankenhaus verifizieren.
 
-${!looksOfficial ? `Da deine E-Mail-Adresse keine offizielle Krankenhaus-E-Mail zu sein scheint, bitten wir dich, uns einen Nachweis zu senden, dass du dort tätig warst (z.B. Arbeitsvertrag, Gehaltsabrechnung, Mitarbeiterausweis - gerne geschwärzt).
+${linkBlock}${!looksOfficial ? `Da deine E-Mail-Adresse keine offizielle Krankenhaus-E-Mail zu sein scheint, bitten wir dich, uns einen Nachweis zu senden, dass du dort tätig warst (z.B. Arbeitsvertrag, Gehaltsabrechnung, Mitarbeiterausweis - gerne geschwärzt).
 
 ` : ""}Nach erfolgreicher Verifizierung wird deine Bewertung von uns geprüft und bei Freigabe veröffentlicht. Du erhältst eine weitere E-Mail, sobald deine Bewertung freigeschaltet wurde.
 

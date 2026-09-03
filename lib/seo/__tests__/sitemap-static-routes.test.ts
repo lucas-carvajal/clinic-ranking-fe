@@ -12,6 +12,7 @@ describe("sitemap static routes", () => {
     expect(paths).toContain("/app/reviews");
     expect(paths).toContain("/app/submit");
     expect(paths).toContain("/legal/imprint");
+    expect(paths).not.toContain("/verify");
   });
 
   it("builds absolute URLs from site origin", () => {
