@@ -11,7 +11,7 @@ describe("VerifyResultView", () => {
   it("renders success without review or email", () => {
     render(<VerifyResultView result={{ kind: "success" }} />);
 
-    expect(screen.getByRole("heading", { name: "Postfach bestätigt" })).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "Email bestätigt" })).toBeInTheDocument();
     expect(screen.getByText(VERIFY_SUCCESS_BODY)).toBeInTheDocument();
     expect(screen.queryByText(/@/)).not.toBeInTheDocument();
     expect(screen.queryByText(/Bewertungstext|Note|Krankenhaus/i)).not.toBeInTheDocument();
