@@ -13,6 +13,9 @@
 # testing
 /coverage
 
+# verification skill local captures (proof lives under /tmp/clinic-ranking-verify-evidence/)
+.cursor/skills/verify-clinic-ranking/artifacts/
+
 # next.js
 /.next/
 /out/
