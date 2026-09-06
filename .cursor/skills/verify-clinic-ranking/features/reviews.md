@@ -25,7 +25,7 @@ Preconditions:
 - Clinic Ranking FE is healthy at the origin from `control-clinic-ranking origin`.
 - `control-clinic-ranking doctor` reports `ok=true`.
 - For `reviews-list` rows, `reviews-filter` options, `reviews-page`, and `reviews-detail` success: `launch --mock` or a live `CLINIC_RANKING_VERIFY_BACKEND_URL`. Without either, only `reviews-error` (and the heading) are in play — report the rest `verified-unreachable`.
-- Mock fixtures: first row `Klinikum Innenstadt` (`62db672b-d95a-4eeb-97f1-a97935095622`); `Bayern` has three rows and a pager; `Sachsen` is empty; specialty `Biochemie` is listed but has no rows.
+- Mock fixtures: first row `Klinikum Innenstadt` (`62db672b-d95a-4eeb-97f1-a97935095622`); `Bayern` has four rows and a pager; `Sachsen` is empty; specialty `Biochemie` is listed but has no rows.
 - Desktop viewport (≥768px) for table rows; narrower for cards.
 
 - **Open list.** Go to `/app/reviews`. Run `control-clinic-ranking screenshot /app/reviews`. Heading `Alle Bewertungen` is visible. Four comboboxes named `Fachrichtung filtern`, `Bundesland filtern`, `Stadt filtern`, and `Krankenhaus filtern` are present. Stadt and Krankenhaus start disabled until a Bundesland is chosen.

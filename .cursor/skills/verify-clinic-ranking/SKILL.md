@@ -167,12 +167,12 @@ Admin (`/admin/login`, cookie `admin_auth_token`, `proxy.ts` gating) needs a rea
 
 ## Mock fixtures
 
-Stable values from `scripts/mock-backend.mjs` (7 reviews, page size 3):
+Stable values from `scripts/mock-backend.mjs` (8 reviews, page size 3):
 
 | Handle | Value |
 |---|---|
 | First row hospital / detail id | `Klinikum Innenstadt` / `62db672b-d95a-4eeb-97f1-a97935095622` |
-| Filter with rows | combobox `Bundesland filtern` → `Bayern` (3 rows, pager) |
+| Filter with rows | combobox `Bundesland filtern` → `Bayern` (4 rows, pager) |
 | Filter empty | `Bundesland filtern` → `Sachsen` → `Keine Bewertungen gefunden` |
 | Verify success token | `clinic-ranking-verify-ok` |
 | Verify dead token | `expired`, `already_used`, `invalid` |
