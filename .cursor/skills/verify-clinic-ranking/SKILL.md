@@ -1,6 +1,6 @@
 ---
 name: verify-clinic-ranking
-description: "Verify the Clinic Ranking FE Next.js web UI (landing, reviews, submit, feedback, legal) by launching an isolated next dev instance and driving it in the browser. Use when proving user-facing behavior, checking a UI change, or after edits to app routes."
+description: "Verify the Clinic Ranking FE Next.js web UI (landing, reviews, submit, feedback, legal, email verify) by launching an isolated next dev instance and driving it in the browser. Use when proving user-facing behavior, checking a UI change, or after edits to app routes."
 ---
 
 # Verify Clinic Ranking FE
@@ -17,12 +17,16 @@ Helper (executable; invocations below are literal):
 
 ```bash
 .cursor/skills/verify-clinic-ranking/scripts/control-clinic-ranking launch
+.cursor/skills/verify-clinic-ranking/scripts/control-clinic-ranking launch --mock
 ```
+
+Use `launch` to prove degraded UI (no API). Use `launch --mock` to prove screens that render backend data (reviews rows, detail, filters, pager, successful submit/feedback/verify). Do not mock the UI itself.
 
 The helper:
 
 - Requires `node_modules/next` (run `npm install` at the repo root if missing).
-- Does **not** copy `.env`. It exports `SITE_URL` to the isolated origin (required — `getSiteUrl()` throws otherwise), `SESSION_COOKIE_NAME=admin_auth_token`, and `BACKEND_URL=http://127.0.0.1:18080` unless `CLINIC_RANKING_VERIFY_BACKEND_URL` is set. That default backend is unused on purpose so a leftover Go API on :8080 is not shared.
+- Does **not** copy `.env`. It exports `SITE_URL` to the isolated origin (required — `getSiteUrl()` throws otherwise), `SESSION_COOKIE_NAME=admin_auth_token`, and `BACKEND_URL=http://127.0.0.1:18080` unless `CLINIC_RANKING_VERIFY_BACKEND_URL` is set. That default origin is unused unless `--mock` (or a real API) is set, so a leftover Go API on :8080 is not shared.
+- `launch --mock` starts `scripts/mock-backend.mjs` on that `BACKEND_URL` first (fixture JSON, no Go). Cleanup kills the mock PID too.
 - Starts `npx next dev --hostname 127.0.0.1 --port <port>`.
 - Picks port **4173**, then scans upward if taken. Refuses to launch a second **default** instance; a second isolated instance needs a new `CLINIC_RANKING_VERIFY_RUN_ID`.
 - Is ready when `GET <origin>/` returns 200 (typically a log line `Local: http://127.0.0.1:<port>` and `Ready in …` as well). Timeout 90s.
@@ -45,10 +49,12 @@ It is read-only. Require `ok=true` plus:
 - `port_owner=us` or `us-child` (Next may listen on a child)
 - `homepage_status=200` and `homepage_has_marker=true` (`Das Assistenz Arzt Ranking` in `/`)
 - `robots_disallow_admin=true` (`Disallow: /admin` in `/robots.txt`)
+- `robots_disallow_verify=true` (`Disallow: /verify` in `/robots.txt`)
+- After `launch --mock`: `mock=true`, `mock_alive=true`, `mock_reviews_status=200`, `mock_has_rows=true` (`Klinikum Innenstadt` in `GET <backend>/reviews`)
 
 If `port_owner` is `foreign`, **stop**. Driving someone else's process is forbidden. If `ok=false`, do not drive; relaunch after `cleanup`.
 
-Doctor does not require a live Go backend. Features that need one say so in the map — report those `verified-unreachable` with the attempted URL when `BACKEND_URL` does not answer.
+Doctor does not require a live Go backend. Features that need list/detail/success data say so in the map — `launch --mock` or a real `CLINIC_RANKING_VERIFY_BACKEND_URL`. Without either, report those `verified-unreachable` with the attempted URL.
 
 ## Drive
 
@@ -63,7 +69,7 @@ ORIGIN="$(.cursor/skills/verify-clinic-ranking/scripts/control-clinic-ranking or
 .cursor/skills/verify-clinic-ranking/scripts/control-clinic-ranking screenshot /app/reviews
 ```
 
-`fetch` is the HTML document (SSR). `snapshot` is Chrome `--dump-dom` after JS. `screenshot` is a 1280×800 PNG. Prefer **role + accessible name** over CSS or coordinates.
+`fetch` is the HTML document (SSR). `snapshot` is Chrome `--dump-dom` after JS. `screenshot` is a 1280×800 PNG. Chrome uses a **15s** virtual-time budget (override `CLINIC_RANKING_VERIFY_CHROME_BUDGET_MS`) so client queries can finish — reviews error/rows will not show if the capture is too short. Prefer **role + accessible name** over CSS or coordinates.
 
 The helper uses the real Chrome binary (`/opt/google/chrome/chrome` when present) and a per-run `--user-data-dir`. Do not point it at a PATH `google-chrome` wrapper that shares the desktop profile — that hangs headless captures.
 
@@ -94,6 +100,10 @@ Stable handles from this repo (German copy is the UI):
 | Feedback success | heading `Vielen Dank für dein Feedback ❤️`; link `Weiteres Feedback geben` |
 | Legal h1s | `Impressum`, `Datenschutzerklärung`, `Allgemeine Geschäftsbedingungen (AGB)` |
 | Admin login h1 | `Admin-Anmeldung`; fields `Benutzername`, `Passwort`; submit `Anmelden` |
+| Verify dead | heading `Dieser Link funktioniert nicht :(`; button `Zur Startseite` → `/` |
+| Verify failed | heading `Bestätigung fehlgeschlagen` (token present, consume failed) |
+| Verify success | heading `Email bestätigt` (live token + backend) |
+| Verify loading | `Wird bestätigt…` |
 
 Open the origin in a **dedicated** browser profile/tab. Do not attach to a user's already-open `localhost:3000`.
 
@@ -108,7 +118,7 @@ Proof standards:
 - Exercise the real user path (click the named link/button, fill the labeled field). `fetch` of a destination is supporting evidence, not a substitute for the click unless the browser is unavailable — then say so.
 - Capture the **action and the resulting state**, not only the final screen: landing CTA click needs a landing screenshot **and** the destination screenshot.
 - Side effects: submit writes `localStorage` keys `clinic-ranking-submit:form-draft` and `clinic-ranking-submit:current-step`; a successful submit navigates to `/app/submit/success` and clears those keys. Feedback success is `?success=true`. List filters change the query string (`state`, `city`, `hospital`, `specialty`, `page`).
-- No Go backend is bundled here. Do not mock the UI. When the backend is down, prove the **real** degraded UI (reviews error + `Aktualisieren`; feedback `role="alert"` after submit; submit comboboxes empty/error). Do not invent a passing list.
+- No Go backend is bundled here. Do not mock the UI. When the backend is down, prove the **real** degraded UI (reviews error + `Aktualisieren`; feedback `role="alert"` after submit; submit comboboxes empty/error). Do not invent a passing list. `launch --mock` is the fixture API for data-backed screens — still exercise the real UI against it.
 - Record the feature ID and entry point with every artifact (filename prefix is enough: `landing-cta-reviews-before.png`).
 
 `control-clinic-ranking fetch|snapshot|screenshot` already write into the evidence dir. Browser-tool screenshots should be copied there too.
@@ -134,6 +144,7 @@ All commands are on:
 | Command | Purpose |
 |---|---|
 | `launch` | Start isolated `next dev`; print run id |
+| `launch --mock` | Start fixture mock on `BACKEND_URL`, then `next dev` |
 | `doctor` | Read-only health; exit non-zero if not ours |
 | `origin` | Print `http://127.0.0.1:<port>` |
 | `status` | PID / origin / evidence path |
@@ -151,3 +162,18 @@ Two verification instances can run side by side **only** with distinct `CLINIC_R
 ## Out of map (for now)
 
 Admin (`/admin/login`, cookie `admin_auth_token`, `proxy.ts` gating) needs a real backend and credentials. Do not fake a session. If a task is admin-only, report `verified-unreachable` with `/admin/login` as the attempted route.
+
+`/verify?token=…` success (`Email bestätigt`) needs `launch --mock` (token `clinic-ranking-verify-ok`) or a real consume token from the Go API. Without either, prove the dead-link and failed states on [Verify email](features/verify-email.md) — do not invent a success.
+
+## Mock fixtures
+
+Stable values from `scripts/mock-backend.mjs` (8 reviews, page size 3):
+
+| Handle | Value |
+|---|---|
+| First row hospital / detail id | `Klinikum Innenstadt` / `62db672b-d95a-4eeb-97f1-a97935095622` |
+| Filter with rows | combobox `Bundesland filtern` → `Bayern` (4 rows, pager) |
+| Filter empty | `Bundesland filtern` → `Sachsen` → `Keine Bewertungen gefunden` |
+| Verify success token | `clinic-ranking-verify-ok` |
+| Verify dead token | `expired`, `already_used`, `invalid` |
+| Types | states Bayern/Berlin/Hamburg/Sachsen; specialty `Biochemie` has no rows |

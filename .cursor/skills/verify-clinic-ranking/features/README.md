@@ -4,11 +4,11 @@ This directory is the maintained source for verifying the user-facing behavior o
 
 ## Baseline preconditions
 
-- Launch with `.cursor/skills/verify-clinic-ranking/scripts/control-clinic-ranking launch`.
+- Launch with `.cursor/skills/verify-clinic-ranking/scripts/control-clinic-ranking launch` (degraded UI) or `launch --mock` (fixture API on `BACKEND_URL`).
 - Origin is `http://127.0.0.1:<port>` (default try 4173), not a shared `:3000` unless doctor says we own it.
-- Run `control-clinic-ranking doctor` and require `ok=true`, `homepage_has_marker=true`, `port_owner` `us` or `us-child`.
+- Run `control-clinic-ranking doctor` and require `ok=true`, `homepage_has_marker=true`, `port_owner` `us` or `us-child`, and `robots_disallow_verify=true`. After `--mock`, also require `mock_alive=true` and `mock_has_rows=true`.
 - Never drive an instance that was not started by this verification run.
-- A Go backend is optional. Landing, ranking placeholder, legal, submit chrome, and feedback **validation** work without it. Reviews rows, review detail, successful feedback POST, and successful submit POST need `CLINIC_RANKING_VERIFY_BACKEND_URL` pointing at a live API. Without it, prove the real error/empty UI — do not skip those sub-features silently.
+- A Go backend is optional. Landing, ranking placeholder, legal, submit chrome, feedback **validation**, and `/verify` dead/failed states work without it. Reviews rows, review detail success, successful feedback POST, successful submit POST, and `/verify` success need `launch --mock` or `CLINIC_RANKING_VERIFY_BACKEND_URL` pointing at a live API. Without either, prove the real error/empty UI — do not skip those sub-features silently.
 
 ## Driving conventions
 
@@ -17,7 +17,7 @@ This directory is the maintained source for verifying the user-facing behavior o
 - Treat every helper command as literal. Keep quoted names and flags unchanged.
 - Browser clicks/fills go through Cursor browser or CDP against `control-clinic-ranking origin`.
 - HTTP and Chrome captures go through `control-clinic-ranking fetch|snapshot|screenshot`.
-- `/` has **no** `AppSiteHeader`. Header nav exists on `/app/*` and `/legal/*` only. Footer is hidden on `/app/submit` and `/app/submit/success`.
+- `/` has **no** `AppSiteHeader`. Header nav exists on `/app/*`, `/legal/*`, and `/verify`. Footer is hidden on `/app/submit` and `/app/submit/success`.
 - Desktop reviews table (`role="link"` rows) is `md+`. Below that, reviews are card `link`s. Drive the viewport you claim.
 
 ## Proof and skip reporting
@@ -47,3 +47,4 @@ Keep implementation details out of the map. Name only user paths, stable handles
 - [Submit a review](./submit-review.md) covers the seven-step form, draft persistence, validation, and success.
 - [Feedback](./feedback.md) covers both form types, client validation, submit, and the success screen.
 - [Legal pages](./legal.md) covers Impressum, Datenschutzerklärung, and AGB from the footer.
+- [Verify email](./verify-email.md) covers the public `/verify` consume page (dead link, failed consume, success).
