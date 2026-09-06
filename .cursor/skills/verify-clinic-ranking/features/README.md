@@ -4,11 +4,11 @@ This directory is the maintained source for verifying the user-facing behavior o
 
 ## Baseline preconditions
 
-- Launch with `.cursor/skills/verify-clinic-ranking/scripts/control-clinic-ranking launch`.
+- Launch with `.cursor/skills/verify-clinic-ranking/scripts/control-clinic-ranking launch` (degraded UI) or `launch --mock` (fixture API on `BACKEND_URL`).
 - Origin is `http://127.0.0.1:<port>` (default try 4173), not a shared `:3000` unless doctor says we own it.
-- Run `control-clinic-ranking doctor` and require `ok=true`, `homepage_has_marker=true`, `port_owner` `us` or `us-child`, and `robots_disallow_verify=true`.
+- Run `control-clinic-ranking doctor` and require `ok=true`, `homepage_has_marker=true`, `port_owner` `us` or `us-child`, and `robots_disallow_verify=true`. After `--mock`, also require `mock_alive=true` and `mock_has_rows=true`.
 - Never drive an instance that was not started by this verification run.
-- A Go backend is optional. Landing, ranking placeholder, legal, submit chrome, feedback **validation**, and `/verify` dead/failed states work without it. Reviews rows, review detail success, successful feedback POST, successful submit POST, and `/verify` success need `CLINIC_RANKING_VERIFY_BACKEND_URL` pointing at a live API. Without it, prove the real error/empty UI — do not skip those sub-features silently.
+- A Go backend is optional. Landing, ranking placeholder, legal, submit chrome, feedback **validation**, and `/verify` dead/failed states work without it. Reviews rows, review detail success, successful feedback POST, successful submit POST, and `/verify` success need `launch --mock` or `CLINIC_RANKING_VERIFY_BACKEND_URL` pointing at a live API. Without either, prove the real error/empty UI — do not skip those sub-features silently.
 
 ## Driving conventions
 

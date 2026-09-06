@@ -15,6 +15,8 @@ HOSTNAME_BIND="127.0.0.1"
 DEFAULT_BACKEND_URL="${CLINIC_RANKING_VERIFY_BACKEND_URL:-http://127.0.0.1:18080}"
 READY_TIMEOUT_SECS="${CLINIC_RANKING_VERIFY_READY_TIMEOUT:-90}"
 HOMEPAGE_MARKER="Das Assistenz Arzt Ranking"
+MOCK_REVIEWS_MARKER="Klinikum Innenstadt"
+MOCK_SCRIPT="${SCRIPT_DIR}/mock-backend.mjs"
 
 usage() {
   cat <<'EOF'
@@ -22,6 +24,7 @@ control-clinic-ranking — isolated Clinic Ranking FE verification helper
 
 Usage:
   control-clinic-ranking launch
+  control-clinic-ranking launch --mock
   control-clinic-ranking doctor
   control-clinic-ranking status
   control-clinic-ranking origin
@@ -33,7 +36,7 @@ Usage:
 Environment:
   CLINIC_RANKING_VERIFY_RUN_ID          Reuse a run (required after launch unless using latest)
   CLINIC_RANKING_VERIFY_PORT            Preferred listen port (default 4173; scans upward if taken)
-  CLINIC_RANKING_VERIFY_BACKEND_URL     Optional Go backend (default http://127.0.0.1:18080, unused)
+  CLINIC_RANKING_VERIFY_BACKEND_URL     Backend origin (default http://127.0.0.1:18080). Unused unless launch --mock or a real API is set.
   CLINIC_RANKING_VERIFY_STATE_ROOT      Default /tmp/clinic-ranking-verify
   CLINIC_RANKING_VERIFY_EVIDENCE_ROOT   Default /tmp/clinic-ranking-verify-evidence
   CLINIC_RANKING_VERIFY_CHROME          Override Chrome/Chromium binary
@@ -160,6 +163,59 @@ pick_port() {
   die "no free port in ${DEFAULT_PORT}-${max}"
 }
 
+parse_backend_listen() {
+  local url="${DEFAULT_BACKEND_URL}"
+  url="${url#http://}"
+  url="${url#https://}"
+  MOCK_BIND_HOST="${url%%:*}"
+  local rest="${url#*:}"
+  MOCK_BIND_PORT="${rest%%/*}"
+  if [[ "${MOCK_BIND_HOST}" != "127.0.0.1" && "${MOCK_BIND_HOST}" != "localhost" ]]; then
+    die "--mock only binds 127.0.0.1 (BACKEND_URL=${DEFAULT_BACKEND_URL})"
+  fi
+  [[ "${MOCK_BIND_PORT}" =~ ^[0-9]+$ ]] || die "cannot parse port from ${DEFAULT_BACKEND_URL}"
+}
+
+start_mock() {
+  local run_id="$1"
+  local sdir="$2"
+  parse_backend_listen
+  if port_in_use "${MOCK_BIND_PORT}"; then
+    die "mock port ${MOCK_BIND_PORT} is already in use. cleanup first, or set CLINIC_RANKING_VERIFY_BACKEND_URL to a free 127.0.0.1 origin."
+  fi
+  [[ -f "${MOCK_SCRIPT}" ]] || die "missing ${MOCK_SCRIPT}"
+
+  local log_file="${sdir}/mock.log"
+  (
+    export CLINIC_RANKING_VERIFY_MOCK_HOST="${MOCK_BIND_HOST}"
+    export CLINIC_RANKING_VERIFY_MOCK_PORT="${MOCK_BIND_PORT}"
+    exec node "${MOCK_SCRIPT}"
+  ) >"${log_file}" 2>&1 &
+  MOCK_PID=$!
+  echo "${MOCK_PID}" >"${sdir}/mock.pid"
+
+  local waited=0
+  local code="000"
+  local mock_origin="http://${MOCK_BIND_HOST}:${MOCK_BIND_PORT}"
+  while (( waited < 50 )); do
+    if ! is_pid_alive "${MOCK_PID}"; then
+      echo "mock-backend exited during startup. last log lines:" >&2
+      tail -n 40 "${log_file}" >&2 || true
+      die "mock process ${MOCK_PID} died before ready"
+    fi
+    code="$(curl -sS -o /dev/null -w '%{http_code}' --max-time 2 "${mock_origin}/health" 2>/dev/null || true)"
+    if [[ "${code}" == "200" ]]; then
+      echo "mock    ${mock_origin}  (pid ${MOCK_PID})"
+      return
+    fi
+    sleep 0.2
+    waited=$((waited + 1))
+  done
+  echo "timed out waiting for mock ${mock_origin}/health (last status ${code}). log:" >&2
+  tail -n 40 "${log_file}" >&2 || true
+  die "mock-backend did not become ready"
+}
+
 chrome_bin() {
   if [[ -n "${CLINIC_RANKING_VERIFY_CHROME:-}" ]]; then
     echo "${CLINIC_RANKING_VERIFY_CHROME}"
@@ -238,6 +294,14 @@ cmd_launch() {
   need_cmd curl
   ensure_dirs
 
+  local with_mock=false
+  while [[ $# -gt 0 ]]; do
+    case "$1" in
+      --mock) with_mock=true; shift ;;
+      *) die "unexpected launch argument: $1 (supported: --mock)" ;;
+    esac
+  done
+
   [[ -d "${REPO_ROOT}/node_modules/next" ]] \
     || die "node_modules/next missing. From ${REPO_ROOT} run: npm install"
 
@@ -270,8 +334,16 @@ cmd_launch() {
   echo "  repo     ${REPO_ROOT}"
   echo "  run      ${run_id}"
   echo "  origin   ${origin}"
+  echo "  backend  ${DEFAULT_BACKEND_URL}"
+  echo "  mock     ${with_mock}"
   echo "  log      ${log_file}"
   echo "  evidence $(evidence_dir "${run_id}")"
+
+  local mock_pid=""
+  if ${with_mock}; then
+    start_mock "${run_id}" "${sdir}"
+    mock_pid="${MOCK_PID}"
+  fi
 
   (
     cd "${REPO_ROOT}"
@@ -294,6 +366,9 @@ ORIGIN=${origin}
 REPO_ROOT=${REPO_ROOT}
 LOG_FILE=${log_file}
 BACKEND_URL=${DEFAULT_BACKEND_URL}
+MOCK=${with_mock}
+MOCK_PID=${mock_pid}
+MOCK_PORT=${MOCK_BIND_PORT:-}
 STARTED_AT=$(date -u +%Y-%m-%dT%H:%M:%SZ)
 EOF
 
@@ -337,6 +412,9 @@ cmd_doctor() {
   local homepage_has_marker=false
   local robots_disallow_admin=false
   local robots_disallow_verify=false
+  local mock_alive=false
+  local mock_reviews_status="000"
+  local mock_has_rows=false
   local tmp
   tmp="$(mktemp)"
 
@@ -392,6 +470,20 @@ cmd_doctor() {
   else
     ok=false
   fi
+
+  if [[ "${MOCK:-}" == "true" ]]; then
+    if is_pid_alive "${MOCK_PID:-}"; then
+      mock_alive=true
+    else
+      ok=false
+    fi
+    mock_reviews_status="$(http_get "${BACKEND_URL}/reviews" "${tmp}" || echo "000")"
+    if [[ "${mock_reviews_status}" == "200" ]] && grep -q "${MOCK_REVIEWS_MARKER}" "${tmp}"; then
+      mock_has_rows=true
+    else
+      ok=false
+    fi
+  fi
   rm -f "${robots}" "${tmp}"
 
   cat <<EOF
@@ -406,6 +498,10 @@ homepage_status=${homepage_status}
 homepage_has_marker=${homepage_has_marker}
 robots_disallow_admin=${robots_disallow_admin}
 robots_disallow_verify=${robots_disallow_verify}
+mock=${MOCK:-false}
+mock_alive=${mock_alive}
+mock_reviews_status=${mock_reviews_status}
+mock_has_rows=${mock_has_rows}
 backend_url=${BACKEND_URL}
 repo=${REPO_ROOT}
 log=${LOG_FILE}
@@ -423,6 +519,9 @@ cmd_status() {
   echo "origin=${ORIGIN}"
   echo "pid=${PID}"
   echo "alive=$(is_pid_alive "${PID}" && echo true || echo false)"
+  echo "mock=${MOCK:-false}"
+  echo "mock_pid=${MOCK_PID:-}"
+  echo "backend_url=${BACKEND_URL}"
   echo "evidence=$(evidence_dir "${run_id}")"
 }
 
@@ -554,6 +653,18 @@ cmd_cleanup() {
       if is_pid_alive "${PID}"; then
         kill -KILL "${PID}" 2>/dev/null || true
         kill_tree "${PID}"
+      fi
+    fi
+    if [[ -n "${MOCK_PID:-}" ]] && is_pid_alive "${MOCK_PID}"; then
+      kill_tree "${MOCK_PID}"
+      local j=0
+      while is_pid_alive "${MOCK_PID}" && (( j < 10 )); do
+        sleep 0.2
+        j=$((j + 1))
+      done
+      if is_pid_alive "${MOCK_PID}"; then
+        kill -KILL "${MOCK_PID}" 2>/dev/null || true
+        kill_tree "${MOCK_PID}"
       fi
     fi
   fi

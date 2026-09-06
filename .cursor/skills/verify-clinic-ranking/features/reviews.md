@@ -24,13 +24,14 @@ Preconditions:
 
 - Clinic Ranking FE is healthy at the origin from `control-clinic-ranking origin`.
 - `control-clinic-ranking doctor` reports `ok=true`.
-- For `reviews-list` rows, `reviews-filter` options, `reviews-page`, and `reviews-detail` success: a live backend via `CLINIC_RANKING_VERIFY_BACKEND_URL`. Without it, only `reviews-error` (and the heading) are in play — report the rest `verified-unreachable`.
+- For `reviews-list` rows, `reviews-filter` options, `reviews-page`, and `reviews-detail` success: `launch --mock` or a live `CLINIC_RANKING_VERIFY_BACKEND_URL`. Without either, only `reviews-error` (and the heading) are in play — report the rest `verified-unreachable`.
+- Mock fixtures: first row `Klinikum Innenstadt` (`62db672b-d95a-4eeb-97f1-a97935095622`); `Bayern` has three rows and a pager; `Sachsen` is empty; specialty `Biochemie` is listed but has no rows.
 - Desktop viewport (≥768px) for table rows; narrower for cards.
 
 - **Open list.** Go to `/app/reviews`. Run `control-clinic-ranking screenshot /app/reviews`. Heading `Alle Bewertungen` is visible. Four comboboxes named `Fachrichtung filtern`, `Bundesland filtern`, `Stadt filtern`, and `Krankenhaus filtern` are present. Stadt and Krankenhaus start disabled until a Bundesland is chosen.
 - **Loading.** On first paint the status `Lade Bewertungen…` may appear. Wait until it is gone before asserting empty, error, or rows.
 - **Error (no backend).** If the list request fails, an alert contains a failure message and a button `Aktualisieren`. Choosing `Aktualisieren` retries; without a backend the alert returns. This is sufficient proof of `reviews-error`.
-- **Rows (backend).** A table of reviews appears on desktop. Run `control-clinic-ranking snapshot /app/reviews`. At least one `role="link"` named `Bewertung …: Details anzeigen` exists, **or** (mobile) a link whose URL is `/app/review/<id>`.
+- **Rows (backend / mock).** A table of reviews appears on desktop. Run `control-clinic-ranking snapshot /app/reviews`. At least one `role="link"` named `Bewertung …: Details anzeigen` exists, **or** (mobile) a link whose URL is `/app/review/<id>`. With `--mock`, the first desktop name is `Bewertung Klinikum Innenstadt: Details anzeigen`.
 - **Filter.** Open combobox `Bundesland filtern`, choose a listed state. The URL gains `?state=<name>` (no `page`). Stadt and Krankenhaus enable. Results update. Clearing the combobox (option labeled `—`) drops the param.
 - **Empty.** Apply a filter combination with no reviews, or observe a backend that returns none. Text `Keine Bewertungen gefunden` is visible and the pager is absent.
 - **Pager.** When more than one page exists, navigation `Seitennavigation` shows `Vorherige Seite`, `Nächste Seite`, and `Seite N` (`aria-current="page"` on the current). Choose `Nächste Seite`. The URL contains `page=2` (or higher) and the heading remains `Alle Bewertungen`.

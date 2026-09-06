@@ -25,7 +25,7 @@ Preconditions:
 - `control-clinic-ranking doctor` reports `ok=true`.
 - Desktop (≥1024px) to use navigation `Formular-Schritte`; narrower uses the mobile progressbar instead of the sidebar.
 - Clear `localStorage` keys `clinic-ranking-submit:form-draft` and `clinic-ranking-submit:current-step` before a clean run (or use a fresh profile).
-- `submit-success` needs a live backend. Without it, prove `submit-validate` and the visible POST error, then mark success `verified-unreachable`.
+- `submit-success` needs `launch --mock` or a live backend. Without either, prove `submit-validate` and the visible POST error, then mark success `verified-unreachable`.
 
 - **Open form.** Choose `Jetzt Berichten` or open `/app/submit`. Run `control-clinic-ranking screenshot /app/submit`. Heading `Dein Krankenhaus` is visible. Footer legal links are **absent**. Counter shows `1 / 7`. Button `Zurück` is disabled. Button `Weiter` is enabled.
 - **Step fields.** Labels `Bundesland`, `Stadt`, `Krankenhaus`, `Fachrichtung` are present. Without a backend the combobox lists may be empty or error; the custom option (`ANDERES BUNDESLAND…` and siblings) still opens a free-text field.

@@ -24,7 +24,7 @@ Preconditions:
 
 - Clinic Ranking FE is healthy at the origin from `control-clinic-ranking origin`.
 - `control-clinic-ranking doctor` reports `ok=true`.
-- `feedback-success` needs a live backend that accepts `POST /feedback`. Without it, prove validate + error and mark success `verified-unreachable`.
+- `feedback-success` needs `launch --mock` or a live backend that accepts `POST /feedback`. Without either, prove validate + error and mark success `verified-unreachable`.
 
 - **Open default.** Go to `/app/feedback` (or click `Feedback` in `Hauptnavigation`). Run `control-clinic-ranking screenshot /app/feedback`. Heading `Feedback geben` is visible. Fields `Dein Feedback` (`#feedback`) and `Deine E-Mail-Adresse` (`#email`) are present. Submit is `Feedback absenden`.
 - **Process variant.** Open `/app/feedback?type=submission_feedback`. Heading `Feedback zum Bewertungsprozess` is visible and the textarea placeholder is `Dein Feedback zum Bewertungsprozess...`.

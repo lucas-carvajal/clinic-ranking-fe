@@ -22,13 +22,13 @@ Preconditions:
 
 - Clinic Ranking FE is healthy at the origin from `control-clinic-ranking origin`.
 - `control-clinic-ranking doctor` reports `ok=true` and `robots_disallow_verify=true`.
-- `verify-success` needs a live backend that accepts `POST /review-requests/verify` plus a real unused token. Without it, prove dead + failed and mark success `verified-unreachable`.
+- `verify-success` needs `launch --mock` (token `clinic-ranking-verify-ok`) or a live backend plus a real unused token. Without either, prove dead + failed and mark success `verified-unreachable`. Token `expired` on the mock is `verify-dead`.
 
 - **Dead link (no token).** Open `/verify`. Run `control-clinic-ranking screenshot /verify`. Heading `Dieser Link funktioniert nicht :(` is visible. Body says the link is invalid, expired, or already used. Button `Zur Startseite` is present. Navigation `Hauptnavigation` is present (unlike `/`).
 - **Home CTA.** Choose `Zur Startseite`. The URL is `/` and the heading `Das Assistenz Arzt Ranking` is visible.
 - **Failed consume (no backend).** Open `/verify?token=not-a-real-token`. Run `control-clinic-ranking fetch /verify?token=not-a-real-token` and `screenshot` the same path. Heading `Bestätigung fehlgeschlagen` is visible. Body is the real error (often `Network error while calling API`). URL still has the token; it is not rewritten to success.
 - **Loading.** A slow consume may flash `Wird bestätigt…` (`role="status"`). Do not treat that as the final state.
-- **Success (backend).** Open `/verify?token=<unused-valid-token>` against a live API. Heading `Email bestätigt` is visible. Body says the email is confirmed and the review will be published anonymously. Direct GET without a successful consume is **not** proof — there is no `?success=` short-circuit.
+- **Success (mock / backend).** Open `/verify?token=clinic-ranking-verify-ok` after `launch --mock` (or a live unused token). Heading `Email bestätigt` is visible. Body says the email is confirmed and the review will be published anonymously. Direct GET without a successful consume is **not** proof — there is no `?success=` short-circuit.
 - **Proof.** Capture `/verify` (dead) and `/verify?token=…` (failed **or** success). The `Zur Startseite` click needs the verify screenshot and the landing destination.
 
 ## Gotchas
