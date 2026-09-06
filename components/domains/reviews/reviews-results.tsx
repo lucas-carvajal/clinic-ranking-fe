@@ -34,7 +34,7 @@ export function ReviewsResults({ data }: Readonly<{ data: ReviewSummary[] }>) {
           <Link
             key={review.id}
             href={`/app/review/${review.id}`}
-            className="border-border bg-surface-lifted shadow-sm block w-full overflow-hidden rounded-lg border p-3 transition-shadow hover:shadow-md"
+            className="border-border bg-background block w-full overflow-hidden rounded-lg border p-4"
           >
             <div className="flex items-start gap-3">
               <div className="min-w-0 flex-1">
@@ -57,7 +57,7 @@ export function ReviewsResults({ data }: Readonly<{ data: ReviewSummary[] }>) {
                 </dl>
               </div>
               <div className="w-12 shrink-0 text-center">
-                <div className="text-brand-mint text-xl font-bold">{review.totalGrade}</div>
+                <div className="text-foreground text-xl font-bold">{review.totalGrade}</div>
                 <div className="text-muted-foreground text-xs">Note</div>
               </div>
             </div>
@@ -65,7 +65,7 @@ export function ReviewsResults({ data }: Readonly<{ data: ReviewSummary[] }>) {
         ))}
       </div>
 
-      <div className="border-border bg-surface-lifted shadow-sm hidden overflow-hidden rounded-md border md:block">
+      <div className="border-border bg-background hidden overflow-hidden rounded-md border md:block">
         <Table>
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (

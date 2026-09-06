@@ -13,7 +13,7 @@ Reviews lets a visitor browse public hospital-training reviews, narrow them by s
 
 ## How to get to it (user POV)
 
-- Choose `Bewertungen Ansehen` on `/`.
+- Choose `Bewertungen ansehen` on `/`.
 - Choose `Alle Bewertungen` in `Hauptnavigation`.
 - Open `/app/reviews` (optional query: `state`, `city`, `hospital`, `specialty`, `page`).
 - Choose a desktop row named `Bewertung <hospital>: Details anzeigen`, or a mobile card link, or open `/app/review/<id>` directly.

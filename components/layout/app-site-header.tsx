@@ -25,14 +25,13 @@ function NavLink({ href, label }: { href: string; label: string }) {
     <Link
       href={href}
       className={cn(
-        "relative text-base font-medium transition-colors duration-200",
-        active ? "text-foreground" : "text-foreground/80 hover:text-foreground",
+        "relative text-base transition-colors duration-200",
+        active
+          ? "text-foreground font-semibold"
+          : "text-ink-utility font-medium hover:text-foreground",
       )}
     >
       {label}
-      {active ? (
-        <span className="bg-brand-red absolute -bottom-1 left-0 h-0.5 w-full rounded-full" />
-      ) : null}
     </Link>
   );
 }
@@ -96,7 +95,7 @@ export function AppSiteHeader() {
 
   return (
     <>
-      <header className="border-border bg-background/95 fixed inset-x-0 top-0 z-50 border-b backdrop-blur-sm">
+      <header className="border-border bg-background fixed inset-x-0 top-0 z-50 border-b">
         <nav
           aria-label="Hauptnavigation"
           className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8"
