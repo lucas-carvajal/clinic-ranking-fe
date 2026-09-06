@@ -45,3 +45,4 @@ Preconditions:
 - Desktop `role="link"` is on the `<tr>`, not an `<a>`. Accessible name is `Bewertung ${hospital}: Details anzeigen`.
 - Pagination is hidden when there is only one page and no next page.
 - Opening detail without a backend is still a valid `reviews-detail` error proof if you used a real navigation to `/app/review/<id>`.
+- Path ids that fail RFC UUID parse (including nil-like `00000000-0000-0000-0000-000000000001`) show `Bewertung nicht gefunden` without calling the API. Use a versioned UUID such as `62db672b-d95a-4eeb-97f1-a97935095622` to prove `Bewertung konnte nicht geladen werden` when the backend is down.

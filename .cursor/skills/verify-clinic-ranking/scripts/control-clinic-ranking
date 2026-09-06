@@ -37,6 +37,7 @@ Environment:
   CLINIC_RANKING_VERIFY_STATE_ROOT      Default /tmp/clinic-ranking-verify
   CLINIC_RANKING_VERIFY_EVIDENCE_ROOT   Default /tmp/clinic-ranking-verify-evidence
   CLINIC_RANKING_VERIFY_CHROME          Override Chrome/Chromium binary
+  CLINIC_RANKING_VERIFY_CHROME_BUDGET_MS  Headless virtual-time budget (default 15000)
 
 Paths for fetch/snapshot/screenshot are origin-relative (e.g. / or /app/reviews).
 EOF
@@ -202,7 +203,7 @@ chrome_run() {
     --user-data-dir="${udir}" \
     --hide-scrollbars \
     --window-size=1280,800 \
-    --virtual-time-budget=4000 \
+    --virtual-time-budget="${CLINIC_RANKING_VERIFY_CHROME_BUDGET_MS:-15000}" \
     "$@"
 }
 
@@ -335,6 +336,7 @@ cmd_doctor() {
   local homepage_status="000"
   local homepage_has_marker=false
   local robots_disallow_admin=false
+  local robots_disallow_verify=false
   local tmp
   tmp="$(mktemp)"
 
@@ -385,6 +387,11 @@ cmd_doctor() {
   else
     ok=false
   fi
+  if [[ "${robots_status}" == "200" ]] && grep -q "Disallow: /verify" "${robots}"; then
+    robots_disallow_verify=true
+  else
+    ok=false
+  fi
   rm -f "${robots}" "${tmp}"
 
   cat <<EOF
@@ -398,6 +405,7 @@ port_owner=${port_owner}
 homepage_status=${homepage_status}
 homepage_has_marker=${homepage_has_marker}
 robots_disallow_admin=${robots_disallow_admin}
+robots_disallow_verify=${robots_disallow_verify}
 backend_url=${BACKEND_URL}
 repo=${REPO_ROOT}
 log=${LOG_FILE}

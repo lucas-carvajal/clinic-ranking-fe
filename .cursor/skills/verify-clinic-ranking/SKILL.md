@@ -1,6 +1,6 @@
 ---
 name: verify-clinic-ranking
-description: "Verify the Clinic Ranking FE Next.js web UI (landing, reviews, submit, feedback, legal) by launching an isolated next dev instance and driving it in the browser. Use when proving user-facing behavior, checking a UI change, or after edits to app routes."
+description: "Verify the Clinic Ranking FE Next.js web UI (landing, reviews, submit, feedback, legal, email verify) by launching an isolated next dev instance and driving it in the browser. Use when proving user-facing behavior, checking a UI change, or after edits to app routes."
 ---
 
 # Verify Clinic Ranking FE
@@ -45,6 +45,7 @@ It is read-only. Require `ok=true` plus:
 - `port_owner=us` or `us-child` (Next may listen on a child)
 - `homepage_status=200` and `homepage_has_marker=true` (`Das Assistenz Arzt Ranking` in `/`)
 - `robots_disallow_admin=true` (`Disallow: /admin` in `/robots.txt`)
+- `robots_disallow_verify=true` (`Disallow: /verify` in `/robots.txt`)
 
 If `port_owner` is `foreign`, **stop**. Driving someone else's process is forbidden. If `ok=false`, do not drive; relaunch after `cleanup`.
 
@@ -63,7 +64,7 @@ ORIGIN="$(.cursor/skills/verify-clinic-ranking/scripts/control-clinic-ranking or
 .cursor/skills/verify-clinic-ranking/scripts/control-clinic-ranking screenshot /app/reviews
 ```
 
-`fetch` is the HTML document (SSR). `snapshot` is Chrome `--dump-dom` after JS. `screenshot` is a 1280×800 PNG. Prefer **role + accessible name** over CSS or coordinates.
+`fetch` is the HTML document (SSR). `snapshot` is Chrome `--dump-dom` after JS. `screenshot` is a 1280×800 PNG. Chrome uses a **15s** virtual-time budget (override `CLINIC_RANKING_VERIFY_CHROME_BUDGET_MS`) so client queries can finish — reviews error/rows will not show if the capture is too short. Prefer **role + accessible name** over CSS or coordinates.
 
 The helper uses the real Chrome binary (`/opt/google/chrome/chrome` when present) and a per-run `--user-data-dir`. Do not point it at a PATH `google-chrome` wrapper that shares the desktop profile — that hangs headless captures.
 
@@ -94,6 +95,10 @@ Stable handles from this repo (German copy is the UI):
 | Feedback success | heading `Vielen Dank für dein Feedback ❤️`; link `Weiteres Feedback geben` |
 | Legal h1s | `Impressum`, `Datenschutzerklärung`, `Allgemeine Geschäftsbedingungen (AGB)` |
 | Admin login h1 | `Admin-Anmeldung`; fields `Benutzername`, `Passwort`; submit `Anmelden` |
+| Verify dead | heading `Dieser Link funktioniert nicht :(`; button `Zur Startseite` → `/` |
+| Verify failed | heading `Bestätigung fehlgeschlagen` (token present, consume failed) |
+| Verify success | heading `Email bestätigt` (live token + backend) |
+| Verify loading | `Wird bestätigt…` |
 
 Open the origin in a **dedicated** browser profile/tab. Do not attach to a user's already-open `localhost:3000`.
 
@@ -151,3 +156,5 @@ Two verification instances can run side by side **only** with distinct `CLINIC_R
 ## Out of map (for now)
 
 Admin (`/admin/login`, cookie `admin_auth_token`, `proxy.ts` gating) needs a real backend and credentials. Do not fake a session. If a task is admin-only, report `verified-unreachable` with `/admin/login` as the attempted route.
+
+`/verify?token=…` success (`Email bestätigt`) needs a real consume token from the Go API. Without it, prove the dead-link and failed states on [Verify email](features/verify-email.md) — do not invent a success.
