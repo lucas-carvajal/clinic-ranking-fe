@@ -61,7 +61,7 @@ Do not hotlink paid Tiempos files. Inter + Source Serif 4 approximate Million’
 
 - **Page**: `bg-background` on `html` / `body` (`#FFFFFF` on public).
 - **Nav**: white bar, gray links, selected black, pulsating ❤️ wordmark, black pill `Bewerten` on desktop, hamburger on mobile.
-- **Landing**: Million letter. Small kicker, short H1, stacked short sections, then the two CTAs. Desktop CTAs sit side by side. Mobile CTAs stack full width. Optional quiet gray footnotes band below the fold.
+- **Landing**: Million letter. Small kicker, short H1, stacked short sections, then the two CTAs. Desktop CTAs sit side by side. Mobile CTAs stack full width. No gray footnotes band.
 - **Reviews**: table on `md+`, cards on small viewports. Keep that split.
 - **Sticky footer**: root layout uses viewport-min height (`min-h-dvh` stack).
 - Prefer whitespace over dividers and heavy shadows. Soft cards only where they earn the box.

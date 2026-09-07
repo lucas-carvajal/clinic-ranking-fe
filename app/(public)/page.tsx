@@ -35,7 +35,7 @@ const landingSections = [
 export default function Home() {
   return (
     <main className="flex w-full flex-1 flex-col">
-      <article className="mx-auto flex w-full max-w-2xl flex-1 flex-col px-6 py-16 sm:px-8 sm:py-24">
+      <article className="mx-auto flex w-full max-w-2xl flex-col px-6 py-16 sm:px-8 sm:py-24">
         <p className="landing-kicker">Ärzte helfen Ärzten</p>
         <h1 className="page-title mt-4">Das Assistenz Arzt Ranking</h1>
         <p className="text-ink-utility font-serif mt-6 text-xl leading-relaxed sm:text-2xl">
@@ -72,11 +72,6 @@ export default function Home() {
           </Button>
         </div>
       </article>
-
-      <aside className="bg-muted text-ink-utility mt-auto px-6 py-10 text-center text-sm leading-relaxed sm:px-8">
-        Über 5000 Ärztinnen und Ärzte nutzen diese Berichte bei der Wahl ihrer
-        Weiterbildung.
-      </aside>
     </main>
   );
 }
