@@ -45,15 +45,15 @@ Public pages use **Paper Minimalism**: white paper, near-black ink, one medical-
 
 | Class / pattern | Use |
 |-----------------|-----|
-| `.landing-kicker` | Small marketing kicker. Inter, muted ink. |
+| `.landing-kicker` | Small marketing kicker. Nunito, muted ink. |
 | `.page-title` | Landing `<h1>`. Source Serif 4, ink, not red. |
 | `.section-title` | Marketing section headings. Source Serif 4, ink. |
-| `font-sans` / Inter | UI chrome: nav, buttons, filters, forms, tables. |
+| `font-sans` / Nunito | UI chrome: nav, buttons, filters, forms, tables. Rounded terminals. |
 | `font-serif` / Source Serif 4 | Editorial marketing headings and landing body. |
 | `text-foreground` | Primary app headings and body. |
 | `text-muted-foreground` | Supporting copy (utility ink, readable). |
 
-Do not hotlink paid Tiempos files. Inter + Source Serif 4 approximate Million’s Tiempos + Inter.
+Do not hotlink paid Tiempos files. Nunito + Source Serif 4 cover UI chrome and the editorial letter. Nunito is SIL OFL.
 
 ---
 
@@ -102,7 +102,7 @@ Do not hotlink paid Tiempos files. Inter + Source Serif 4 approximate Million’
 | Concern | Location |
 |---------|----------|
 | Tokens and semantic colors | `app/globals.css` (`:root`, `[data-shell="admin"]`, `@theme inline`) |
-| Fonts | `app/layout.tsx` (`Inter`, `Source_Serif_4`) |
+| Fonts | `app/layout.tsx` (`Nunito`, `Source_Serif_4`) |
 | Button semantics | `components/ui/button.tsx` |
 | Public nav | `components/layout/app-site-header.tsx` |
 | Reviews surfaces | `components/domains/reviews/*` |

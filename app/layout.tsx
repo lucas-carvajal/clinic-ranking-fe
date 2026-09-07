@@ -1,12 +1,12 @@
 import type { Metadata } from "next";
-import { Geist_Mono, Inter, Source_Serif_4 } from "next/font/google";
+import { Geist_Mono, Nunito, Source_Serif_4 } from "next/font/google";
 import { ConditionalFooter } from "@/components/layout/conditional-footer";
 import { QueryProvider } from "@/components/providers/QueryProvider";
 import { getSiteUrl } from "@/lib/site-url";
 import "./globals.css";
 
-const inter = Inter({
-  variable: "--font-inter",
+const nunito = Nunito({
+  variable: "--font-nunito",
   subsets: ["latin"],
 });
 
@@ -48,7 +48,7 @@ export default function RootLayout({
   return (
     <html
       lang="de"
-      className={`${inter.variable} ${sourceSerif.variable} ${geistMono.variable} antialiased`}
+      className={`${nunito.variable} ${sourceSerif.variable} ${geistMono.variable} antialiased`}
     >
       <body className="min-h-dvh">
         <QueryProvider>
