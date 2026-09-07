@@ -169,6 +169,7 @@ export function SubmitForm() {
               ) : (
                 <Button
                   type="button"
+                  variant="brand"
                   disabled={submitMutation.isPending}
                   onClick={handleSubmitAttempt}
                 >
