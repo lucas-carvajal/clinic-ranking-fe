@@ -74,7 +74,7 @@ Do not hotlink paid Tiempos files. Inter + Source Serif 4 approximate Million’
 |---------|----------------|--------|
 | **default** | Black (`bg-primary`) — chrome and in-flow actions, including nav `Bewerten` | `--button-radius` (100px on public) |
 | **brand** | Medical red + white label — primary product submits | `--button-radius` |
-| **outline** | Transparent fill, thin `#151515` border, black label — secondary landing CTA | `--button-radius` |
+| **outline** | Transparent fill, 2px `#151515` border, black label. Hover fills ink. Secondary landing CTA. | `--button-radius` |
 | **secondary** | Quiet fill | `--button-radius` |
 | **destructive** | Soft red tint — dangerous actions | `--button-radius` |
 | **ghost** / **link** | Minimal chrome | `--button-radius` |

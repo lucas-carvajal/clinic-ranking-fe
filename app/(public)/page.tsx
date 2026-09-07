@@ -58,7 +58,7 @@ export default function Home() {
             asChild
             variant="brand"
             size="lg"
-            className="h-12 w-full px-8 text-base sm:h-14 sm:w-auto sm:min-w-48 sm:px-10 sm:text-lg"
+            className="h-11 w-full px-6 text-[17px] sm:w-auto sm:px-7"
           >
             <Link href="/app/submit">Jetzt bewerten</Link>
           </Button>
@@ -66,7 +66,7 @@ export default function Home() {
             asChild
             variant="outline"
             size="lg"
-            className="h-12 w-full px-8 text-base sm:h-14 sm:w-auto sm:min-w-48 sm:px-10 sm:text-lg"
+            className="h-11 w-full px-6 text-[17px] sm:w-auto sm:px-7"
           >
             <Link href="/app/reviews">Bewertungen ansehen</Link>
           </Button>
