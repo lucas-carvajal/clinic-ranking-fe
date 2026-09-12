@@ -34,7 +34,7 @@ export const reviewColumns = [
   helper.accessor("totalGrade", {
     header: "Note",
     cell: ({ getValue }) => (
-      <span className="text-brand-mint font-semibold tabular-nums">{getValue()}</span>
+      <span className="text-foreground font-semibold tabular-nums">{getValue()}</span>
     ),
   }),
 ];

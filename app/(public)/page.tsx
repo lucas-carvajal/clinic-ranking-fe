@@ -21,63 +21,64 @@ export const metadata: Metadata = {
   },
 };
 
-/** Layout only — colors come from `Button variant="brand"` (see docs/design-philosophy.md). */
-const landingCtaLayoutClass =
-  "mt-10 h-12 min-w-48 self-center px-8 text-base sm:h-14 sm:min-w-56 sm:px-10 sm:text-lg";
-
-const landingBlocks = [
+const landingSections = [
   {
-    title: "Helfe anderen die richtige Entscheidung zu treffen ❤️",
-    body: "Berichte von deiner Facharztweiterbildung und helfe in nur 5 Minuten über 5000 Ärzten bei der Entscheidung zur richtigen Weiterbildung!",
-    button: "Jetzt Berichten",
-    href: "/app/submit",
+    numeral: "I.",
+    emoji: "🤝",
+    title: "Helfe anderen die richtige Entscheidung zu treffen",
+    body: "Berichte von deiner Facharztweiterbildung und hilf in fünf Minuten anderen Ärztinnen und Ärzten bei der Wahl der Weiterbildung.",
   },
   {
-    title: "Finde das richtige Krankenhaus für deine Weiterbildung 🏥",
-    body: "Informiere dich wo du am besten die nächsten 5 Jahre verbringst und dich für deinen Facharzt ausbilden lässt!",
-    button: "Bewertungen Ansehen",
-    href: "/app/reviews",
+    numeral: "II.",
+    emoji: "😍",
+    title: "Finde das richtige Krankenhaus",
+    body: "Informiere dich, wo du die nächsten Jahre verbringst und dich für deinen Facharzt ausbilden lässt.",
   },
-];
+] as const;
 
 export default function Home() {
   return (
-    <main className="mx-auto flex w-full max-w-6xl flex-1 flex-col justify-center px-6 py-16 sm:px-8 lg:px-10">
-      <section className="max-w-4xl">
-        <h1 className="page-title">Das Assistenz Arzt Ranking</h1>
-        <h2 className="mt-6 text-2xl leading-tight font-medium text-foreground sm:text-4xl">
-          <span className="block">Ärzte helfen Ärzten</span>
-          <span className="block">Für eine faire Facharztweiterbildung</span>
-        </h2>
-      </section>
+    <main className="flex w-full flex-1 flex-col">
+      <article className="mx-auto w-full max-w-xl px-6 py-20 sm:px-8 sm:py-28">
+        <h1 className="text-foreground text-3xl font-semibold tracking-tight sm:text-4xl">
+          Das Assistenz Arzt Ranking
+        </h1>
+        <p className="text-foreground mt-4 text-lg leading-relaxed">
+          Ärzte helfen Ärzten.{" "}
+          <em className="italic">Für eine faire Facharztweiterbildung.</em>
+        </p>
 
-      <section
-        aria-label="Landing page content"
-        className="mt-14 grid grid-cols-1 gap-5 md:grid-cols-2"
-      >
-        {landingBlocks.map((block) => (
-          <article
-            key={block.title}
-            className="flex min-h-64 flex-col justify-between py-4 text-foreground md:px-4"
-          >
-            <div>
-              <h3 className="section-title">{block.title}</h3>
-              <p className="mt-5 text-base leading-7 text-muted-foreground">
-                {block.body}
-              </p>
+        <section aria-label="Landing page content" className="mt-12 space-y-8">
+          {landingSections.map((section) => (
+            <div key={section.title} className="flex gap-4">
+              <span className="text-ink-muted w-6 shrink-0 pt-0.5 text-sm" aria-hidden>
+                {section.numeral}
+              </span>
+              <div>
+                <h2 className="text-foreground font-semibold">
+                  <span
+                    className="mr-2 inline-block text-2xl leading-none align-[-0.15em]"
+                    aria-hidden
+                  >
+                    {section.emoji}
+                  </span>
+                  {section.title}
+                </h2>
+                <p className="text-foreground/80 mt-2 leading-relaxed">{section.body}</p>
+              </div>
             </div>
-            {block.href ? (
-              <Button asChild variant="brand" className={landingCtaLayoutClass}>
-                <Link href={block.href}>{block.button}</Link>
-              </Button>
-            ) : (
-              <Button variant="brand" className={landingCtaLayoutClass}>
-                {block.button}
-              </Button>
-            )}
-          </article>
-        ))}
-      </section>
+          ))}
+        </section>
+
+        <div className="mt-12 flex flex-col items-start gap-4 sm:flex-row sm:items-center">
+          <Button asChild variant="brand" className="h-10 px-5 text-[15px]">
+            <Link href="/app/submit">Jetzt bewerten</Link>
+          </Button>
+          <Button asChild variant="link" className="text-[15px]">
+            <Link href="/app/reviews">Bewertungen ansehen</Link>
+          </Button>
+        </div>
+      </article>
     </main>
   );
 }

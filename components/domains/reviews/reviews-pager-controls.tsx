@@ -1,7 +1,7 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
 import { computeItems } from "@/lib/domains/reviews/pager/compute-items";
+import { cn } from "@/lib/utils";
 
 type ReviewsPagerControlsProps = {
   currentPage: number;
@@ -12,6 +12,9 @@ type ReviewsPagerControlsProps = {
   onNext: () => void;
   onPrev: () => void;
 };
+
+const pagerLinkClass =
+  "cursor-pointer text-[15px] transition-colors duration-200 disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-40";
 
 export function ReviewsPagerControls({
   currentPage,
@@ -30,58 +33,64 @@ export function ReviewsPagerControls({
   return (
     <nav
       aria-label="Seitennavigation"
-      className="mt-8 flex items-center justify-center gap-2"
+      className="mt-10 flex items-center justify-center gap-6"
     >
-      <Button
+      <button
         type="button"
-        variant="outline"
-        className="h-12 w-12 bg-surface-lifted text-lg"
+        className={cn(
+          pagerLinkClass,
+          "text-ink-utility font-semibold hover:text-foreground",
+        )}
         onClick={onPrev}
         disabled={currentPage === 1 || isFetching}
         aria-label="Vorherige Seite"
       >
-        ←
-      </Button>
+        Zurück
+      </button>
 
-      {items.map((item, i) =>
-        item === "ellipsis" ? (
-          <span
-            key={`e-${i}`}
-            className="text-muted-foreground select-none px-1"
-            aria-hidden
-          >
-            …
-          </span>
-        ) : (
-          <Button
-            key={`p-${item.page}`}
-            type="button"
-            variant={item.page === currentPage ? "default" : "outline"}
-            className={
-              item.page === currentPage
-                ? "h-12 min-w-12 px-3 text-base font-medium"
-                : "h-12 min-w-12 bg-surface-lifted px-3 text-base font-medium"
-            }
-            onClick={() => onGoToPage(item.page)}
-            disabled={isFetching && item.page !== currentPage}
-            aria-current={item.page === currentPage ? "page" : undefined}
-            aria-label={`Seite ${item.page}`}
-          >
-            {item.page}
-          </Button>
-        ),
-      )}
+      <div className="flex items-center gap-4">
+        {items.map((item, i) =>
+          item === "ellipsis" ? (
+            <span
+              key={`e-${i}`}
+              className="text-ink-muted select-none"
+              aria-hidden
+            >
+              …
+            </span>
+          ) : (
+            <button
+              key={`p-${item.page}`}
+              type="button"
+              className={cn(
+                pagerLinkClass,
+                item.page === currentPage
+                  ? "text-foreground font-extrabold"
+                  : "text-ink-utility font-semibold hover:text-foreground",
+              )}
+              onClick={() => onGoToPage(item.page)}
+              disabled={isFetching && item.page !== currentPage}
+              aria-current={item.page === currentPage ? "page" : undefined}
+              aria-label={`Seite ${item.page}`}
+            >
+              {item.page}
+            </button>
+          ),
+        )}
+      </div>
 
-      <Button
+      <button
         type="button"
-        variant="outline"
-        className="h-12 w-12 bg-surface-lifted text-lg"
+        className={cn(
+          pagerLinkClass,
+          "text-ink-utility font-semibold hover:text-foreground",
+        )}
         onClick={onNext}
         disabled={!hasNext || isFetching}
         aria-label="Nächste Seite"
       >
-        →
-      </Button>
+        Weiter
+      </button>
     </nav>
   );
 }

@@ -72,9 +72,9 @@ Stable handles from this repo (German copy is the UI):
 | Surface | Handle |
 |---|---|
 | Landing h1 | heading `Das Assistenz Arzt Ranking` |
-| Landing CTAs | link `Jetzt Berichten` → `/app/submit`; link `Bewertungen Ansehen` → `/app/reviews` |
+| Landing CTAs | link `Jetzt bewerten` → `/app/submit`; link `Bewertungen ansehen` → `/app/reviews` |
 | Landing region | `aria-label="Landing page content"` |
-| App header nav | `aria-label="Hauptnavigation"` — **not on `/`**. Links: `Alle Bewertungen`, `Das Ranking`, `Feedback`. CTA link `Bewerten` → `/app/submit`. Logo link goes to `/`. |
+| App header nav | `aria-label="Hauptnavigation"` on `/`, `/legal/*`, `/verify`, and `/app/*`. Links: `Alle Bewertungen`, `Das Ranking`, `Feedback`. CTA link `Bewerten` → `/app/submit`. Logo link goes to `/`. |
 | Mobile menu | button `Menü öffnen` / `Menü schließen`; dialog with `aria-modal="true"` |
 | Footer (hidden on `/app/submit*`) | links `Impressum`, `Datenschutzerklärung`, `AGB` |
 | Reviews h1 | `Alle Bewertungen` |

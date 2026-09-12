@@ -12,7 +12,7 @@ Submit lets a visitor walk a seven-step form, keep a local draft, and send a rev
 
 ## How to get to it (user POV)
 
-- Choose `Jetzt Berichten` on `/`.
+- Choose `Jetzt bewerten` on `/`.
 - Choose `Bewerten` in the header (desktop) or in the mobile menu.
 - Open `/app/submit` directly.
 - After a successful submit, the app navigates to `/app/submit/success` (also reachable as a screen, `noindex`).
@@ -27,7 +27,7 @@ Preconditions:
 - Clear `localStorage` keys `clinic-ranking-submit:form-draft` and `clinic-ranking-submit:current-step` before a clean run (or use a fresh profile).
 - `submit-success` needs a live backend. Without it, prove `submit-validate` and the visible POST error, then mark success `verified-unreachable`.
 
-- **Open form.** Choose `Jetzt Berichten` or open `/app/submit`. Run `control-clinic-ranking screenshot /app/submit`. Heading `Dein Krankenhaus` is visible. Footer legal links are **absent**. Counter shows `1 / 7`. Button `Zurück` is disabled. Button `Weiter` is enabled.
+- **Open form.** Choose `Jetzt bewerten` or open `/app/submit`. Run `control-clinic-ranking screenshot /app/submit`. Heading `Dein Krankenhaus` is visible. Footer legal links are **absent**. Counter shows `1 / 7`. Button `Zurück` is disabled. Button `Weiter` is enabled.
 - **Step fields.** Labels `Bundesland`, `Stadt`, `Krankenhaus`, `Fachrichtung` are present. Without a backend the combobox lists may be empty or error; the custom option (`ANDERES BUNDESLAND…` and siblings) still opens a free-text field.
 - **Next step.** Choose `Weiter`. Counter becomes `2 / 7` and heading `Deine Weiterbildung` is visible. Sidebar (desktop) marks the current step with `aria-current="step"`.
 - **Sidebar jump.** On desktop, choose `Dein Krankenhaus` in `Formular-Schritte`. Counter returns to `1 / 7`.

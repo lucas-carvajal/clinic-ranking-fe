@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 export function FeedbackSuccess() {
   return (
     <div className="text-foreground mx-auto max-w-3xl px-4 py-8 md:px-6">
-      <div className="border-border bg-cream-surface rounded-xl border p-6 md:p-8">
+      <div className="py-2">
         <div className="flex flex-col gap-4 md:flex-row md:items-start">
           <span className="text-3xl leading-none shrink-0 select-none" aria-hidden>
             ✅

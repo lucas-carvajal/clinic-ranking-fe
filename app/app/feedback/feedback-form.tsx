@@ -44,6 +44,7 @@ function SubmitFeedbackButton() {
   return (
     <Button
       type="submit"
+      variant="brand"
       disabled={pending}
       size="lg"
       className="h-auto min-h-11 w-full px-6 py-3 text-base font-medium md:text-lg"
@@ -84,7 +85,7 @@ export function FeedbackForm({ defaultType }: Readonly<{ defaultType: FeedbackPa
             placeholder={copy.feedbackPlaceholder}
             aria-invalid={!!state.fieldErrors?.feedback}
             className={cn(
-              "bg-surface-lifted border-border min-h-[200px] resize-y shadow-sm",
+              "bg-background border-border min-h-[200px] resize-y",
               state.fieldErrors?.feedback &&
                 "border-destructive focus-visible:border-destructive",
             )}
@@ -106,7 +107,7 @@ export function FeedbackForm({ defaultType }: Readonly<{ defaultType: FeedbackPa
             placeholder={copy.emailPlaceholder}
             aria-invalid={!!state.fieldErrors?.email}
             className={cn(
-              "bg-surface-lifted border-border shadow-sm",
+              "bg-background border-border",
               state.fieldErrors?.email &&
                 "border-destructive focus-visible:border-destructive",
             )}
