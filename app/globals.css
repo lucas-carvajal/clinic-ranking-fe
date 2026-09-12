@@ -130,8 +130,8 @@
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
   --font-sans: var(--font-nunito);
-  --font-serif: var(--font-source-serif);
-  --font-mono: var(--font-geist-mono);
+  --font-serif: var(--font-nunito);
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, monospace;
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
@@ -156,12 +156,10 @@
 
 @layer components {
   .page-title {
-    font-family: var(--font-source-serif), ui-serif, Georgia, serif;
     @apply text-foreground text-4xl leading-tight font-semibold tracking-tight sm:text-6xl;
   }
 
   .section-title {
-    font-family: var(--font-source-serif), ui-serif, Georgia, serif;
     @apply text-foreground text-2xl leading-tight font-semibold tracking-tight;
   }
 

@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
 
+import { LegalNavLink, legalLinks } from "@/components/layout/site-footer";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
@@ -27,8 +28,8 @@ function NavLink({ href, label }: { href: string; label: string }) {
       className={cn(
         "relative text-base transition-colors duration-200",
         active
-          ? "text-foreground font-semibold"
-          : "text-ink-utility font-medium hover:text-foreground",
+          ? "text-foreground font-extrabold"
+          : "text-ink-utility font-semibold hover:text-foreground",
       )}
     >
       {label}
@@ -95,7 +96,7 @@ export function AppSiteHeader() {
 
   return (
     <>
-      <header className="border-border bg-background fixed inset-x-0 top-0 z-50 border-b">
+      <header className="bg-background fixed inset-x-0 top-0 z-50">
         <nav
           aria-label="Hauptnavigation"
           className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8"
@@ -120,11 +121,7 @@ export function AppSiteHeader() {
             </div>
           </div>
           <div className="hidden md:block">
-            <Button
-              asChild
-              size="lg"
-              className="h-auto min-h-11 px-5 text-base font-medium md:text-lg md:px-6"
-            >
+            <Button asChild className="h-9 px-4 text-[15px]">
               <Link href="/app/submit">Bewerten</Link>
             </Button>
           </div>
@@ -208,15 +205,22 @@ export function AppSiteHeader() {
               </Link>
             ))}
             <hr className="border-border border-t" />
-            <Button
-              asChild
-              size="lg"
-              className="h-auto min-h-11 w-full px-6 py-3.5 text-lg font-medium"
-            >
+            <Button asChild className="h-10 w-full px-5 text-[15px]">
               <Link href="/app/submit" onClick={() => setMobileOpen(false)}>
                 Bewerten
               </Link>
             </Button>
+            <div className="space-y-3 pt-4">
+              {legalLinks.map(({ href, label }) => (
+                <LegalNavLink
+                  key={href}
+                  href={href}
+                  label={label}
+                  className="block text-center"
+                  onClick={() => setMobileOpen(false)}
+                />
+              ))}
+            </div>
           </div>
         </div>
       ) : null}

@@ -9,7 +9,7 @@ describe("Home", () => {
     expect(
       screen.getByRole("heading", { name: "Das Assistenz Arzt Ranking" }),
     ).toBeInTheDocument();
-    expect(screen.getByText("Ärzte helfen Ärzten")).toBeInTheDocument();
+    expect(screen.getByText(/Ärzte helfen Ärzten/)).toBeInTheDocument();
     const reportLink = screen.getByRole("link", { name: "Jetzt bewerten" });
     expect(reportLink).toBeInTheDocument();
     expect(reportLink).toHaveAttribute("href", "/app/submit");

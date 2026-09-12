@@ -34,8 +34,8 @@ Public pages use **Paper Minimalism**: white paper, near-black ink, one medical-
 
 - **Red fill** is for product actions (`Jetzt bewerten`, `Abschicken`, `Feedback absenden`). It is not a title color and not the nav selected state.
 - **Black fill** is chrome (`Bewerten` in the header).
-- **Outline pill** is the secondary landing action (`Bewertungen ansehen`).
-- **Selected nav** is black weight and color. It is not red and has no underline bar.
+- **Underlined text** is the secondary CTA (`Button variant="link"`, weight 600). Landing uses it for `Bewertungen ansehen`. Nav links stay their own component.
+- **Selected nav** is black at 800. Idle nav is utility gray at 600. It is not red and has no underline bar.
 - Public UI stays mono besides the red product CTA. Do not use mint as a second brand color on public pages.
 - Admin (`[data-shell="admin"]`) restores the cream / mint tokens and is out of scope for this language.
 
@@ -46,24 +46,24 @@ Public pages use **Paper Minimalism**: white paper, near-black ink, one medical-
 | Class / pattern | Use |
 |-----------------|-----|
 | `.landing-kicker` | Small marketing kicker. Nunito, muted ink. |
-| `.page-title` | Landing `<h1>`. Source Serif 4, ink, not red. |
-| `.section-title` | Marketing section headings. Source Serif 4, ink. |
-| `font-sans` / Nunito | UI chrome: nav, buttons, filters, forms, tables. Rounded terminals. |
-| `font-serif` / Source Serif 4 | Editorial marketing headings and landing body. |
+| `.page-title` | Landing `<h1>`. Nunito, ink, not red. |
+| `.section-title` | Marketing section headings. Nunito, ink. |
+| `font-sans` / Nunito | All public type: nav, buttons, filters, forms, tables, headings, body. |
 | `text-foreground` | Primary app headings and body. |
 | `text-muted-foreground` | Supporting copy (utility ink, readable). |
 
-Do not hotlink paid Tiempos files. Nunito + Source Serif 4 cover UI chrome and the editorial letter. Nunito is SIL OFL.
+One family on public pages. Nunito is SIL OFL. Do not hotlink paid Tiempos files.
 
 ---
 
 ## Surfaces and layout
 
 - **Page**: `bg-background` on `html` / `body` (`#FFFFFF` on public).
-- **Nav**: white bar, gray links, selected black, pulsating ❤️ wordmark, black pill `Bewerten` on desktop, hamburger on mobile.
-- **Landing**: Million letter. Small kicker, short H1, stacked short sections, then the two CTAs. Desktop CTAs sit side by side. Mobile CTAs stack full width. No gray footnotes band.
-- **Reviews**: table on `md+`, cards on small viewports. Keep that split.
-- **Sticky footer**: root layout uses viewport-min height (`min-h-dvh` stack).
+- **Nav**: white bar with no hairline, gray links, selected black, pulsating ❤️ wordmark, black pill `Bewerten` on desktop, hamburger on mobile.
+- **Footer**: legal links on the same white sheet. No hairline. Idle utility gray at 400. Selected black at 600. Desktop only. On mobile those links live in the hamburger menu.
+- **Landing**: Million letter. Title first (`Das Assistenz Arzt Ranking`). Subhead below (`Ärzte helfen Ärzten` plus the fair-training line). Short numbered sections. One red pill (`Jetzt bewerten`) and an underlined text link (`Bewertungen ansehen`). No kicker above the title. No gray footnotes band.
+- **Reviews**: table on `md+`, cards on small viewports. Keep that split. Pager is text like the nav: idle 600 utility, current 800 black. `Zurück` / `Weiter`. No circles.
+- **Sticky footer**: root layout uses viewport-min height (`min-h-dvh` stack). Extra bottom padding on the page stack (`pb-20` mobile, `pb-14` desktop) so the last control is not on the edge.
 - Prefer whitespace over dividers and heavy shadows. Soft cards only where they earn the box.
 
 ---
@@ -72,12 +72,13 @@ Do not hotlink paid Tiempos files. Nunito + Source Serif 4 cover UI chrome and t
 
 | Variant | Fill / intent | Radius |
 |---------|----------------|--------|
-| **default** | Black (`bg-primary`) — chrome and in-flow actions, including nav `Bewerten` | `--button-radius` (100px on public) |
-| **brand** | Medical red + white label — primary product submits | `--button-radius` |
-| **outline** | Transparent fill, 2px `#151515` border, black label. Hover fills ink. Secondary landing CTA. | `--button-radius` |
+| **default** | Black (`bg-primary`) — chrome, nav `Bewerten` | `--button-radius` (100px on public) |
+| **brand** | Medical red + white label — important product CTAs (`Jetzt bewerten`, `Abschicken`, `Feedback absenden`) | `--button-radius` |
+| **outline** | Transparent fill, 2px `#151515` border, black label | `--button-radius` |
 | **secondary** | Quiet fill | `--button-radius` |
 | **destructive** | Soft red tint — dangerous actions | `--button-radius` |
-| **ghost** / **link** | Minimal chrome | `--button-radius` |
+| **ghost** | Minimal chrome | `--button-radius` |
+| **link** | Underlined ink, no pill, weight 600 — secondary CTAs (`Bewertungen ansehen`) | none |
 
 ---
 
@@ -102,7 +103,7 @@ Do not hotlink paid Tiempos files. Nunito + Source Serif 4 cover UI chrome and t
 | Concern | Location |
 |---------|----------|
 | Tokens and semantic colors | `app/globals.css` (`:root`, `[data-shell="admin"]`, `@theme inline`) |
-| Fonts | `app/layout.tsx` (`Nunito`, `Source_Serif_4`) |
+| Fonts | `app/layout.tsx` (`Nunito`) |
 | Button semantics | `components/ui/button.tsx` |
 | Public nav | `components/layout/app-site-header.tsx` |
 | Reviews surfaces | `components/domains/reviews/*` |

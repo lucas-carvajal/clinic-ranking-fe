@@ -22,13 +22,13 @@ export function SubmitSuccessView() {
           Danke für deine Bewertung! ❤️
         </h1>
 
-        <p className="text-ink-utility font-serif text-lg leading-relaxed">
+        <p className="text-ink-utility text-lg leading-relaxed">
           Wir werden uns so schnell wie möglich bei dir per Email melden, um deine
           Bewertung zu verifizieren und zu veröffentlichen.
         </p>
 
         <div className="mt-12">
-          <p className="text-ink-utility font-serif mb-4 leading-relaxed">
+          <p className="text-ink-utility mb-4 leading-relaxed">
             Wenn du Feedback zum Bewertungsprozess hast, lass es uns gerne wissen :)
           </p>
           <Button asChild variant="outline" size="lg" className="w-full sm:w-auto">

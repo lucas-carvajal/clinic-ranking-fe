@@ -74,7 +74,7 @@ function VerifyCard({
         </div>
 
         <h1 className="page-title mb-6 text-3xl sm:text-4xl">{title}</h1>
-        <p className="text-ink-utility font-serif text-lg leading-relaxed">{body}</p>
+        <p className="text-ink-utility text-lg leading-relaxed">{body}</p>
 
         <div className="mt-10">
           <Button asChild variant="outline" size="lg">

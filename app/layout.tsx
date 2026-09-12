@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Geist_Mono, Nunito, Source_Serif_4 } from "next/font/google";
+import { Nunito } from "next/font/google";
 import { ConditionalFooter } from "@/components/layout/conditional-footer";
 import { QueryProvider } from "@/components/providers/QueryProvider";
 import { getSiteUrl } from "@/lib/site-url";
@@ -7,16 +7,6 @@ import "./globals.css";
 
 const nunito = Nunito({
   variable: "--font-nunito",
-  subsets: ["latin"],
-});
-
-const sourceSerif = Source_Serif_4({
-  variable: "--font-source-serif",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
   subsets: ["latin"],
 });
 
@@ -48,12 +38,14 @@ export default function RootLayout({
   return (
     <html
       lang="de"
-      className={`${nunito.variable} ${sourceSerif.variable} ${geistMono.variable} antialiased`}
+      className={`${nunito.variable} antialiased`}
     >
       <body className="min-h-dvh">
         <QueryProvider>
           <div className="flex min-h-dvh flex-col">
-            <div className="flex flex-1 flex-col">{children}</div>
+            <div className="flex flex-1 flex-col pb-20 md:pb-14">
+              {children}
+            </div>
             <ConditionalFooter />
           </div>
         </QueryProvider>

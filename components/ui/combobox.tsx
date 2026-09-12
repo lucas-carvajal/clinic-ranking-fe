@@ -140,8 +140,6 @@ export function Combobox({
     return match?.label ?? value;
   }, [options, placeholder, value]);
 
-  const isPlaceholder = value == null || value === "";
-
   const commit = useCallback(
     (next: InternalItem | undefined) => {
       if (!next) return;
@@ -208,8 +206,7 @@ export function Combobox({
           aria-label={ariaLabel ?? placeholder}
           disabled={disabled}
           className={cn(
-            "h-10 w-full justify-between bg-surface-lifted px-3 text-sm font-normal hover:bg-black/[0.14] aria-expanded:bg-black/[0.17] dark:hover:bg-white/10 dark:aria-expanded:bg-white/12",
-            isPlaceholder && "text-muted-foreground",
+            "h-10 w-full justify-between rounded-lg bg-surface-lifted px-3 text-[15px] font-medium text-foreground hover:bg-black/[0.14] hover:text-foreground aria-expanded:bg-black/[0.17] aria-expanded:text-foreground dark:hover:bg-white/10 dark:hover:text-foreground dark:aria-expanded:bg-white/12 dark:aria-expanded:text-foreground",
             triggerClassName,
             className,
           )}
@@ -276,10 +273,10 @@ export function Combobox({
                   onMouseEnter={() => setHighlightedIndex(i)}
                   onClick={() => commit(item)}
                   className={cn(
-                    "flex cursor-pointer items-center gap-2 px-3 py-2 text-sm",
+                    "flex cursor-pointer items-center gap-2 px-3 py-2 text-sm text-foreground",
                     isHighlighted &&
-                      "bg-black/[0.14] dark:bg-white/10",
-                    item.isClear && "text-muted-foreground",
+                      "bg-black/[0.14] text-foreground dark:bg-white/10 dark:text-foreground",
+                    item.isClear && !isHighlighted && "text-muted-foreground",
                   )}
                 >
                   <Check

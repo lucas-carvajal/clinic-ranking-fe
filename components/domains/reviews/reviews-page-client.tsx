@@ -107,7 +107,7 @@ export function ReviewsPageClient() {
   const uiError = pager.isError ? mapToUiError(pager.error) : undefined;
 
   return (
-    <div className="text-foreground mx-auto w-full max-w-7xl px-3 py-4 md:p-4">
+    <div className="text-foreground mx-auto w-full max-w-7xl px-3 pt-4 pb-8 md:p-6">
       <h1 className="app-page-heading mb-6">Alle Bewertungen</h1>
 
       <div className="mb-6 grid w-full grid-cols-1 gap-3 md:grid-cols-2 md:gap-2 lg:grid-cols-4">
