@@ -33,6 +33,19 @@ it("module does not import session-clearing helpers", () => {
   expect(source).not.toMatch(/clear-admin-session|clearAdminSession/);
 });
 
+const ADMIN_MUTATING_SERVER_ACTIONS = [
+  "app/(admin)/admin/(protected)/review-request/[id]/actions.ts",
+  "app/(admin)/admin/(protected)/review-request/[id]/generate-verification-link.ts",
+] as const;
+
+it("mutating admin server actions authenticate inside the action", () => {
+  for (const rel of ADMIN_MUTATING_SERVER_ACTIONS) {
+    const source = readFileSync(join(process.cwd(), rel), "utf8");
+    expect(source, rel).toMatch(/^"use server";/m);
+    expect(source, rel).toMatch(/await requireAdminUser\(/);
+  }
+});
+
 describe("requireAdminUser", () => {
   const sessionName = "admin_session";
 

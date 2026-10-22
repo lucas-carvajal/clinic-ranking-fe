@@ -82,4 +82,14 @@ describe("generateReviewRequestVerificationLink", () => {
     });
     expect(global.fetch).not.toHaveBeenCalled();
   });
+
+  it("does not call the backend when the admin session check rejects", async () => {
+    vi.mocked(requireAdminUser).mockRejectedValue(new Error("REDIRECT:/admin/login"));
+    global.fetch = vi.fn() as typeof fetch;
+
+    await expect(generateReviewRequestVerificationLink(REQUEST_ID)).rejects.toThrow(
+      /REDIRECT:/,
+    );
+    expect(global.fetch).not.toHaveBeenCalled();
+  });
 });
